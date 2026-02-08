@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pensioengat Calculator | Finaforte</title>
+  <meta name="description" content="Bereken gratis of je genoeg pensioen opbouwt en hoeveel je extra moet sparen om je pensioentekort te dichten.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #333; }
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .input-row { display: flex; align-items: center; gap: 16px; }
+    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .value-display {
+      background: #f0faf9;
+      border: 2px solid #1AABA6;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1AABA6;
+      min-width: 120px;
+      text-align: center;
+    }
+    .input-hint { font-size: 12px; color: #666; margin-top: 6px; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: #1AABA6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .result-header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .result-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 8px; }
+    .result-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .result-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-label { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+    .stat-value { font-size: 28px; font-weight: 700; }
+    .stat-value.warning { color: #ffc107; }
+    .stat-value.success { color: #90EE90; }
+    .progress-section { margin-bottom: 24px; }
+    .progress-bar-container {
+      background: #e5e5e5;
+      border-radius: 8px;
+      height: 32px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .progress-bar {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.5s ease;
+    }
+    .progress-bar.green { background: linear-gradient(90deg, #1AABA6, #158783); }
+    .progress-bar.orange { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .progress-bar.red { background: linear-gradient(90deg, #ef4444, #dc2626); }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 13px; color: #666; }
+    .breakdown-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+    .breakdown-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+    .breakdown-row:last-child { border: none; }
+    .breakdown-label { color: #666; }
+    .breakdown-value { font-weight: 600; }
+    .breakdown-value.positive { color: #1AABA6; }
+    .breakdown-value.negative { color: #c53030; }
+    .action-box {
+      background: #fff3cd;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .action-box.success {
+      background: #d4edda;
+      border-color: #1AABA6;
+    }
+    .action-title { font-weight: 600; color: #856404; margin-bottom: 4px; }
+    .action-box.success .action-title { color: #155724; }
+    .action-text { font-size: 14px; color: #333; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; }
+    .cta-icon { font-size: 32px; margin-bottom: 8px; }
+    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
+    .cta-text { color: #666; margin-bottom: 20px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .error-msg { color: #c53030; font-size: 14px; margin-bottom: 12px; }
+    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 700px) {
+      .result-stats { flex-direction: column; gap: 16px; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .value-display { min-width: auto; }
+      .stat-value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+        
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Pensioengat'
+    };
+    // ============================================
+// ============================================
+
+    const PARAMS = {
+      aowAlleen: 17928,    // AOW 2026 alleenstaand
+      aowSamen: 12300,     // AOW 2026 samenwonend (per persoon)
+      pensioenLeeftijd: 67,
+      rekenrente: 0.02,    // 2% voor uitkeringsfase
+      uitkeringsduur: 20,  // jaren
+    };
+
+    const formatCurrency = (amount) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+
+    // PMT: Berekent periodieke betaling
+    const PMT = (rate, nper, pv, fv) => {
+      if (rate === 0) return -(pv + fv) / nper;
+      const pvif = Math.pow(1 + rate, nper);
+      return -rate * (pv * pvif + fv) / (pvif - 1);
+    };
+
+    // PV: Berekent contante waarde
+    const PV = (rate, nper, pmt) => {
+      if (rate === 0) return -pmt * nper;
+      return -pmt * (1 - Math.pow(1 + rate, -nper)) / rate;
+    };
+
+    // UTM parameters ophalen
+    const getUTMParams = () => {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+      };
+    };
+
+    function App() {
+      // Invoer states
+      const [leeftijd, setLeeftijd] = React.useState(45);
+      const [brutoInkomen, setBrutoInkomen] = React.useState(75000);
+      const [gewenstPct, setGewenstPct] = React.useState(70);
+      const [samenwonend, setSamenwonend] = React.useState(true);
+      const [werkgeversPensioen, setWerkgeversPensioen] = React.useState(15000);
+      const [eigenOpbouw, setEigenOpbouw] = React.useState(0);
+      const [huidigeInleg, setHuidigeInleg] = React.useState(0);
+      const [rendement, setRendement] = React.useState(5);
+      
+      // UI states
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [email, setEmail] = React.useState('');
+      const [naam, setNaam] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [loading, setLoading] = React.useState(false);
+      const [error, setError] = React.useState('');
+
+      const jarenTotPensioen = Math.max(0, PARAMS.pensioenLeeftijd - leeftijd);
+
+      // Berekeningslogica
+      const results = React.useMemo(() => {
+        const gewenstPensioen = brutoInkomen * (gewenstPct / 100);
+        const aow = samenwonend ? PARAMS.aowSamen : PARAMS.aowAlleen;
+        const totaalVerwacht = aow + werkgeversPensioen + eigenOpbouw;
+        const pensioengat = Math.max(0, gewenstPensioen - totaalVerwacht);
+
+        // Benodigd kapitaal (PV van pensioengat)
+        const benodigdKapitaal = pensioengat > 0 ? PV(PARAMS.rekenrente, PARAMS.uitkeringsduur, -pensioengat) : 0;
+
+        // Wat levert huidige inleg op bij pensioen?
+        const jaarRendement = rendement / 100;
+        const huidigeOpbouwEind = huidigeInleg > 0 && jarenTotPensioen > 0
+          ? huidigeInleg * 12 * ((Math.pow(1 + jaarRendement, jarenTotPensioen) - 1) / jaarRendement)
+          : 0;
+
+        // Tekort na huidige opbouw
+        const tekort = Math.max(0, benodigdKapitaal - huidigeOpbouwEind);
+
+        // Benodigde extra maandinleg
+        const maandRate = jaarRendement / 12;
+        const maanden = jarenTotPensioen * 12;
+        const extraInleg = tekort > 0 && maanden > 0 ? PMT(maandRate, maanden, 0, -tekort) : 0;
+
+        // Dekkingsgraad
+        const dekkingsgraad = gewenstPensioen > 0 ? (totaalVerwacht / gewenstPensioen) * 100 : 100;
+
+        return { gewenstPensioen, aow, totaalVerwacht, pensioengat, benodigdKapitaal, huidigeOpbouwEind, tekort, extraInleg, dekkingsgraad };
+      }, [leeftijd, brutoInkomen, gewenstPct, samenwonend, werkgeversPensioen, eigenOpbouw, huidigeInleg, rendement, jarenTotPensioen]);
+
+      // FormSubmit email versturen
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        const utmParams = getUTMParams();
+
+        const formData = new FormData();
+        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+
+        formData.append('Calculator', LEAD_CONFIG.calculatorName);
+        formData.append('Naam', naam);
+        formData.append('Email', email);
+        formData.append('Datum', new Date().toLocaleString('nl-NL'));
+        formData.append('Leeftijd', leeftijd + ' jaar');
+        formData.append('Jaren_tot_pensioen', jarenTotPensioen);
+        formData.append('Bruto_inkomen', formatCurrency(brutoInkomen));
+        formData.append('Gewenst_percentage', gewenstPct + '%');
+        formData.append('Leefsituatie', samenwonend ? 'Samenwonend' : 'Alleenstaand');
+        formData.append('Werkgeverspensioen', formatCurrency(werkgeversPensioen));
+        formData.append('Pensioengat', formatCurrency(results.pensioengat));
+        formData.append('Benodigd_kapitaal', formatCurrency(results.benodigdKapitaal));
+        formData.append('Extra_inleg_nodig', formatCurrency(results.extraInleg) + '/maand');
+        formData.append('Dekkingsgraad', Math.round(results.dekkingsgraad) + '%');
+        formData.append('UTM_Source', utmParams.utm_source || 'direct');
+        formData.append('Pagina', window.location.href);
+
+        try {
+          const response = await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+
+          setSubmitted(true);
+          setLoading(false);
+        } catch (err) {
+          console.error('Email error:', err);
+          setSubmitted(true);
+          setLoading(false);
+        }
+      };
+
+      const getProgressColor = (pct) => {
+        if (pct >= 90) return 'green';
+        if (pct >= 70) return 'orange';
+        return 'red';
+      };
+
+      const resetForm = () => {
+        setShowResults(false);
+        setShowLeadForm(false);
+        setSubmitted(false);
+        setEmail('');
+        setNaam('');
+        setError('');
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis Calculator 2026</div>
+            <h1>Pensioengat Calculator</h1>
+            <p>Ontdek of je genoeg pensioen opbouwt en hoeveel je extra moet sparen</p>
+          </div>
+
+          <div className="card">
+            <h3 className="card-title">Jouw Situatie</h3>
+            <div className="input-grid">
+              <div className="input-group">
+                <label className="input-label">Jouw leeftijd</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="25" max="65" step="1" value={leeftijd} onChange={(e) => { setLeeftijd(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{leeftijd} jaar</div>
+                </div>
+                <p className="input-hint">Nog {jarenTotPensioen} jaar tot pensioen (67)</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Bruto jaarinkomen</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="30000" max="200000" step="5000" value={brutoInkomen} onChange={(e) => { setBrutoInkomen(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(brutoInkomen)}</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Gewenst pensioen (% van inkomen)</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="50" max="100" step="5" value={gewenstPct} onChange={(e) => { setGewenstPct(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{gewenstPct}%</div>
+                </div>
+                <p className="input-hint">Norm: 70-80% van laatstverdiende inkomen</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Leefsituatie</label>
+                <div style={{display: 'flex', gap: '12px', marginTop: '8px'}}>
+                  <button
+                    onClick={() => { setSamenwonend(true); setShowResults(false); }}
+                    style={{flex: 1, padding: '12px', border: samenwonend ? '2px solid #1AABA6' : '2px solid #e5e5e5', borderRadius: '8px', background: samenwonend ? '#f0faf9' : 'white', cursor: 'pointer', fontWeight: samenwonend ? '600' : '400', color: samenwonend ? '#1AABA6' : '#666'}}
+                  >Samenwonend</button>
+                  <button
+                    onClick={() => { setSamenwonend(false); setShowResults(false); }}
+                    style={{flex: 1, padding: '12px', border: !samenwonend ? '2px solid #1AABA6' : '2px solid #e5e5e5', borderRadius: '8px', background: !samenwonend ? '#f0faf9' : 'white', cursor: 'pointer', fontWeight: !samenwonend ? '600' : '400', color: !samenwonend ? '#1AABA6' : '#666'}}
+                  >Alleenstaand</button>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Werkgeverspensioen (per jaar)</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="0" max="50000" step="1000" value={werkgeversPensioen} onChange={(e) => { setWerkgeversPensioen(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(werkgeversPensioen)}</div>
+                </div>
+                <p className="input-hint">Check mijnpensioenoverzicht.nl</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Eigen pensioenopbouw (lijfrente/BV)</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="0" max="30000" step="500" value={eigenOpbouw} onChange={(e) => { setEigenOpbouw(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(eigenOpbouw)}</div>
+                </div>
+                <p className="input-hint">Verwachte jaarlijkse uitkering uit privé pensioen</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Huidige maandelijkse pensioeninleg</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="0" max="2000" step="50" value={huidigeInleg} onChange={(e) => { setHuidigeInleg(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(huidigeInleg)}</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Verwacht rendement</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="2" max="8" step="0.5" value={rendement} onChange={(e) => { setRendement(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{rendement}%</div>
+                </div>
+                <p className="input-hint">Voorzichtig: 3-4% | Neutraal: 5% | Offensief: 6-7%</p>
+              </div>
+            </div>
+            <button className="btn" style={{marginTop: '16px'}} onClick={() => setShowResults(true)}>Bereken mijn pensioengat →</button>
+          </div>
+
+          {showResults && (
+            <>
+              <div className="result-header">
+                <div className="result-tag">Jouw pensioenanalyse</div>
+                <div className="result-title">
+                  {results.pensioengat > 0 ? `Je hebt een pensioengat van ${formatCurrency(results.pensioengat)} per jaar` : '✓ Je bent goed op weg!'}
+                </div>
+                <div className="result-stats">
+                  <div className="stat">
+                    <div className="stat-label">Dekkingsgraad</div>
+                    <div className={`stat-value ${results.dekkingsgraad >= 90 ? 'success' : 'warning'}`}>{results.dekkingsgraad.toFixed(0)}%</div>
+                  </div>
+                  <div className="stat">
+                    <div className="stat-label">Extra inleg nodig/maand</div>
+                    <div className="stat-value">{formatCurrency(results.extraInleg)}</div>
+                  </div>
+                  <div className="stat">
+                    <div className="stat-label">Benodigd kapitaal</div>
+                    <div className="stat-value">{formatCurrency(results.benodigdKapitaal)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="progress-section">
+                <div className="progress-bar-container">
+                  <div className={`progress-bar ${getProgressColor(results.dekkingsgraad)}`} style={{width: `${Math.min(100, results.dekkingsgraad)}%`}}></div>
+                </div>
+                <div className="progress-labels">
+                  <span>0%</span>
+                  <span>Dekkingsgraad: {results.dekkingsgraad.toFixed(0)}%</span>
+                  <span>100%</span>
+                </div>
+              </div>
+
+              <div className="breakdown-card">
+                <h3 className="card-title">Pensioenopbouw per jaar</h3>
+                <div className="breakdown-row">
+                  <span className="breakdown-label">Gewenst pensioen ({gewenstPct}%)</span>
+                  <span className="breakdown-value">{formatCurrency(results.gewenstPensioen)}</span>
+                </div>
+                <div className="breakdown-row">
+                  <span className="breakdown-label">AOW ({samenwonend ? 'samenwonend' : 'alleenstaand'})</span>
+                  <span className="breakdown-value positive">+ {formatCurrency(results.aow)}</span>
+                </div>
+                <div className="breakdown-row">
+                  <span className="breakdown-label">Werkgeverspensioen</span>
+                  <span className="breakdown-value positive">+ {formatCurrency(werkgeversPensioen)}</span>
+                </div>
+                {eigenOpbouw > 0 && (
+                  <div className="breakdown-row">
+                    <span className="breakdown-label">Eigen opbouw (lijfrente/BV)</span>
+                    <span className="breakdown-value positive">+ {formatCurrency(eigenOpbouw)}</span>
+                  </div>
+                )}
+                <div className="breakdown-row">
+                  <span className="breakdown-label">Totaal verwacht</span>
+                  <span className="breakdown-value">{formatCurrency(results.totaalVerwacht)}</span>
+                </div>
+                <div className="breakdown-row" style={{background: results.pensioengat > 0 ? '#fff3cd' : '#d4edda', margin: '8px -24px -24px', padding: '16px 24px', borderRadius: '0 0 12px 12px'}}>
+                  <span className="breakdown-label" style={{fontWeight: '600'}}>Pensioengat per jaar</span>
+                  <span className={`breakdown-value ${results.pensioengat > 0 ? 'negative' : 'positive'}`} style={{fontSize: '18px'}}>
+                    {results.pensioengat > 0 ? `-${formatCurrency(results.pensioengat)}` : '€ 0 ✓'}
+                  </span>
+                </div>
+              </div>
+
+              {results.pensioengat > 0 ? (
+                <div className="action-box">
+                  <div className="action-title">💡 Actie vereist</div>
+                  <div className="action-text">
+                    Om je pensioengat te dichten, moet je nog {formatCurrency(results.extraInleg)} extra per maand inleggen gedurende {jarenTotPensioen} jaar.
+                    Dit is bovenop je huidige inleg van {formatCurrency(huidigeInleg)}/maand.
+                  </div>
+                </div>
+              ) : (
+                <div className="action-box success">
+                  <div className="action-title">✓ Goed bezig!</div>
+                  <div className="action-text">
+                    Met je huidige pensioenopbouw ben je op koers om je gewenste pensioeninkomen te bereiken.
+                  </div>
+                </div>
+              )}
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div className="cta-icon">📊</div>
+                  <h3 className="cta-title">Wil je een persoonlijk pensioenrapport?</h3>
+                  <p className="cta-text">Ontvang een uitgebreid rapport met concrete aanbevelingen en optimalisatiemogelijkheden</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input 
+                      type="text" 
+                      className="form-input" 
+                      placeholder="Je naam" 
+                      value={naam} 
+                      onChange={(e) => setNaam(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="email" 
+                      className="form-input" 
+                      placeholder="je@email.nl" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      required 
+                    />
+                    {error && <p className="error-msg">{error}</p>}
+                    <button type="submit" className="btn" disabled={loading}>
+                      {loading ? <><span className="loading"></span>Versturen...</> : 'Verstuur mijn rapport →'}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div className="success-icon">✅</div>
+                  <h3 className="success-title">Je rapport is onderweg!</h3>
+                  <p style={{color: '#666', marginBottom: '16px'}}>Check je inbox voor je persoonlijke pensioenanalyse.</p>
+                  <button className="btn" style={{width: 'auto', padding: '12px 24px', background: 'transparent', color: '#1AABA6', border: '2px solid #1AABA6'}} onClick={resetForm}>
+                    Nieuwe berekening maken
+                  </button>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief. AOW 2026: €17.928 (alleen), €12.300 (samen). Rekenrente: 2%. Uitkeringsduur: 20 jaar.
+                Verwacht rendement: {rendement}% (opbouwfase). Check mijnpensioenoverzicht.nl voor actuele pensioengegevens.
+                <br/>© 2026 Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

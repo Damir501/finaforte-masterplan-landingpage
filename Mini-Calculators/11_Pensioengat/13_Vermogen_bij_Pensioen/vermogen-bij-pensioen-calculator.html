@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vermogen bij Pensioen Calculator | Finaforte</title>
+  <meta name="description" content="Bereken gratis hoeveel vermogen je opbouwt tot je pensioen. Inclusief 4% regel analyse en benodigde maandinleg berekening.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #333; }
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .input-row { display: flex; align-items: center; gap: 16px; }
+    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .value-display {
+      background: #f0faf9;
+      border: 2px solid #1AABA6;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1AABA6;
+      min-width: 120px;
+      text-align: center;
+    }
+    .input-hint { font-size: 12px; color: #666; margin-top: 6px; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: #1AABA6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #158783; }
+    .result-header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .result-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 8px; }
+    .result-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .result-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-label { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+    .stat-value { font-size: 28px; font-weight: 700; }
+    .stat-value.warning { color: #ffc107; }
+    .stat-value.success { color: #90EE90; }
+    .gauge-section { text-align: center; margin-bottom: 24px; }
+    .gauge-container {
+      position: relative;
+      width: 200px;
+      height: 100px;
+      margin: 0 auto 16px;
+      overflow: hidden;
+    }
+    .gauge-bg {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 100px 100px 0 0;
+      background: linear-gradient(90deg, #ef4444 0%, #f59e0b 40%, #22c55e 70%, #1AABA6 100%);
+      transform-origin: center bottom;
+    }
+    .gauge-fill {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 4px;
+      height: 90px;
+      background: #333;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-90deg);
+      transition: transform 0.5s ease;
+      border-radius: 2px;
+    }
+    .gauge-center {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      background: #333;
+      border-radius: 50%;
+    }
+    .gauge-label { font-size: 32px; font-weight: 700; color: #1AABA6; }
+    .gauge-sublabel { font-size: 14px; color: #666; }
+    .breakdown-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+    .breakdown-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .breakdown-icon { font-size: 24px; margin-bottom: 8px; }
+    .breakdown-value { font-size: 24px; font-weight: 700; color: #1AABA6; margin-bottom: 4px; }
+    .breakdown-label { font-size: 13px; color: #666; }
+    .rule-box {
+      background: #f0faf9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .rule-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px; }
+    .rule-value { font-size: 28px; font-weight: 700; color: #1AABA6; margin-bottom: 4px; }
+    .rule-desc { font-size: 13px; color: #666; }
+    .action-box {
+      background: #fff3cd;
+      border-left: 4px solid #f59e0b;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .action-box.success {
+      background: #d4edda;
+      border-color: #1AABA6;
+    }
+    .action-title { font-weight: 600; color: #856404; margin-bottom: 4px; }
+    .action-box.success .action-title { color: #155724; }
+    .action-text { font-size: 14px; color: #333; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; }
+    .cta-icon { font-size: 32px; margin-bottom: 8px; }
+    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
+    .cta-text { color: #666; margin-bottom: 20px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    @media (max-width: 700px) {
+      .result-stats { flex-direction: column; gap: 16px; }
+      .breakdown-grid { grid-template-columns: 1fr; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .value-display { min-width: auto; }
+      .stat-value { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Vermogen bij Pensioen'
+    };
+    // ============================================
+const formatCurrency = (amount) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+
+    const FV = (rate, nper, pmt, pv = 0) => {
+      if (rate === 0) return -(pv + pmt * nper);
+      const factor = Math.pow(1 + rate, nper);
+      return -(pv * factor + pmt * ((factor - 1) / rate));
+    };
+
+    const PMT = (rate, nper, pv, fv) => {
+      if (rate === 0) return -(pv + fv) / nper;
+      const factor = Math.pow(1 + rate, nper);
+      return -rate * (pv * factor + fv) / (factor - 1);
+    };
+
+    function App() {
+      const [leeftijd, setLeeftijd] = React.useState(35);
+      const [pensioenLeeftijd, setPensioenLeeftijd] = React.useState(67);
+      const [huidigVermogen, setHuidigVermogen] = React.useState(50000);
+      const [maandInleg, setMaandInleg] = React.useState(500);
+      const [rendement, setRendement] = React.useState(6);
+      const [doelOnttrekking, setDoelOnttrekking] = React.useState(30000);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [email, setEmail] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+
+      const jaren = Math.max(0, pensioenLeeftijd - leeftijd);
+      const maandRate = rendement / 100 / 12;
+      const maanden = jaren * 12;
+
+      const results = React.useMemo(() => {
+        // Groei huidig vermogen
+        const vermogenGroei = huidigVermogen * Math.pow(1 + rendement / 100, jaren);
+
+        // Waarde maandelijkse inleg
+        const inlegGroei = maandInleg > 0 && maanden > 0 ? -FV(maandRate, maanden, -maandInleg, 0) : 0;
+
+        // Totaal eindvermogen
+        const eindvermogen = vermogenGroei + inlegGroei;
+
+        // 4% regel
+        const veiligOnttrekking = eindvermogen * 0.04;
+
+        // Doelvermogen o.b.v. gewenste onttrekking
+        const doelVermogen = doelOnttrekking / 0.04;
+
+        // Tekort/overschot
+        const verschil = eindvermogen - doelVermogen;
+        const opKoers = verschil >= 0;
+
+        // Benodigde extra inleg bij tekort
+        const tekort = Math.max(0, -verschil);
+        const extraInleg = tekort > 0 && maanden > 0 ? PMT(maandRate, maanden, 0, -tekort) : 0;
+
+        // Score (percentage van doelvermogen)
+        const score = doelVermogen > 0 ? Math.min(150, (eindvermogen / doelVermogen) * 100) : 100;
+
+        return { vermogenGroei, inlegGroei, eindvermogen, veiligOnttrekking, doelVermogen, verschil, opKoers, extraInleg, score };
+      }, [huidigVermogen, maandInleg, rendement, jaren, maandRate, maanden, doelOnttrekking]);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('calculator', LEAD_CONFIG.calculatorName);
+        formData.append('current_age', leeftijd);
+        formData.append('retirement_age', pensioenLeeftijd);
+        formData.append('current_wealth', huidigVermogen);
+        formData.append('monthly_contribution', maandInleg);
+        formData.append('expected_return', rendement);
+        formData.append('desired_withdrawal', doelOnttrekking);
+        formData.append('projected_wealth', Math.round(results.eindvermogen));
+        formData.append('goal_wealth', Math.round(results.doelVermogen));
+        formData.append('on_track', results.opKoers ? 'Yes' : 'No');
+        formData.append('score', results.score.toFixed(0));
+        formData.append('safe_withdrawal', Math.round(results.veiligOnttrekking));
+        formData.append('extra_monthly_needed', Math.round(results.extraInleg));
+
+        fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          setSubmitted(true);
+        })
+        .catch(error => {
+          console.error('Form submission error:', error);
+          setSubmitted(true);
+        });
+      };
+
+      // Gauge rotation: -90deg (0%) to 90deg (150%)
+      const gaugeRotation = -90 + (results.score / 150) * 180;
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis Calculator</div>
+            <h1>Vermogen bij Pensioen Calculator</h1>
+            <p>Bereken hoeveel vermogen je opbouwt en of je op koers ligt voor je pensioendoel</p>
+          </div>
+
+          <div className="card">
+            <h3 className="card-title">Jouw Situatie</h3>
+            <div className="input-grid">
+              <div className="input-group">
+                <label className="input-label">Jouw leeftijd</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="20" max="60" step="1" value={leeftijd} onChange={(e) => { setLeeftijd(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{leeftijd} jaar</div>
+                </div>
+                <p className="input-hint">Nog {jaren} jaar tot pensioen</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Gewenste pensioenleeftijd</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="55" max="70" step="1" value={pensioenLeeftijd} onChange={(e) => { setPensioenLeeftijd(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{pensioenLeeftijd} jaar</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Huidig belegd vermogen</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="0" max="500000" step="5000" value={huidigVermogen} onChange={(e) => { setHuidigVermogen(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(huidigVermogen)}</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Maandelijkse inleg</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="0" max="3000" step="50" value={maandInleg} onChange={(e) => { setMaandInleg(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(maandInleg)}</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Verwacht rendement per jaar</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="2" max="10" step="0.5" value={rendement} onChange={(e) => { setRendement(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{rendement}%</div>
+                </div>
+                <p className="input-hint">Historisch gemiddeld aandelen: ~7%</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Gewenste jaarlijkse onttrekking</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="10000" max="100000" step="5000" value={doelOnttrekking} onChange={(e) => { setDoelOnttrekking(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(doelOnttrekking)}</div>
+                </div>
+              </div>
+            </div>
+            <button className="btn" style={{marginTop: '16px'}} onClick={() => setShowResults(true)}>Bereken mijn vermogen →</button>
+          </div>
+
+          {showResults && (
+            <>
+              <div className="result-header">
+                <div className="result-tag">Jouw vermogensprojectie</div>
+                <div className="result-title">
+                  Geschat vermogen op {pensioenLeeftijd}-jarige leeftijd
+                </div>
+                <div className="result-stats">
+                  <div className="stat">
+                    <div className="stat-label">Eindvermogen</div>
+                    <div className="stat-value">{formatCurrency(results.eindvermogen)}</div>
+                  </div>
+                  <div className="stat">
+                    <div className="stat-label">Doelvermogen</div>
+                    <div className="stat-value">{formatCurrency(results.doelVermogen)}</div>
+                  </div>
+                  <div className="stat">
+                    <div className="stat-label">Status</div>
+                    <div className={`stat-value ${results.opKoers ? 'success' : 'warning'}`}>
+                      {results.opKoers ? '✓ Op koers' : '⚠ Tekort'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="gauge-section">
+                <div className="gauge-container">
+                  <div className="gauge-bg"></div>
+                  <div className="gauge-fill" style={{transform: `translateX(-50%) rotate(${gaugeRotation}deg)`}}></div>
+                  <div className="gauge-center"></div>
+                </div>
+                <div className="gauge-label">{results.score.toFixed(0)}%</div>
+                <div className="gauge-sublabel">van je doelvermogen</div>
+              </div>
+
+              <div className="breakdown-grid">
+                <div className="breakdown-card">
+                  <div className="breakdown-icon">💰</div>
+                  <div className="breakdown-value">{formatCurrency(results.vermogenGroei)}</div>
+                  <div className="breakdown-label">Groei huidig vermogen</div>
+                </div>
+                <div className="breakdown-card">
+                  <div className="breakdown-icon">📈</div>
+                  <div className="breakdown-value">{formatCurrency(results.inlegGroei)}</div>
+                  <div className="breakdown-label">Waarde maandelijkse inleg</div>
+                </div>
+              </div>
+
+              <div className="rule-box">
+                <div className="rule-title">📊 De 4% Regel</div>
+                <div className="rule-value">{formatCurrency(results.veiligOnttrekking)}/jaar</div>
+                <div className="rule-desc">
+                  Met {formatCurrency(results.eindvermogen)} kun je jaarlijks ~{formatCurrency(results.veiligOnttrekking)} opnemen
+                  zonder dat je vermogen opraakt (over ~30 jaar)
+                </div>
+              </div>
+
+              {results.opKoers ? (
+                <div className="action-box success">
+                  <div className="action-title">✓ Goed bezig!</div>
+                  <div className="action-text">
+                    Je bouwt voldoende vermogen op voor je gewenste onttrekking van {formatCurrency(doelOnttrekking)}/jaar.
+                    Je hebt zelfs een buffer van {formatCurrency(results.verschil)}.
+                  </div>
+                </div>
+              ) : (
+                <div className="action-box">
+                  <div className="action-title">💡 Actie nodig</div>
+                  <div className="action-text">
+                    Voor je doel heb je {formatCurrency(Math.abs(results.verschil))} meer nodig.
+                    Verhoog je maandelijkse inleg met {formatCurrency(results.extraInleg)} om op koers te komen.
+                  </div>
+                </div>
+              )}
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div className="cta-icon">📊</div>
+                  <h3 className="cta-title">Wil je een uitgebreid vermogensrapport?</h3>
+                  <p className="cta-text">Ontvang een persoonlijk rapport met scenario-analyse en concrete aanbevelingen</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input type="email" className="form-input" placeholder="je@email.nl" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                    <button type="submit" className="btn">Verstuur mijn rapport →</button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div className="success-icon">✅</div>
+                  <h3 className="success-title">Je rapport is onderweg!</h3>
+                  <p style={{color: '#666'}}>Check je inbox voor je persoonlijke vermogensanalyse.</p>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief. De 4% regel is een vuistregel, geen garantie.
+                Beleggen brengt risico's met zich mee. In het verleden behaalde resultaten bieden geen garantie voor de toekomst.
+                <br/>© Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

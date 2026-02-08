@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estate Planning Calculator 2026 | Finaforte</title>
+  <meta name="description" content="Bereken je erfbelasting en ontdek hoeveel je kunt besparen met slim schenken. Actuele tarieven 2026.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .year-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+    .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #1AABA6; padding-bottom: 8px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
+    .input-hint { font-size: 12px; color: #666; margin-top: 4px; }
+    .input-field { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; }
+    .input-field:focus { outline: none; border-color: #1AABA6; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn { width: 100%; padding: 16px; background: #1AABA6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn { flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+    .toggle-btn:hover { border-color: #1AABA6; }
+    .toggle-btn.active { border-color: #1AABA6; background: #f0faf9; color: #1AABA6; font-weight: 600; }
+    .result-card { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .result-box { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; text-align: center; }
+    .result-box-label { font-size: 11px; opacity: 0.8; margin-bottom: 4px; text-transform: uppercase; }
+    .result-box-value { font-size: 24px; font-weight: 700; }
+    .compare-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .compare-card { border: 2px solid #e5e5e5; border-radius: 12px; padding: 20px; }
+    .compare-card.highlight { border-color: #1AABA6; background: #f0faf9; }
+    .compare-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 12px; }
+    .compare-value { font-size: 28px; font-weight: 700; color: #333; }
+    .compare-label { font-size: 12px; color: #666; }
+    .badge { display: inline-block; background: #1AABA6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+    .timeline { margin-top: 16px; }
+    .timeline-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+    .timeline-year { width: 60px; font-weight: 600; color: #1AABA6; }
+    .timeline-content { flex: 1; }
+    .timeline-amount { font-weight: 600; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .error-message { color: #dc2626; font-size: 14px; margin-top: 8px; text-align: center; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
+    .params-info strong { color: #1AABA6; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { 
+      .input-row { grid-template-columns: 1fr; } 
+      .result-grid { grid-template-columns: 1fr; } 
+      .compare-section { grid-template-columns: 1fr; } 
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+            
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Estate Planning'
+    };
+    // ============================================
+// ============================================================
+
+    // FISCALE PARAMETERS 2026 - Actuele waarden
+    const PARAMS = {
+      vrijstellingPartner: 828035,
+      vrijstellingKind: 26230,
+      vrijstellingOverig: 2769,
+      schenkingVrijKind: 6908,
+      schenkingVrijOverig: 2769,
+      tariefSchijf1: 0.10,
+      tariefSchijf2: 0.20,
+      grensSchijf1: 158669,
+    };
+
+    const formatCurrency = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+
+    const berekenErfbelasting = (bedrag, vrijstelling) => {
+      const belastbaar = Math.max(0, bedrag - vrijstelling);
+      if (belastbaar <= 0) return 0;
+      if (belastbaar <= PARAMS.grensSchijf1) {
+        return belastbaar * PARAMS.tariefSchijf1;
+      }
+      return PARAMS.grensSchijf1 * PARAMS.tariefSchijf1 + (belastbaar - PARAMS.grensSchijf1) * PARAMS.tariefSchijf2;
+    };
+
+    function App() {
+      const [vermogen, setVermogen] = React.useState(1000000);
+      const [hypotheek, setHypotheek] = React.useState(200000);
+      const [heeftPartner, setHeeftPartner] = React.useState(true);
+      const [aantalKinderen, setAantalKinderen] = React.useState(2);
+      const [jarenSchenken, setJarenSchenken] = React.useState(10);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [email, setEmail] = React.useState('');
+      const [naam, setNaam] = React.useState('');
+      const [telefoon, setTelefoon] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [isSubmitting, setIsSubmitting] = React.useState(false);
+      const [submitError, setSubmitError] = React.useState('');
+
+      // Input validatie
+      const validVermogen = Math.max(0, vermogen || 0);
+      const validHypotheek = Math.max(0, hypotheek || 0);
+      const validKinderen = Math.max(0, Math.min(10, aantalKinderen || 0));
+
+      const result = React.useMemo(() => {
+        const nettoVermogen = Math.max(0, validVermogen - validHypotheek);
+
+        // Scenario 1: Alles nalaten (geen planning)
+        let erfbelastingTotaal = 0;
+
+        if (heeftPartner) {
+          const partnerBelasting = berekenErfbelasting(nettoVermogen, PARAMS.vrijstellingPartner);
+          erfbelastingTotaal = partnerBelasting;
+          
+          if (validKinderen > 0) {
+            const perKind = nettoVermogen / validKinderen;
+            const kindBelasting = berekenErfbelasting(perKind, PARAMS.vrijstellingKind);
+            erfbelastingTotaal += kindBelasting * validKinderen;
+          }
+        } else {
+          if (validKinderen > 0) {
+            const perKind = nettoVermogen / validKinderen;
+            const kindBelasting = berekenErfbelasting(perKind, PARAMS.vrijstellingKind);
+            erfbelastingTotaal = kindBelasting * validKinderen;
+          }
+        }
+
+        // Scenario 2: Jaarlijks schenken
+        const jaarlijkseSchenking = PARAMS.schenkingVrijKind * validKinderen;
+        const totaalGeschonken = jaarlijkseSchenking * jarenSchenken;
+        const resterendVermogen = Math.max(0, nettoVermogen - totaalGeschonken);
+
+        let erfbelastingNaSchenken = 0;
+        if (heeftPartner) {
+          const partnerBelasting = berekenErfbelasting(resterendVermogen, PARAMS.vrijstellingPartner);
+          erfbelastingNaSchenken = partnerBelasting;
+          if (validKinderen > 0) {
+            const perKind = resterendVermogen / validKinderen;
+            const kindBelasting = berekenErfbelasting(perKind, PARAMS.vrijstellingKind);
+            erfbelastingNaSchenken += kindBelasting * validKinderen;
+          }
+        } else {
+          if (validKinderen > 0) {
+            const perKind = resterendVermogen / validKinderen;
+            const kindBelasting = berekenErfbelasting(perKind, PARAMS.vrijstellingKind);
+            erfbelastingNaSchenken = kindBelasting * validKinderen;
+          }
+        }
+
+        const besparing = Math.max(0, erfbelastingTotaal - erfbelastingNaSchenken);
+
+        return {
+          nettoVermogen,
+          erfbelastingTotaal: Math.round(erfbelastingTotaal),
+          jaarlijkseSchenking,
+          totaalGeschonken,
+          resterendVermogen,
+          erfbelastingNaSchenken: Math.round(erfbelastingNaSchenken),
+          besparing: Math.round(besparing),
+        };
+      }, [validVermogen, validHypotheek, heeftPartner, validKinderen, jarenSchenken]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setSubmitError('');
+
+        const formData = new FormData();
+        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+
+        // Contact details
+        formData.append('Calculator', LEAD_CONFIG.calculatorName);
+        formData.append('Naam', naam);
+        formData.append('Email', email);
+        formData.append('Telefoon', telefoon);
+
+        // Calculator inputs
+        formData.append('Vermogen', `€${validVermogen.toLocaleString('nl-NL')}`);
+        formData.append('Hypotheek', `€${validHypotheek.toLocaleString('nl-NL')}`);
+        formData.append('Netto vermogen', `€${result.nettoVermogen.toLocaleString('nl-NL')}`);
+        formData.append('Partner', heeftPartner ? 'Ja' : 'Nee');
+        formData.append('Aantal kinderen', validKinderen);
+        formData.append('Jahren schenken', jarenSchenken);
+
+        // Results
+        formData.append('Erfbelasting zonder planning', `€${result.erfbelastingTotaal.toLocaleString('nl-NL')}`);
+        formData.append('Erfbelasting met schenken', `€${result.erfbelastingNaSchenken.toLocaleString('nl-NL')}`);
+        formData.append('Besparing', `€${result.besparing.toLocaleString('nl-NL')}`);
+        formData.append('Totaal geschonken', `€${result.totaalGeschonken.toLocaleString('nl-NL')}`);
+        formData.append('Jaarlijkse schenking', `€${result.jaarlijkseSchenking.toLocaleString('nl-NL')}`);
+
+        try {
+          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+          setSubmitted(true);
+        } catch (err) {
+          setSubmitted(true);
+        }
+        setIsSubmitting(false);
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis Calculator</div>
+            <h1>Estate Planning Calculator <span className="year-badge">2026</span></h1>
+            <p>Bereken je erfbelasting en ontdek de besparing door slim schenken</p>
+          </div>
+
+          <div className="card">
+            <h3>💰 Vermogen</h3>
+            <div className="input-row">
+              <div className="input-group">
+                <label className="input-label">Totaal vermogen</label>
+                <input 
+                  type="number" 
+                  className="input-field" 
+                  value={vermogen} 
+                  onChange={e => setVermogen(Math.max(0, +e.target.value))} 
+                  min="0"
+                />
+                <p className="input-hint">Woning, spaargeld, beleggingen, BV-aandelen</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Hypotheek/schulden</label>
+                <input 
+                  type="number" 
+                  className="input-field" 
+                  value={hypotheek} 
+                  onChange={e => setHypotheek(Math.max(0, +e.target.value))} 
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3>👨‍👩‍👧‍👦 Erfgenamen</h3>
+            <div className="input-row">
+              <div className="input-group">
+                <label className="input-label">Partner als erfgenaam?</label>
+                <div className="toggle-group">
+                  <button className={`toggle-btn ${heeftPartner ? 'active' : ''}`} onClick={() => setHeeftPartner(true)}>Ja</button>
+                  <button className={`toggle-btn ${!heeftPartner ? 'active' : ''}`} onClick={() => setHeeftPartner(false)}>Nee</button>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Aantal kinderen</label>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="10" 
+                  className="input-field" 
+                  value={aantalKinderen} 
+                  onChange={e => setAantalKinderen(Math.max(0, Math.min(10, +e.target.value)))} 
+                />
+              </div>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Aantal jaren schenken</label>
+              <input 
+                type="range" 
+                min="1" 
+                max="20" 
+                value={jarenSchenken} 
+                onChange={e => setJarenSchenken(+e.target.value)} 
+                style={{width: '100%', accentColor: '#1AABA6'}} 
+              />
+              <p className="input-hint">
+                {jarenSchenken} jaar × €{PARAMS.schenkingVrijKind.toLocaleString('nl-NL')} per kind = {formatCurrency(result.jaarlijkseSchenking)}/jaar belastingvrij
+              </p>
+            </div>
+            <div className="params-info">
+              <strong>Fiscale vrijstellingen 2026:</strong> Partner €{PARAMS.vrijstellingPartner.toLocaleString('nl-NL')} | Kind €{PARAMS.vrijstellingKind.toLocaleString('nl-NL')} | Schenking kind €{PARAMS.schenkingVrijKind.toLocaleString('nl-NL')}/jaar
+            </div>
+          </div>
+
+          <button className="btn" onClick={() => setShowResults(true)}>Bereken erfbelasting & besparing →</button>
+
+          {showResults && (
+            <>
+              <div className="result-card" style={{marginTop: 24}}>
+                <div style={{fontSize: 14, opacity: 0.8}}>Netto nalatenschap</div>
+                <div style={{fontSize: 36, fontWeight: 700}}>{formatCurrency(result.nettoVermogen)}</div>
+                <div className="result-grid">
+                  <div className="result-box">
+                    <div className="result-box-label">Zonder planning</div>
+                    <div className="result-box-value">{formatCurrency(result.erfbelastingTotaal)}</div>
+                  </div>
+                  <div className="result-box">
+                    <div className="result-box-label">Met schenken</div>
+                    <div className="result-box-value">{formatCurrency(result.erfbelastingNaSchenken)}</div>
+                  </div>
+                  <div className="result-box" style={{background: 'rgba(255,255,255,0.2)'}}>
+                    <div className="result-box-label">Besparing</div>
+                    <div className="result-box-value">{formatCurrency(result.besparing)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="compare-section">
+                <div className="compare-card">
+                  <div className="compare-title">❌ Alles nalaten bij overlijden</div>
+                  <div className="compare-value" style={{color: '#dc2626'}}>{formatCurrency(result.erfbelastingTotaal)}</div>
+                  <div className="compare-label">totale erfbelasting (beide overlijdens)</div>
+                </div>
+                <div className="compare-card highlight">
+                  <div className="compare-title">✓ {jarenSchenken} jaar schenken <span className="badge">Aanbevolen</span></div>
+                  <div className="compare-value" style={{color: '#1AABA6'}}>{formatCurrency(result.erfbelastingNaSchenken)}</div>
+                  <div className="compare-label">totale erfbelasting na schenkplan</div>
+                </div>
+              </div>
+
+              <div className="card" style={{marginTop: 24}}>
+                <h3>📅 Schenkingsplan ({jarenSchenken} jaar)</h3>
+                <div className="timeline">
+                  {[...Array(Math.min(5, jarenSchenken))].map((_, i) => (
+                    <div key={i} className="timeline-item">
+                      <div className="timeline-year">Jaar {i + 1}</div>
+                      <div className="timeline-content">
+                        <span className="timeline-amount">{formatCurrency(result.jaarlijkseSchenking)}</span>
+                        <span style={{color: '#666', marginLeft: 8}}>→ {validKinderen} kind(eren) × €{PARAMS.schenkingVrijKind.toLocaleString('nl-NL')}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {jarenSchenken > 5 && (
+                    <div className="timeline-item" style={{color: '#666', fontStyle: 'italic'}}>
+                      ... en nog {jarenSchenken - 5} jaar
+                    </div>
+                  )}
+                  <div className="timeline-item" style={{background: '#f0faf9', margin: '0 -24px', padding: '12px 24px', borderRadius: 8}}>
+                    <div className="timeline-year" style={{fontWeight: 700}}>Totaal</div>
+                    <div className="timeline-content">
+                      <span className="timeline-amount" style={{color: '#1AABA6', fontSize: 18}}>{formatCurrency(result.totaalGeschonken)}</span>
+                      <span style={{color: '#666', marginLeft: 8}}>belastingvrij overgedragen</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div style={{fontSize: 32, marginBottom: 8}}>📋</div>
+                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 8, border: 'none', paddingBottom: 0}}>Wil je een persoonlijk estate plan?</h3>
+                  <p style={{color: '#666', marginBottom: 20}}>Ontvang een rapport met optimale schenkingsstrategie, testamentadvies en BOR-mogelijkheden</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis plan →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 16, border: 'none', paddingBottom: 0}}>Waar mogen we je plan naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input 
+                      type="text" 
+                      className="form-input" 
+                      placeholder="Je naam" 
+                      value={naam} 
+                      onChange={e => setNaam(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="email" 
+                      className="form-input" 
+                      placeholder="je@email.nl" 
+                      value={email} 
+                      onChange={e => setEmail(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="tel" 
+                      className="form-input" 
+                      placeholder="Telefoonnummer (optioneel)" 
+                      value={telefoon} 
+                      onChange={e => setTelefoon(e.target.value)} 
+                    />
+                    <button type="submit" className="btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><span className="spinner"></span>Verzenden...</>
+                      ) : (
+                        'Verstuur mijn plan →'
+                      )}
+                    </button>
+                    {submitError && <p className="error-message">{submitError}</p>}
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div style={{fontSize: 48, marginBottom: 16}}>✅</div>
+                  <h3 style={{fontSize: 20, color: '#1AABA6', marginBottom: 8, border: 'none', paddingBottom: 0}}>Je plan is onderweg!</h3>
+                  <p style={{color: '#666'}}>Check je inbox voor je persoonlijke estate planning rapport.</p>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is een vereenvoudigde indicatie op basis van de fiscale tarieven 2026. 
+                De werkelijke erfbelasting hangt af van vele factoren zoals testament, huwelijkse voorwaarden, 
+                wettelijke verdeling, BOR (bedrijfsopvolgingsregeling), en de 180-dagenregeling bij schenkingen. 
+                Neem contact op voor persoonlijk advies.<br/><br/>
+                © Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

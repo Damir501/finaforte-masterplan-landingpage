@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lenen van BV Calculator | Finaforte</title>
+  <meta name="description" content="Bereken de gevolgen van lenen van je eigen BV. Check de €500k grens en zie het effect op je Box 3.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #1AABA6; padding-bottom: 8px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
+    .input-hint { font-size: 12px; color: #666; margin-top: 4px; }
+    .input-field { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; }
+    .input-field:focus { outline: none; border-color: #1AABA6; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn { width: 100%; padding: 16px; background: #1AABA6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .result-card { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
+    .result-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; margin-top: 16px; }
+    .stat-label { font-size: 12px; opacity: 0.8; }
+    .stat-value { font-size: 24px; font-weight: 700; }
+    .warning-card { background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .warning-card h4 { color: #dc2626; margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .warning-card p { color: #991b1b; font-size: 13px; line-height: 1.5; }
+    .ok-card { background: #f0fdf4; border: 2px solid #22c55e; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+    .ok-card h4 { color: #16a34a; margin-bottom: 8px; font-size: 14px; }
+    .ok-card p { color: #166534; font-size: 13px; }
+    .info-box { background: #f0faf9; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #158783; }
+    .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #666; }
+    .info-value { font-weight: 600; color: #333; }
+    .info-value.negative { color: #dc2626; }
+    .info-value.positive { color: #16a34a; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn { flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; }
+    .toggle-btn.active { border-color: #1AABA6; background: #f0faf9; color: #1AABA6; font-weight: 600; }
+    .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+    .checkbox-group input { width: 18px; height: 18px; accent-color: #1AABA6; }
+    .checkbox-group label { font-size: 14px; color: #333; }
+    .error-msg { color: #c53030; font-size: 14px; margin-bottom: 12px; }
+    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { .input-row { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+        
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Lenen van BV'
+    };
+    // ============================================
+// ============================================
+
+    // Parameters 2026
+    const PARAMS = {
+      excessiefGrens: 500000,
+      box2TariefLaag: 0.245,
+      box2TariefHoog: 0.31,
+      box2Grens: 69470,
+      box2GrensPartners: 138940,
+      rcRenteMin: 0.035,
+      rcRenteMax: 0.045,
+      rcRenteDefault: 0.04,
+      vpbTariefLaag: 0.19,
+      vpbTariefHoog: 0.258,
+      vpbGrens: 200000,
+      heffingvrijAlleen: 57684,
+      heffingvrijPartner: 115368,
+      forfaitSchuld: 0.0247,
+      box3Tarief: 0.36,
+      schuldendrempelAlleen: 3700,
+      schuldendrempelPartner: 7400,
+    };
+
+    // UTM parameters ophalen
+    const getUTMParams = () => {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+      };
+    };
+
+    const formatCurrency = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+    const formatPercent = (n) => (n * 100).toFixed(1) + '%';
+
+    function App() {
+      const [huidigRC, setHuidigRC] = React.useState(100000);
+      const [nieuwLening, setNieuwLening] = React.useState(200000);
+      const [huidigBox3, setHuidigBox3] = React.useState(300000);
+      const [eigenwoningschuld, setEigenwoningschuld] = React.useState(0);
+      const [heeftHypotheekzekerheid, setHeeftHypotheekzekerheid] = React.useState(false);
+      const [rcRente, setRcRente] = React.useState(4);
+      const [partner, setPartner] = React.useState(true);
+      const [doelInvestering, setDoelInvestering] = React.useState('Vastgoed aankoop');
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [email, setEmail] = React.useState('');
+      const [naam, setNaam] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [loading, setLoading] = React.useState(false);
+      const [error, setError] = React.useState('');
+
+      const result = React.useMemo(() => {
+        const renteDecimaal = rcRente / 100;
+        const eigenwoningVrijstelling = heeftHypotheekzekerheid ? eigenwoningschuld : 0;
+        const totaleSchuldExcessief = huidigRC + nieuwLening - eigenwoningVrijstelling;
+        const isExcessief = totaleSchuldExcessief > PARAMS.excessiefGrens;
+        const excessiefBedrag = Math.max(0, totaleSchuldExcessief - PARAMS.excessiefGrens);
+        
+        const box2Grens = partner ? PARAMS.box2GrensPartners : PARAMS.box2Grens;
+        let box2Heffing = 0;
+        if (excessiefBedrag > 0) {
+          if (excessiefBedrag <= box2Grens) {
+            box2Heffing = excessiefBedrag * PARAMS.box2TariefLaag;
+          } else {
+            box2Heffing = (box2Grens * PARAMS.box2TariefLaag) + ((excessiefBedrag - box2Grens) * PARAMS.box2TariefHoog);
+          }
+        }
+        const effectiefBox2Tarief = excessiefBedrag > 0 ? box2Heffing / excessiefBedrag : 0;
+
+        const jaarlijkseRente = nieuwLening * renteDecimaal;
+        
+        let vpbOverRente = 0;
+        if (jaarlijkseRente <= PARAMS.vpbGrens) {
+          vpbOverRente = jaarlijkseRente * PARAMS.vpbTariefLaag;
+        } else {
+          vpbOverRente = (PARAMS.vpbGrens * PARAMS.vpbTariefLaag) + ((jaarlijkseRente - PARAMS.vpbGrens) * PARAMS.vpbTariefHoog);
+        }
+        const nettoVoorBV = jaarlijkseRente - vpbOverRente;
+
+        const schuldendrempel = partner ? PARAMS.schuldendrempelPartner : PARAMS.schuldendrempelAlleen;
+        const totaleSchuldBox3 = huidigRC + nieuwLening;
+        const aftrekbareSchuldBox3 = Math.max(0, totaleSchuldBox3 - schuldendrempel);
+        const box3SchuldAftrek = aftrekbareSchuldBox3 * PARAMS.forfaitSchuld * PARAMS.box3Tarief;
+
+        const maxVeiligLening = Math.max(0, PARAMS.excessiefGrens - huidigRC + eigenwoningVrijstelling);
+
+        return {
+          totaleSchuldExcessief, isExcessief, excessiefBedrag, box2Heffing, effectiefBox2Tarief,
+          jaarlijkseRente, vpbOverRente, nettoVoorBV, box3SchuldAftrek, maxVeiligLening,
+          eigenwoningVrijstelling, aftrekbareSchuldBox3, schuldendrempel, box2Grens,
+        };
+      }, [huidigRC, nieuwLening, huidigBox3, eigenwoningschuld, heeftHypotheekzekerheid, rcRente, partner]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        const utmParams = getUTMParams();
+
+        const formData = new FormData();
+        formData.append('name', naam);
+        formData.append('email', email);
+        formData.append('timestamp', new Date().toISOString());
+
+        // Invoer
+        formData.append('huidige_rc_schuld', huidigRC);
+        formData.append('nieuwe_lening', nieuwLening);
+        formData.append('huidig_box3_vermogen', huidigBox3);
+        formData.append('eigenwoningschuld', eigenwoningschuld);
+        formData.append('hypothecaire_zekerheid', heeftHypotheekzekerheid ? 'Ja' : 'Nee');
+        formData.append('rc_rente_pct', rcRente);
+        formData.append('fiscaal_partner', partner ? 'Ja' : 'Nee');
+        formData.append('doel_lening', doelInvestering);
+
+        // Resultaten
+        formData.append('totale_schuld_excessief', Math.round(result.totaleSchuldExcessief));
+        formData.append('is_excessief', result.isExcessief ? 'Ja' : 'Nee');
+        formData.append('excessief_bedrag', Math.round(result.excessiefBedrag));
+        formData.append('box2_heffing', Math.round(result.box2Heffing));
+        formData.append('jaarlijkse_rente', Math.round(result.jaarlijkseRente));
+        formData.append('vpb_over_rente', Math.round(result.vpbOverRente));
+        formData.append('netto_voor_bv', Math.round(result.nettoVoorBV));
+        formData.append('box3_schuld_aftrek', Math.round(result.box3SchuldAftrek));
+        formData.append('max_veilig_lening', Math.round(result.maxVeiligLening));
+
+        // UTM Parameters
+        formData.append('utm_source', utmParams.utm_source);
+        formData.append('utm_medium', utmParams.utm_medium);
+        formData.append('utm_campaign', utmParams.utm_campaign);
+        formData.append('utm_content', utmParams.utm_content);
+        formData.append('utm_term', utmParams.utm_term);
+
+        // Metadata
+        formData.append('bron', 'Lenen van BV Calculator');
+        formData.append('pagina_url', window.location.href);
+
+        try {
+          const response = await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            setSubmitted(true);
+          } else {
+            setError('Er ging iets mis. Probeer het opnieuw.');
+          }
+        } catch (err) {
+          setError('Er ging iets mis. Probeer het opnieuw.');
+        }
+        setLoading(false);
+      };
+
+      const resetForm = () => {
+        setShowResults(false);
+        setShowLeadForm(false);
+        setSubmitted(false);
+        setEmail('');
+        setNaam('');
+        setError('');
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis DGA Calculator 2026</div>
+            <h1>Lenen van BV Calculator</h1>
+            <p>Bereken de fiscale gevolgen van lenen van je eigen BV</p>
+          </div>
+
+          <div className="card">
+            <h3>🏦 Huidige Situatie</h3>
+            <div className="info-box">
+              💡 Peildatum voor excessief lenen is 31 december. Eigenwoningschulden met hypothecaire zekerheid tellen NIET mee voor de €500k grens.
+            </div>
+            <div className="input-row">
+              <div className="input-group">
+                <label className="input-label">Huidige R/C schuld aan BV</label>
+                <input type="number" className="input-field" value={huidigRC} onChange={e => setHuidigRC(+e.target.value)} />
+                <p className="input-hint">Je bestaande rekening-courant schuld</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Huidig Box 3 vermogen (privé)</label>
+                <input type="number" className="input-field" value={huidigBox3} onChange={e => setHuidigBox3(+e.target.value)} />
+                <p className="input-hint">Exclusief eigen woning</p>
+              </div>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Eigenwoningschuld bij BV</label>
+              <input type="number" className="input-field" value={eigenwoningschuld} onChange={e => setEigenwoningschuld(+e.target.value)} />
+              <div className="checkbox-group">
+                <input type="checkbox" id="hypotheek" checked={heeftHypotheekzekerheid} onChange={e => setHeeftHypotheekzekerheid(e.target.checked)} />
+                <label htmlFor="hypotheek">BV heeft hypothecaire zekerheid (recht van hypotheek)</label>
+              </div>
+              <p className="input-hint">Met hypothecaire zekerheid telt dit NIET mee voor de €500k grens</p>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Fiscaal partner?</label>
+              <div className="toggle-group">
+                <button className={`toggle-btn ${partner ? 'active' : ''}`} onClick={() => setPartner(true)}>Ja</button>
+                <button className={`toggle-btn ${!partner ? 'active' : ''}`} onClick={() => setPartner(false)}>Nee</button>
+              </div>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3>💰 Nieuwe Lening</h3>
+            <div className="input-row">
+              <div className="input-group">
+                <label className="input-label">Gewenst leenbedrag</label>
+                <input type="number" className="input-field" value={nieuwLening} onChange={e => setNieuwLening(+e.target.value)} />
+              </div>
+              <div className="input-group">
+                <label className="input-label">R/C rente (%)</label>
+                <input type="number" step="0.1" min="3" max="6" className="input-field" value={rcRente} onChange={e => setRcRente(+e.target.value)} />
+                <p className="input-hint">Marktconform 2026: 3,5% - 4,5%</p>
+              </div>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Doel van de lening</label>
+              <select className="input-field" value={doelInvestering} onChange={e => setDoelInvestering(e.target.value)}>
+                <option>Vastgoed aankoop</option>
+                <option>Verbouwing eigen woning</option>
+                <option>Beleggingen</option>
+                <option>Consumptief</option>
+                <option>Anders</option>
+              </select>
+            </div>
+          </div>
+
+          <button className="btn" onClick={() => setShowResults(true)}>Bereken gevolgen →</button>
+
+          {showResults && (
+            <>
+              {result.isExcessief ? (
+                <div className="warning-card" style={{marginTop: 24}}>
+                  <h4>⚠️ Let op: Excessief lenen!</h4>
+                  <p>
+                    Je totale schuld van {formatCurrency(result.totaleSchuldExcessief)} overschrijdt de grens van €500.000. 
+                    Het bedrag van {formatCurrency(result.excessiefBedrag)} wordt belast als fictief dividend in Box 2 
+                    (effectief tarief: {formatPercent(result.effectiefBox2Tarief)}).
+                  </p>
+                </div>
+              ) : (
+                <div className="ok-card" style={{marginTop: 24}}>
+                  <h4>✓ Binnen de grens</h4>
+                  <p>
+                    Je totale schuld van {formatCurrency(result.totaleSchuldExcessief)} blijft onder de €500.000 grens. 
+                    Geen Box 2 heffing over excessief lenen.
+                    {result.eigenwoningVrijstelling > 0 && ` (Eigenwoningschuld van ${formatCurrency(result.eigenwoningVrijstelling)} is vrijgesteld)`}
+                  </p>
+                </div>
+              )}
+
+              <div className="result-card">
+                <div style={{fontSize: 14, opacity: 0.8}}>Samenvatting nieuwe lening</div>
+                <div className="result-stats">
+                  <div>
+                    <div className="stat-label">Totale schuld (excl. EW)</div>
+                    <div className="stat-value">{formatCurrency(result.totaleSchuldExcessief)}</div>
+                  </div>
+                  <div>
+                    <div className="stat-label">Ruimte tot €500k</div>
+                    <div className="stat-value">{formatCurrency(result.maxVeiligLening)}</div>
+                  </div>
+                  <div>
+                    <div className="stat-label">R/C rente ({rcRente}%)</div>
+                    <div className="stat-value">{formatCurrency(result.jaarlijkseRente)}/jr</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card">
+                <h3>📊 Financiële Impact (per jaar)</h3>
+                
+                <div style={{fontWeight: 600, color: '#666', fontSize: 12, marginBottom: 8, marginTop: 16}}>KOSTEN PRIVÉ</div>
+                <div className="info-row">
+                  <span className="info-label">Rente aan BV ({rcRente}%)</span>
+                  <span className="info-value negative">- {formatCurrency(result.jaarlijkseRente)}</span>
+                </div>
+                
+                <div style={{fontWeight: 600, color: '#666', fontSize: 12, marginBottom: 8, marginTop: 16}}>OPBRENGST BV</div>
+                <div className="info-row">
+                  <span className="info-label">Rente-inkomsten BV</span>
+                  <span className="info-value">+ {formatCurrency(result.jaarlijkseRente)}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">VPB over rente (19%)</span>
+                  <span className="info-value negative">- {formatCurrency(result.vpbOverRente)}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Netto voor BV na VPB</span>
+                  <span className="info-value positive">+ {formatCurrency(result.nettoVoorBV)}</span>
+                </div>
+
+                <div style={{fontWeight: 600, color: '#666', fontSize: 12, marginBottom: 8, marginTop: 16}}>BOX 3 EFFECT</div>
+                <div className="info-row">
+                  <span className="info-label">Schuld verlaagt Box 3 grondslag</span>
+                  <span className="info-value">{formatCurrency(result.aftrekbareSchuldBox3)}</span>
+                </div>
+                <div className="info-row">
+                  <span className="info-label">Box 3 besparing (2,47% × 36%)</span>
+                  <span className="info-value positive">+ {formatCurrency(result.box3SchuldAftrek)}</span>
+                </div>
+                {result.schuldendrempel > 0 && (
+                  <div className="info-row" style={{opacity: 0.7, fontSize: 13}}>
+                    <span className="info-label">↳ Drempel niet-aftrekbaar</span>
+                    <span className="info-value">{formatCurrency(result.schuldendrempel)}</span>
+                  </div>
+                )}
+
+                {result.isExcessief && (
+                  <>
+                    <div style={{fontWeight: 600, color: '#dc2626', fontSize: 12, marginBottom: 8, marginTop: 16}}>EXCESSIEF LENEN HEFFING</div>
+                    <div className="info-row" style={{background: '#fef2f2', margin: '0 -24px', padding: '12px 24px'}}>
+                      <span className="info-label" style={{color: '#dc2626'}}>
+                        Box 2 heffing over {formatCurrency(result.excessiefBedrag)}
+                        <br/><span style={{fontSize: 11}}>(24,5% tot {formatCurrency(result.box2Grens)}, daarna 31%)</span>
+                      </span>
+                      <span className="info-value negative">- {formatCurrency(result.box2Heffing)}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div style={{fontSize: 32, marginBottom: 8}}>📋</div>
+                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 8, border: 'none'}}>Wil je een volledige leningsanalyse?</h3>
+                  <p style={{color: '#666', marginBottom: 20}}>Ontvang een rapport met alternatieven, risico's en optimale leningstructuur voor jouw situatie</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis analyse →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 16, border: 'none'}}>Waar mogen we je analyse naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input type="text" className="form-input" placeholder="Je naam" value={naam} onChange={e => setNaam(e.target.value)} required />
+                    <input type="email" className="form-input" placeholder="je@email.nl" value={email} onChange={e => setEmail(e.target.value)} required />
+                    {error && <p className="error-msg">{error}</p>}
+                    <button type="submit" className="btn" disabled={loading}>
+                      {loading ? <><span className="loading"></span>Versturen...</> : 'Verstuur mijn analyse →'}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div style={{fontSize: 48, marginBottom: 16}}>✅</div>
+                  <h3 style={{fontSize: 20, color: '#1AABA6', marginBottom: 8, border: 'none'}}>Je analyse is onderweg!</h3>
+                  <p style={{color: '#666', marginBottom: 16}}>Check je inbox voor de volledige leningsanalyse.</p>
+                  <button className="btn" style={{width: 'auto', padding: '12px 24px', background: 'transparent', color: '#1AABA6', border: '2px solid #1AABA6'}} onClick={resetForm}>
+                    Nieuwe berekening maken
+                  </button>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief. Peildatum excessief lenen is 31 december.
+                Eigenwoningschulden met hypothecaire zekerheid zijn vrijgesteld van de €500k grens.
+                Box 2 tarieven 2026: 24,5% tot {formatCurrency(PARAMS.box2Grens)} ({formatCurrency(PARAMS.box2GrensPartners)} partners), 31% daarboven.
+                <br/>© 2026 Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

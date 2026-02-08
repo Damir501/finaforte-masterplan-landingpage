@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eigen Woning Hefboom Calculator | Finaforte</title>
+  <meta name="description" content="Bereken hoe je hypotheekstructuur je Box 3 belasting beïnvloedt. Ontdek of aflossingsvrij of overwaarde opnemen voordeliger is.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #1AABA6; padding-bottom: 8px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
+    .input-hint { font-size: 12px; color: #666; margin-top: 4px; }
+    .input-field { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; }
+    .input-field:focus { outline: none; border-color: #1AABA6; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn { width: 100%; padding: 16px; background: #1AABA6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .result-card { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
+    .result-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+    .result-title { font-size: 22px; font-weight: 700; margin: 8px 0; }
+    .result-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; margin-top: 16px; }
+    .stat-label { font-size: 12px; opacity: 0.8; }
+    .stat-value { font-size: 24px; font-weight: 700; }
+    .stat-value.negative { color: #ffcccc; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { text-align: left; padding: 12px 8px; color: #666; border-bottom: 2px solid #e5e5e5; }
+    th.right { text-align: right; }
+    th.optimal { background: #f0faf9; color: #1AABA6; }
+    td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
+    td.right { text-align: right; }
+    td.optimal { background: #f0faf9; }
+    td.negative { color: #c53030; }
+    td.positive { color: #1AABA6; }
+    td.bold { font-weight: 600; }
+    .info-box { background: #f0faf9; border-left: 4px solid #1AABA6; padding: 16px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+    .info-box h4 { color: #1AABA6; margin-bottom: 8px; font-size: 14px; }
+    .info-box p { font-size: 13px; color: #555; line-height: 1.5; }
+    .params-table { font-size: 12px; margin-top: 16px; }
+    .params-table td { padding: 6px 8px; border-bottom: 1px solid #e5e5e5; }
+    .params-table td:first-child { color: #666; }
+    .params-table td:last-child { text-align: right; font-weight: 500; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .cta-icon { font-size: 32px; margin-bottom: 8px; }
+    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
+    .cta-text { color: #666; margin-bottom: 20px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn { flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+    .toggle-btn.active { border-color: #1AABA6; background: #f0faf9; color: #1AABA6; font-weight: 600; }
+    .calculation-detail { background: #f9f9f9; border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 13px; }
+    .calculation-detail h4 { font-size: 14px; color: #333; margin-bottom: 12px; }
+    .calc-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #e5e5e5; }
+    .calc-row:last-child { border-bottom: none; font-weight: 600; }
+    .calc-row span:first-child { color: #666; }
+    .error-msg { color: #c53030; font-size: 14px; margin-bottom: 12px; }
+    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { .input-row { grid-template-columns: 1fr; } .result-stats { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+        
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Eigen Woning Hefboom'
+    };
+    // ============================================
+// ============================================
+
+    // Fiscale parameters 2026
+    const PARAMS = {
+      ewfPct: 0.0035,
+      ewfMax: 1200000,
+      ewfPctHoog: 0.0235,
+      hillenAfbouwJaar: 8,
+      hillenPctPerJaar: 0.0333,
+      box1MaxAftrek: 0.3756,
+      box3Tarief: 0.36,
+      forfaitSparen: 0.0103,
+      forfaitBeleggen: 0.0588,
+      forfaitSchulden: 0.0247,
+      heffingvrijAlleen: 57684,
+      heffingvrijPartner: 115368,
+    };
+
+    // UTM parameters ophalen
+    const getUTMParams = () => {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        utm_source: params.get('utm_source') || '',
+        utm_medium: params.get('utm_medium') || '',
+        utm_campaign: params.get('utm_campaign') || '',
+        utm_content: params.get('utm_content') || '',
+        utm_term: params.get('utm_term') || '',
+      };
+    };
+
+    const formatCurrency = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+    const formatPercent = (n, decimals = 2) => `${(n * 100).toFixed(decimals)}%`;
+
+    const berekenEWF = (woz) => woz <= PARAMS.ewfMax ? woz * PARAMS.ewfPct : woz * PARAMS.ewfPctHoog;
+
+    const berekenWetHillen = (ewf, hypotheekrente) => {
+      const saldo = ewf - hypotheekrente;
+      if (saldo <= 0) {
+        return { saldo, renteAftrek: Math.abs(saldo), ewfBijtelling: 0, hillenVrijstelling: 0, hillenBijtelling: 0, nettoBox1Effect: Math.abs(saldo) * PARAMS.box1MaxAftrek };
+      }
+      const hillenVrijstellingPct = 1 - (PARAMS.hillenAfbouwJaar * PARAMS.hillenPctPerJaar);
+      const vrijgesteld = saldo * hillenVrijstellingPct;
+      const bijtelling = saldo - vrijgesteld;
+      return { saldo, renteAftrek: 0, ewfBijtelling: saldo, hillenVrijstelling: vrijgesteld, hillenBijtelling: bijtelling, nettoBox1Effect: -bijtelling * PARAMS.box1MaxAftrek };
+    };
+
+    const berekenBox3 = (spaargeld, beleggingen, schulden, partner) => {
+      const heffingvrij = partner ? PARAMS.heffingvrijPartner : PARAMS.heffingvrijAlleen;
+      const rendementSparen = spaargeld * PARAMS.forfaitSparen;
+      const rendementBeleggen = beleggingen * PARAMS.forfaitBeleggen;
+      const rendementSchulden = schulden * PARAMS.forfaitSchulden;
+      const totaalRendement = rendementSparen + rendementBeleggen - rendementSchulden;
+      const totaalVermogen = spaargeld + beleggingen - schulden;
+      const grondslag = Math.max(0, totaalVermogen - heffingvrij);
+      if (grondslag <= 0 || totaalVermogen <= 0) {
+        return { spaargeld, beleggingen, schulden, totaalVermogen, heffingvrij, grondslag: 0, forfaitairRendement: 0, belasting: 0, effectiefTarief: 0 };
+      }
+      const gewogenRendement = (grondslag / totaalVermogen) * Math.max(0, totaalRendement);
+      const belasting = gewogenRendement * PARAMS.box3Tarief;
+      return { spaargeld, beleggingen, schulden, totaalVermogen, heffingvrij, grondslag, forfaitairRendement: gewogenRendement, belasting, effectiefTarief: grondslag > 0 ? belasting / grondslag : 0 };
+    };
+
+    const berekenScenario = (naam, woz, hypotheek, rente, spaargeld, beleggingen, partner) => {
+      const ewf = berekenEWF(woz);
+      const hypotheekrente = hypotheek * (rente / 100);
+      const hillen = berekenWetHillen(ewf, hypotheekrente);
+      const box3 = berekenBox3(spaargeld, beleggingen, 0, partner);
+      const totaalEffect = hillen.nettoBox1Effect - box3.belasting;
+      return { naam, hypotheek, ewf, hypotheekrente, ...hillen, box3, totaalEffect };
+    };
+
+    function App() {
+      const [woz, setWoz] = React.useState(500000);
+      const [hypotheek, setHypotheek] = React.useState(250000);
+      const [rente, setRente] = React.useState(4.0);
+      const [spaargeld, setSpaargeld] = React.useState(50000);
+      const [beleggingen, setBeleggingen] = React.useState(150000);
+      const [partner, setPartner] = React.useState(true);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [email, setEmail] = React.useState('');
+      const [naam, setNaam] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [loading, setLoading] = React.useState(false);
+      const [error, setError] = React.useState('');
+      const [showDetails, setShowDetails] = React.useState(false);
+
+      const scenarios = React.useMemo(() => {
+        const overwaarde = woz - hypotheek;
+        return [
+          berekenScenario('Huidige situatie', woz, hypotheek, rente, spaargeld, beleggingen, partner),
+          berekenScenario('Aflossen met spaargeld', woz, Math.max(0, hypotheek - spaargeld), rente, 0, beleggingen, partner),
+          berekenScenario('Overwaarde opnemen', woz, hypotheek + Math.min(overwaarde * 0.5, 100000), rente, spaargeld + Math.min(overwaarde * 0.5, 100000), beleggingen, partner),
+        ];
+      }, [woz, hypotheek, rente, spaargeld, beleggingen, partner]);
+
+      const huidig = scenarios[0];
+      const optimaal = scenarios.reduce((best, s) => s.totaalEffect > best.totaalEffect ? s : best);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        const utmParams = getUTMParams();
+
+        // Create FormData for FormSubmit.co
+        const formData = new FormData();
+
+        // Contact info
+        formData.append('email', email);
+        formData.append('naam', naam);
+        formData.append('timestamp', new Date().toISOString());
+
+        // Input parameters
+        formData.append('woz_waarde', woz);
+        formData.append('huidige_hypotheek', hypotheek);
+        formData.append('hypotheek_rente', rente);
+        formData.append('spaargeld', spaargeld);
+        formData.append('beleggingen', beleggingen);
+        formData.append('fiscaal_partner', partner ? 'Ja' : 'Nee');
+
+        // Current situation results
+        formData.append('huidig_ewf', Math.round(huidig.ewf));
+        formData.append('huidig_hypotheekrente', Math.round(huidig.hypotheekrente));
+        formData.append('huidig_box1_effect', Math.round(huidig.nettoBox1Effect));
+        formData.append('huidig_box3_belasting', Math.round(huidig.box3.belasting));
+        formData.append('huidig_totaal_effect', Math.round(huidig.totaalEffect));
+
+        // Optimal scenario results
+        formData.append('optimaal_scenario', optimaal.naam);
+        formData.append('optimaal_hypotheek', Math.round(optimaal.hypotheek));
+        formData.append('optimaal_totaal_effect', Math.round(optimaal.totaalEffect));
+        formData.append('besparing', Math.round(optimaal.totaalEffect - huidig.totaalEffect));
+
+        // UTM parameters
+        Object.entries(utmParams).forEach(([key, value]) => {
+          if (value) formData.append(key, value);
+        });
+
+        // Metadata
+        formData.append('bron', 'Eigen Woning Hefboom Calculator');
+        formData.append('pagina_url', window.location.href);
+        formData.append('calculator_name', LEAD_CONFIG.calculatorName);
+
+        try {
+          const response = await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            setSubmitted(true);
+          } else {
+            setError('Er ging iets mis. Probeer het opnieuw.');
+          }
+        } catch (err) {
+          setError('Er ging iets mis. Probeer het opnieuw.');
+        }
+        setLoading(false);
+      };
+
+      const resetForm = () => {
+        setShowResults(false);
+        setShowLeadForm(false);
+        setSubmitted(false);
+        setEmail('');
+        setNaam('');
+        setError('');
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis Calculator 2026</div>
+            <h1>Eigen Woning Hefboom Calculator</h1>
+            <p>Ontdek hoe je hypotheekstructuur je Box 3 belasting beïnvloedt</p>
+          </div>
+
+          <div className="card">
+            <h3>🏠 Eigen Woning</h3>
+            <div className="input-row">
+              <div className="input-group">
+                <label className="input-label">WOZ-waarde</label>
+                <input type="number" className="input-field" value={woz} onChange={e => setWoz(+e.target.value)} />
+                <div className="input-hint">WOZ-waarde per 1 januari 2026</div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Huidige hypotheek</label>
+                <input type="number" className="input-field" value={hypotheek} onChange={e => setHypotheek(+e.target.value)} />
+                <div className="input-hint">Resterende hypotheekschuld</div>
+              </div>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Hypotheekrente (%)</label>
+              <input type="number" step="0.1" className="input-field" value={rente} onChange={e => setRente(+e.target.value)} />
+            </div>
+          </div>
+
+          <div className="card">
+            <h3>💰 Box 3 Vermogen</h3>
+            <div className="input-row">
+              <div className="input-group">
+                <label className="input-label">Spaargeld</label>
+                <input type="number" className="input-field" value={spaargeld} onChange={e => setSpaargeld(+e.target.value)} />
+                <div className="input-hint">Forfait: 1,03%</div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Beleggingen</label>
+                <input type="number" className="input-field" value={beleggingen} onChange={e => setBeleggingen(+e.target.value)} />
+                <div className="input-hint">Forfait: 5,88%</div>
+              </div>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Fiscaal partner?</label>
+              <div className="toggle-group">
+                <button className={`toggle-btn ${partner ? 'active' : ''}`} onClick={() => setPartner(true)}>Ja ({formatCurrency(PARAMS.heffingvrijPartner)} vrij)</button>
+                <button className={`toggle-btn ${!partner ? 'active' : ''}`} onClick={() => setPartner(false)}>Nee ({formatCurrency(PARAMS.heffingvrijAlleen)} vrij)</button>
+              </div>
+            </div>
+          </div>
+
+          <button className="btn" onClick={() => setShowResults(true)}>Analyseer scenario's →</button>
+
+          {showResults && (
+            <>
+              <div className="result-card" style={{marginTop: 24}}>
+                <div className="result-tag">✓ Optimaal scenario</div>
+                <div className="result-title">{optimaal.naam}</div>
+                <div className="result-stats">
+                  <div>
+                    <div className="stat-label">Netto jaarlijks effect</div>
+                    <div className="stat-value">{formatCurrency(optimaal.totaalEffect)}</div>
+                  </div>
+                  <div>
+                    <div className="stat-label">Besparing t.o.v. huidig</div>
+                    <div className="stat-value">{formatCurrency(optimaal.totaalEffect - huidig.totaalEffect)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card">
+                <h3>📊 Scenario Vergelijking</h3>
+                <div style={{overflowX: 'auto'}}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        {scenarios.map((s, i) => (
+                          <th key={i} className={`right ${s.naam === optimaal.naam ? 'optimal' : ''}`}>
+                            {s.naam}{s.naam === optimaal.naam && ' ★'}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Hypotheek</td>
+                        {scenarios.map((s, i) => <td key={i} className={`right ${s.naam === optimaal.naam ? 'optimal' : ''}`}>{formatCurrency(s.hypotheek)}</td>)}
+                      </tr>
+                      <tr>
+                        <td>EWF</td>
+                        {scenarios.map((s, i) => <td key={i} className={`right ${s.naam === optimaal.naam ? 'optimal' : ''}`}>{formatCurrency(s.ewf)}</td>)}
+                      </tr>
+                      <tr>
+                        <td>Hypotheekrente</td>
+                        {scenarios.map((s, i) => <td key={i} className={`right ${s.naam === optimaal.naam ? 'optimal' : ''}`}>{formatCurrency(s.hypotheekrente)}</td>)}
+                      </tr>
+                      <tr>
+                        <td>Box 1 effect</td>
+                        {scenarios.map((s, i) => <td key={i} className={`right ${s.naam === optimaal.naam ? 'optimal' : ''} ${s.nettoBox1Effect >= 0 ? 'positive' : 'negative'}`}>{formatCurrency(s.nettoBox1Effect)}</td>)}
+                      </tr>
+                      <tr>
+                        <td>Box 3 belasting</td>
+                        {scenarios.map((s, i) => <td key={i} className={`right ${s.naam === optimaal.naam ? 'optimal' : ''} negative`}>-{formatCurrency(s.box3.belasting)}</td>)}
+                      </tr>
+                      <tr>
+                        <td className="bold">Netto effect</td>
+                        {scenarios.map((s, i) => <td key={i} className={`right bold ${s.naam === optimaal.naam ? 'optimal' : ''} ${s.totaalEffect >= 0 ? 'positive' : 'negative'}`}>{formatCurrency(s.totaalEffect)}</td>)}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="info-box">
+                <h4>💡 Wet Hillen 2026</h4>
+                <p>De Wet Hillen wordt sinds 2019 afgebouwd met 3,33% per jaar. In 2026 (jaar 8) is nog {formatPercent(1 - PARAMS.hillenAfbouwJaar * PARAMS.hillenPctPerJaar)} vrijgesteld als je EWF hoger is dan je hypotheekrente.</p>
+              </div>
+
+              <div className="card">
+                <h3>📋 Fiscale parameters 2026</h3>
+                <table className="params-table">
+                  <tbody>
+                    <tr><td>Eigenwoningforfait (WOZ ≤ €1,2M)</td><td>{formatPercent(PARAMS.ewfPct)}</td></tr>
+                    <tr><td>Eigenwoningforfait (WOZ > €1,2M)</td><td>{formatPercent(PARAMS.ewfPctHoog)}</td></tr>
+                    <tr><td>Wet Hillen vrijstelling 2026</td><td>{formatPercent(1 - PARAMS.hillenAfbouwJaar * PARAMS.hillenPctPerJaar)}</td></tr>
+                    <tr><td>Box 1 max. aftrekpercentage</td><td>{formatPercent(PARAMS.box1MaxAftrek)}</td></tr>
+                    <tr><td>Box 3 tarief</td><td>{formatPercent(PARAMS.box3Tarief)}</td></tr>
+                    <tr><td>Forfait sparen</td><td>{formatPercent(PARAMS.forfaitSparen)}</td></tr>
+                    <tr><td>Forfait beleggen</td><td>{formatPercent(PARAMS.forfaitBeleggen)}</td></tr>
+                    <tr><td>Heffingsvrij (alleen)</td><td>{formatCurrency(PARAMS.heffingvrijAlleen)}</td></tr>
+                    <tr><td>Heffingsvrij (partner)</td><td>{formatCurrency(PARAMS.heffingvrijPartner)}</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div className="cta-icon">📊</div>
+                  <h3 className="cta-title">Wil je het volledige adviesrapport?</h3>
+                  <p className="cta-text">Ontvang een persoonlijk PDF-rapport met scenario-analyse, Wet Hillen impact en concrete aanbevelingen</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input type="text" className="form-input" placeholder="Je naam" value={naam} onChange={e => setNaam(e.target.value)} required />
+                    <input type="email" className="form-input" placeholder="je@email.nl" value={email} onChange={e => setEmail(e.target.value)} required />
+                    {error && <p className="error-msg">{error}</p>}
+                    <button type="submit" className="btn" disabled={loading}>
+                      {loading ? <><span className="loading"></span>Versturen...</> : 'Verstuur mijn rapport →'}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div className="success-icon">✅</div>
+                  <h3 className="success-title">Je rapport is onderweg!</h3>
+                  <p style={{color: '#666', marginBottom: 16}}>Check je inbox voor het volledige adviesrapport.</p>
+                  <button className="btn" style={{width: 'auto', padding: '12px 24px', background: 'transparent', color: '#1AABA6', border: '2px solid #1AABA6'}} onClick={resetForm}>
+                    Nieuwe berekening maken
+                  </button>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief en gebaseerd op fiscale parameters 2026.
+                Box 3 forfaits zijn voorlopige percentages en kunnen nog wijzigen.
+                <br/>© 2026 Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+    
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

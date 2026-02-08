@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aflossen vs. Beleggen Calculator 2026 | Finaforte</title>
+  <meta name="description" content="Bereken gratis wat slimmer is: extra aflossen op je hypotheek of beleggen. Inclusief break-even rendement berekening.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .year-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #333; }
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .input-row { display: flex; align-items: center; gap: 16px; }
+    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .value-display {
+      background: #f0faf9;
+      border: 2px solid #1AABA6;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1AABA6;
+      min-width: 120px;
+      text-align: center;
+    }
+    .input-hint { font-size: 12px; color: #666; margin-top: 6px; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: #1AABA6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
+    .params-info strong { color: #1AABA6; }
+    .result-header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      color: white;
+      text-align: center;
+    }
+    .result-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 8px; }
+    .result-title { font-size: 24px; font-weight: 700; margin-bottom: 16px; }
+    .break-even { font-size: 48px; font-weight: 700; margin-bottom: 8px; }
+    .break-even-label { font-size: 14px; opacity: 0.9; }
+    .comparison-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px; }
+    .comparison-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      border: 2px solid #e5e5e5;
+    }
+    .comparison-card.best { border-color: #1AABA6; background: #f0faf9; }
+    .comparison-card.best .card-badge { display: block; }
+    .card-badge { display: none; background: #1AABA6; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
+    .card-name { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 16px; }
+    .result-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .result-row:last-child { border: none; }
+    .result-label { color: #666; font-size: 14px; }
+    .result-value { font-weight: 600; font-size: 14px; }
+    .result-value.highlight { color: #1AABA6; font-size: 18px; }
+    .result-value.negative { color: #c53030; }
+    .insight-box {
+      background: #f0faf9;
+      border-left: 4px solid #1AABA6;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .insight-title { font-weight: 600; color: #1AABA6; margin-bottom: 4px; }
+    .insight-text { font-size: 14px; color: #333; }
+    .assumptions-card { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .assumptions-title { font-size: 14px; font-weight: 600; color: #b45309; margin-bottom: 8px; }
+    .assumptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }
+    .assumption-item { font-size: 12px; color: #92400e; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; }
+    .cta-icon { font-size: 32px; margin-bottom: 8px; }
+    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
+    .cta-text { color: #666; margin-bottom: 20px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 700px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .value-display { min-width: auto; }
+      .break-even { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+            
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Aflossen vs Beleggen'
+    };
+    // ============================================
+// ============================================================
+
+    // FISCALE PARAMETERS 2026 - Alle waarden geverifieerd
+    const PARAMS = {
+      box3Forfait: 0.06,          // 6% forfait beleggingen 2026 (was 5,88% in 2025)
+      box3Tarief: 0.36,           // 36% Box 3 tarief 2026
+      box3HeffingvrijAlleen: 59357,   // Heffingsvrij vermogen alleenstaand
+      box3HeffingvrijPartners: 118714, // Heffingsvrij vermogen partners
+      maxAftrek: 0.3705,          // Maximaal aftrekpercentage hypotheekrente 37,05%
+    };
+
+    const formatCurrency = (amount) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+    const formatPercent = (pct) => `${(pct * 100).toFixed(2)}%`;
+
+    function App() {
+      const [bedrag, setBedrag] = React.useState(50000);
+      const [hypotheekRente, setHypotheekRente] = React.useState(4.5);
+      const [beleggingsRendement, setBeleggingsRendement] = React.useState(6);
+      const [horizon, setHorizon] = React.useState(10);
+      const [box3Vermogen, setBox3Vermogen] = React.useState(100000);
+      const [heeftPartner, setHeeftPartner] = React.useState(true);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [naam, setNaam] = React.useState('');
+      const [email, setEmail] = React.useState('');
+      const [telefoon, setTelefoon] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+      const heffingsvrijVermogen = heeftPartner ? PARAMS.box3HeffingvrijPartners : PARAMS.box3HeffingvrijAlleen;
+
+      const results = React.useMemo(() => {
+        // Netto hypotheekrente (na aftrek)
+        const nettoHypotheekRente = hypotheekRente * (1 - PARAMS.maxAftrek);
+        
+        // Break-even moet ook Box 3 belasting meenemen
+        // Als je belegt, betaal je Box 3 belasting over het forfaitaire rendement
+        const effectieveBox3Belasting = PARAMS.box3Forfait * PARAMS.box3Tarief; // 6% * 36% = 2.16%
+        const breakEven = nettoHypotheekRente + effectieveBox3Belasting * 100;
+
+        // Scenario 1: Aflossen
+        const renteBesparing = bedrag * (hypotheekRente / 100);
+        const verliesAftrek = renteBesparing * PARAMS.maxAftrek;
+        const nettoRenteBesparing = renteBesparing - verliesAftrek;
+        const totaalAflossen = nettoRenteBesparing * horizon;
+
+        // Scenario 2: Beleggen
+        const eindwaardeBeleggen = bedrag * Math.pow(1 + beleggingsRendement / 100, horizon);
+        const winst = eindwaardeBeleggen - bedrag;
+        
+        // Box 3 belasting berekening (vereenvoudigd)
+        // Alleen belasting als totaal vermogen boven heffingsvrij komt
+        const totaalVermogen = box3Vermogen + bedrag;
+        const belastbaarVermogen = Math.max(0, totaalVermogen - heffingsvrijVermogen);
+        const aandeel = belastbaarVermogen > 0 ? bedrag / totaalVermogen : 0;
+        const forfaitairRendement = bedrag * PARAMS.box3Forfait;
+        const jaarlijkseBox3 = forfaitairRendement * PARAMS.box3Tarief * aandeel;
+        const box3Belasting = jaarlijkseBox3 * horizon;
+        
+        const nettoBeleggen = winst - box3Belasting;
+
+        const verschil = nettoBeleggen - totaalAflossen;
+        const advies = verschil > 0 ? 'beleggen' : 'aflossen';
+
+        return {
+          breakEven,
+          nettoHypotheekRente,
+          renteBesparing,
+          nettoRenteBesparing,
+          totaalAflossen,
+          eindwaardeBeleggen,
+          winst,
+          box3Belasting,
+          nettoBeleggen,
+          verschil,
+          advies,
+        };
+      }, [bedrag, hypotheekRente, beleggingsRendement, horizon, box3Vermogen, heffingsvrijVermogen]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const formData = new FormData();
+        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+
+        // Contactgegevens
+        formData.append('Naam', naam);
+        formData.append('Email', email);
+        formData.append('Telefoon', telefoon);
+
+        // Calculator inputs
+        formData.append('Bedrag', formatCurrency(bedrag));
+        formData.append('Hypotheekrente', hypotheekRente + '%');
+        formData.append('Beleggingsrendement', beleggingsRendement + '%');
+        formData.append('Horizon', horizon + ' jaar');
+        formData.append('Box 3 vermogen', formatCurrency(box3Vermogen));
+        formData.append('Fiscaal partner', heeftPartner ? 'Ja' : 'Nee');
+
+        // Resultaten
+        formData.append('Break-even rendement', results.breakEven.toFixed(2) + '%');
+        formData.append('Netto hypotheekrente', results.nettoHypotheekRente.toFixed(2) + '%');
+        formData.append('Totaal voordeel aflossen', formatCurrency(Math.round(results.totaalAflossen)));
+        formData.append('Eindwaarde beleggen', formatCurrency(Math.round(results.eindwaardeBeleggen)));
+        formData.append('Box 3 belasting', formatCurrency(Math.round(results.box3Belasting)));
+        formData.append('Netto voordeel beleggen', formatCurrency(Math.round(results.nettoBeleggen)));
+        formData.append('Verschil', formatCurrency(Math.round(results.verschil)));
+        formData.append('Advies', results.advies === 'beleggen' ? 'Beleggen' : 'Aflossen');
+
+        // Metadata
+        formData.append('Bron', 'Aflossen vs Beleggen Calculator 2026');
+        formData.append('Datum', new Date().toLocaleDateString('nl-NL'));
+        formData.append('URL', window.location.href);
+
+        try {
+          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+          setSubmitted(true);
+        } catch (err) {
+          console.error('FormSubmit error:', err);
+          setSubmitted(true);
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis DGA Calculator</div>
+            <h1>Aflossen vs. Beleggen Calculator <span className="year-badge">2026</span></h1>
+            <p>Ontdek wat slimmer is: extra aflossen op je hypotheek of beleggen</p>
+          </div>
+
+          <div className="card">
+            <h3 className="card-title">💰 Jouw Situatie</h3>
+            <div className="input-grid">
+              <div className="input-group">
+                <label className="input-label">Beschikbaar bedrag</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="10000" max="200000" step="5000" value={bedrag} onChange={(e) => { setBedrag(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(bedrag)}</div>
+                </div>
+                <p className="input-hint">Bedrag dat je wilt aflossen of beleggen</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Hypotheekrente (bruto)</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="2" max="7" step="0.1" value={hypotheekRente} onChange={(e) => { setHypotheekRente(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{hypotheekRente}%</div>
+                </div>
+                <p className="input-hint">Netto na aftrek: {(hypotheekRente * (1 - PARAMS.maxAftrek)).toFixed(2)}%</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Verwacht beleggingsrendement</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="2" max="10" step="0.5" value={beleggingsRendement} onChange={(e) => { setBeleggingsRendement(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{beleggingsRendement}%</div>
+                </div>
+                <p className="input-hint">Historisch gemiddeld aandelenrendement: ~7%</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Vergelijkingsperiode</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="5" max="30" step="1" value={horizon} onChange={(e) => { setHorizon(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{horizon} jaar</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Huidig Box 3 vermogen</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="0" max="1000000" step="10000" value={box3Vermogen} onChange={(e) => { setBox3Vermogen(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(box3Vermogen)}</div>
+                </div>
+                <p className="input-hint">Totaal vermogen in Box 3 (excl. beschikbaar bedrag)</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Fiscaal partner?</label>
+                <div className="input-row">
+                  <button 
+                    onClick={() => { setHeeftPartner(true); setShowResults(false); }}
+                    style={{
+                      flex: 1, padding: '12px', border: '2px solid', borderRadius: '8px', cursor: 'pointer',
+                      borderColor: heeftPartner ? '#1AABA6' : '#e5e5e5',
+                      background: heeftPartner ? '#f0faf9' : 'white',
+                      color: heeftPartner ? '#1AABA6' : '#666',
+                      fontWeight: heeftPartner ? '600' : '400'
+                    }}
+                  >Ja</button>
+                  <button 
+                    onClick={() => { setHeeftPartner(false); setShowResults(false); }}
+                    style={{
+                      flex: 1, padding: '12px', border: '2px solid', borderRadius: '8px', cursor: 'pointer',
+                      borderColor: !heeftPartner ? '#1AABA6' : '#e5e5e5',
+                      background: !heeftPartner ? '#f0faf9' : 'white',
+                      color: !heeftPartner ? '#1AABA6' : '#666',
+                      fontWeight: !heeftPartner ? '600' : '400'
+                    }}
+                  >Nee</button>
+                </div>
+                <p className="input-hint">Heffingsvrij: {formatCurrency(heffingsvrijVermogen)}</p>
+              </div>
+            </div>
+
+            <div className="params-info">
+              <strong>Fiscale parameters 2026:</strong> Box 3 forfait beleggingen: 6% | Box 3 tarief: 36% | Max hypotheekrenteaftrek: 37,05%
+            </div>
+
+            <button className="btn" style={{marginTop: '16px'}} onClick={() => setShowResults(true)}>Bereken wat slimmer is →</button>
+          </div>
+
+          {showResults && (
+            <>
+              <div className="assumptions-card">
+                <div className="assumptions-title">📋 Modelaannames</div>
+                <div className="assumptions-grid">
+                  <div className="assumption-item">• Max hypotheekrenteaftrek: {formatPercent(PARAMS.maxAftrek)}</div>
+                  <div className="assumption-item">• Box 3 forfait: {formatPercent(PARAMS.box3Forfait)}</div>
+                  <div className="assumption-item">• Box 3 tarief: {formatPercent(PARAMS.box3Tarief)}</div>
+                  <div className="assumption-item">• Heffingsvrij: {formatCurrency(heffingsvrijVermogen)}</div>
+                </div>
+              </div>
+
+              <div className="result-header">
+                <div className="result-tag">Break-even rendement</div>
+                <div className="break-even">{results.breakEven.toFixed(2)}%</div>
+                <div className="break-even-label">Dit bruto rendement moet je halen om beleggen voordeliger te maken dan aflossen (incl. Box 3 belasting)</div>
+              </div>
+
+              <div className="comparison-grid">
+                <div className={`comparison-card ${results.advies === 'aflossen' ? 'best' : ''}`}>
+                  <span className="card-badge">★ Beste optie</span>
+                  <div className="card-name">🏠 Extra aflossen</div>
+                  <div className="result-row">
+                    <span className="result-label">Rentebesparing/jaar (bruto)</span>
+                    <span className="result-value">{formatCurrency(results.renteBesparing)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Netto besparing/jaar</span>
+                    <span className="result-value">{formatCurrency(results.nettoRenteBesparing)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Totaal voordeel ({horizon} jaar)</span>
+                    <span className="result-value highlight">{formatCurrency(results.totaalAflossen)}</span>
+                  </div>
+                  <div className="insight-box" style={{marginTop: '16px', marginBottom: 0}}>
+                    <div className="insight-text" style={{fontSize: '12px'}}>
+                      ✅ Gegarandeerd rendement<br/>
+                      ✅ Lagere maandlasten<br/>
+                      ✅ Minder risico
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`comparison-card ${results.advies === 'beleggen' ? 'best' : ''}`}>
+                  <span className="card-badge">★ Beste optie</span>
+                  <div className="card-name">📈 Beleggen</div>
+                  <div className="result-row">
+                    <span className="result-label">Eindwaarde belegging</span>
+                    <span className="result-value">{formatCurrency(results.eindwaardeBeleggen)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Box 3 belasting ({horizon} jaar)</span>
+                    <span className="result-value negative">-{formatCurrency(results.box3Belasting)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Netto voordeel ({horizon} jaar)</span>
+                    <span className="result-value highlight">{formatCurrency(results.nettoBeleggen)}</span>
+                  </div>
+                  <div className="insight-box" style={{marginTop: '16px', marginBottom: 0}}>
+                    <div className="insight-text" style={{fontSize: '12px'}}>
+                      ⚠️ Beleggingsrisico<br/>
+                      ⚠️ Box 3 belasting<br/>
+                      ✅ Vermogen blijft liquide
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="insight-box">
+                <div className="insight-title">
+                  {results.advies === 'beleggen' ? '📈 Beleggen is voordeliger' : '🏠 Aflossen is voordeliger'}
+                </div>
+                <div className="insight-text">
+                  {results.advies === 'beleggen'
+                    ? `Met een verwacht rendement van ${beleggingsRendement}% is beleggen ${formatCurrency(results.verschil)} voordeliger over ${horizon} jaar. Let op: beleggen brengt risico's met zich mee en het daadwerkelijke rendement kan lager uitvallen.`
+                    : `Met een hypotheekrente van ${hypotheekRente}% is extra aflossen ${formatCurrency(Math.abs(results.verschil))} voordeliger over ${horizon} jaar. Aflossen geeft een gegarandeerd "rendement" zonder risico.`
+                  }
+                </div>
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div className="cta-icon">📊</div>
+                  <h3 className="cta-title">Wil je een uitgebreide analyse?</h3>
+                  <p className="cta-text">Ontvang een persoonlijk rapport met scenario-analyse, risico-inschatting en concrete aanbevelingen</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input 
+                      type="text" 
+                      className="form-input" 
+                      placeholder="Je naam" 
+                      value={naam} 
+                      onChange={(e) => setNaam(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="email" 
+                      className="form-input" 
+                      placeholder="je@email.nl" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="tel" 
+                      className="form-input" 
+                      placeholder="Telefoonnummer (optioneel)" 
+                      value={telefoon} 
+                      onChange={(e) => setTelefoon(e.target.value)} 
+                    />
+                    <button type="submit" className="btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><span className="spinner"></span>Verzenden...</>
+                      ) : (
+                        'Verstuur mijn rapport →'
+                      )}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div className="success-icon">✅</div>
+                  <h3 className="success-title">Je rapport is onderweg!</h3>
+                  <p style={{color: '#666'}}>Check je inbox voor de uitgebreide analyse.</p>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief en gebaseerd op fiscale parameters 2026.
+                Hypotheekrenteaftrek: max 37,05%. Box 3: 6% forfait overige bezittingen, 36% tarief.
+                Heffingsvrij vermogen: €59.357 (alleenstaand) / €118.714 (partners).
+                Beleggen brengt risico's met zich mee. In het verleden behaalde resultaten bieden geen garantie voor de toekomst.
+                Bij werkelijk rendement lager dan forfait kunt u mogelijk gebruikmaken van de tegenbewijsregeling.
+                Raadpleeg een financieel adviseur voor persoonlijk advies.
+                <br/>© Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

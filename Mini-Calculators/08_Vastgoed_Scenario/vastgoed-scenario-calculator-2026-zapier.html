@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vastgoed Scenario Calculator 2026 | Finaforte</title>
+  <meta name="description" content="Vergelijk gratis drie vastgoedinvesteringsscenario's voor DGA's: Dividend naar Privé, Lenen van BV, of Aankopen in de BV.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+    .header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .year-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #333; }
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .input-row { display: flex; align-items: center; gap: 16px; }
+    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .value-display {
+      background: #f0faf9;
+      border: 2px solid #1AABA6;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1AABA6;
+      min-width: 120px;
+      text-align: center;
+    }
+    .input-hint { font-size: 12px; color: #666; margin-top: 6px; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: #1AABA6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .scenario-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 2px solid #e5e5e5;
+      transition: all 0.2s;
+    }
+    .scenario-card.best { border-color: #1AABA6; background: #f0faf9; }
+    .scenario-card.best .scenario-badge { display: block; }
+    .scenario-badge { display: none; background: #1AABA6; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; }
+    .scenario-name { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 12px; }
+    .scenario-value { font-size: 24px; font-weight: 700; color: #1AABA6; margin-bottom: 4px; }
+    .scenario-label { font-size: 12px; color: #666; margin-bottom: 12px; }
+    .scenario-detail { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+    .scenario-detail:last-child { border: none; }
+    .detail-label { color: #666; }
+    .detail-value { font-weight: 500; }
+    .detail-value.negative { color: #c53030; }
+    .detail-value.positive { color: #1AABA6; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; }
+    .cta-icon { font-size: 32px; margin-bottom: 8px; }
+    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
+    .cta-text { color: #666; margin-bottom: 20px; }
+    .form-input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #e5e5e5;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
+    .params-info strong { color: #1AABA6; }
+    .assumptions-card { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .assumptions-title { font-size: 14px; font-weight: 600; color: #b45309; margin-bottom: 8px; }
+    .assumptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+    .assumption-item { font-size: 12px; color: #92400e; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 800px) {
+      .scenario-grid { grid-template-columns: 1fr; }
+      .input-grid { grid-template-columns: 1fr; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .value-display { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+            
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Vastgoed Scenario'
+    };
+    // ============================================
+// ============================================================
+
+    // FISCALE PARAMETERS 2026 - Alle waarden geverifieerd
+    const PARAMS = {
+      box2: { schijf1: 0.245, schijf2: 0.31, grens: 68843 },
+      vpb: { schijf1: 0.19, schijf2: 0.258, grens: 200000 },
+      box3: { forfait: 0.06, tarief: 0.36, heffingvrij: 118714 },
+      rcRente: 0.06,
+      grensExcessief: 500000,
+    };
+
+    // MODEL AANNAMES
+    const AANNAMES = {
+      hypotheekRente: 0.045,      // 4,5% hypotheekrente
+      waardestijging: 0.02,       // 2% jaarlijkse waardestijging
+      exploitatieKosten: 0.25,    // 25% van bruto huur (onderhoud, VvE, leegstand, etc.)
+      gemiddeldBox2: 0.27,        // Gemiddeld effectief Box 2 tarief voor vooraf berekening
+    };
+
+    const formatCurrency = (amount) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+    const formatPercent = (pct) => `${(pct * 100).toFixed(1)}%`;
+
+    const berekenBox2 = (bedrag) => {
+      if (bedrag <= 0) return 0;
+      if (bedrag <= PARAMS.box2.grens) return bedrag * PARAMS.box2.schijf1;
+      return PARAMS.box2.grens * PARAMS.box2.schijf1 + (bedrag - PARAMS.box2.grens) * PARAMS.box2.schijf2;
+    };
+
+    const berekenVPB = (winst) => {
+      if (winst <= 0) return 0;
+      if (winst <= PARAMS.vpb.grens) return winst * PARAMS.vpb.schijf1;
+      return PARAMS.vpb.grens * PARAMS.vpb.schijf1 + (winst - PARAMS.vpb.grens) * PARAMS.vpb.schijf2;
+    };
+
+    const berekenBox3 = (vermogen) => {
+      const belastbaar = Math.max(0, vermogen - PARAMS.box3.heffingvrij);
+      return belastbaar * PARAMS.box3.forfait * PARAMS.box3.tarief;
+    };
+
+    function App() {
+      const [aankoopprijs, setAankoopprijs] = React.useState(500000);
+      const [eigenInbreng, setEigenInbreng] = React.useState(150000);
+      const [brutoHuur, setBrutoHuur] = React.useState(6);
+      const [horizon, setHorizon] = React.useState(15);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [naam, setNaam] = React.useState('');
+      const [email, setEmail] = React.useState('');
+      const [telefoon, setTelefoon] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+      const scenarios = React.useMemo(() => {
+        const ltv = (aankoopprijs - eigenInbreng) / aankoopprijs;
+        const hypotheek = aankoopprijs - eigenInbreng;
+        const huurInkomsten = aankoopprijs * (brutoHuur / 100) * (1 - AANNAMES.exploitatieKosten);
+        const renteBank = hypotheek * AANNAMES.hypotheekRente;
+
+        // Scenario 1: Dividend naar Privé
+        // Eerst dividend uitkeren, dan privé kopen
+        const brutoDividendNodig = eigenInbreng / (1 - AANNAMES.gemiddeldBox2);
+        const box2Vooraf = brutoDividendNodig - eigenInbreng;
+        const s1NettoHuur = huurInkomsten - renteBank;
+        const s1Box3Jaarlijks = berekenBox3(eigenInbreng); // Alleen eigen inbreng in Box 3, hypotheek is schuld
+        const s1NettoJaarlijks = s1NettoHuur - s1Box3Jaarlijks;
+        const s1Eindwaarde = aankoopprijs * Math.pow(1 + AANNAMES.waardestijging, horizon);
+        const s1NettoEind = s1Eindwaarde - hypotheek + (s1NettoJaarlijks * horizon) - box2Vooraf;
+
+        // Scenario 2: Lenen van BV
+        // R/C lening van BV, pand privé
+        const s2RcRente = eigenInbreng * PARAMS.rcRente;
+        const s2NettoHuur = huurInkomsten - renteBank - s2RcRente;
+        const s2Box3Jaarlijks = berekenBox3(0); // Pand - hypotheek - R/C schuld ≈ 0 netto
+        const s2VpbRente = s2RcRente * PARAMS.vpb.schijf1; // BV betaalt VPB over ontvangen rente
+        const s2NettoJaarlijks = s2NettoHuur - s2Box3Jaarlijks;
+        const s2RcEind = eigenInbreng; // R/C moet nog worden afgelost
+        const s2LatentBox2 = berekenBox2(s2RcEind); // Bij aflossing R/C via dividend
+        const s2Eindwaarde = aankoopprijs * Math.pow(1 + AANNAMES.waardestijging, horizon);
+        const s2NettoEind = s2Eindwaarde - hypotheek - s2RcEind + (s2NettoJaarlijks * horizon) - s2LatentBox2;
+
+        // Scenario 3: In de BV
+        // Pand volledig in de BV
+        const s3NettoHuur = huurInkomsten - renteBank;
+        const s3VpbJaarlijks = berekenVPB(s3NettoHuur);
+        const s3NettoJaarlijks = s3NettoHuur - s3VpbJaarlijks;
+        const s3Eindwaarde = aankoopprijs * Math.pow(1 + AANNAMES.waardestijging, horizon);
+        const s3WaardestijgingBruto = s3Eindwaarde - aankoopprijs;
+        const s3VpbWaardestijging = berekenVPB(s3WaardestijgingBruto);
+        const s3TotaalWinstBV = (s3NettoJaarlijks * horizon) + s3WaardestijgingBruto - s3VpbWaardestijging;
+        const s3LatentBox2 = berekenBox2(s3TotaalWinstBV);
+        const s3NettoEind = s3TotaalWinstBV - s3LatentBox2;
+
+        return [
+          { 
+            naam: 'Dividend → Privé', 
+            nettoEind: Math.round(s1NettoEind), 
+            nettoJaar: Math.round(s1NettoJaarlijks), 
+            belastingVooraf: Math.round(box2Vooraf), 
+            belastingJaar: Math.round(s1Box3Jaarlijks), 
+            latent: 0,
+            beschrijving: 'Dividend uitkeren, pand privé kopen'
+          },
+          { 
+            naam: 'Lenen van BV', 
+            nettoEind: Math.round(s2NettoEind), 
+            nettoJaar: Math.round(s2NettoJaarlijks), 
+            belastingVooraf: 0, 
+            belastingJaar: Math.round(s2Box3Jaarlijks + s2VpbRente), 
+            latent: Math.round(s2LatentBox2),
+            beschrijving: 'R/C lening, pand privé, rente aan BV'
+          },
+          { 
+            naam: 'In de BV', 
+            nettoEind: Math.round(s3NettoEind), 
+            nettoJaar: Math.round(s3NettoJaarlijks), 
+            belastingVooraf: 0, 
+            belastingJaar: Math.round(s3VpbJaarlijks), 
+            latent: Math.round(s3LatentBox2),
+            beschrijving: 'Pand volledig in de BV'
+          },
+        ];
+      }, [aankoopprijs, eigenInbreng, brutoHuur, horizon]);
+
+      const bestScenario = scenarios.reduce((best, s) => s.nettoEind > best.nettoEind ? s : best);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const formData = new FormData();
+        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+        formData.append('Calculator', LEAD_CONFIG.calculatorName);
+        formData.append('Naam', naam);
+        formData.append('Email', email);
+        formData.append('Telefoon', telefoon);
+        formData.append('Datum', new Date().toLocaleString('nl-NL'));
+
+        // Calculator inputs
+        formData.append('Aankoopprijs', formatCurrency(aankoopprijs));
+        formData.append('Eigen inbreng', formatCurrency(eigenInbreng));
+        formData.append('LTV', ((aankoopprijs - eigenInbreng) / aankoopprijs * 100).toFixed(1) + '%');
+        formData.append('Bruto huurrendement', brutoHuur + '%');
+        formData.append('Planningshorizon', horizon + ' jaar');
+
+        // Resultaten per scenario
+        formData.append('Dividend → Privé (netto)', formatCurrency(scenarios[0].nettoEind));
+        formData.append('Lenen van BV (netto)', formatCurrency(scenarios[1].nettoEind));
+        formData.append('In de BV (netto)', formatCurrency(scenarios[2].nettoEind));
+        formData.append('Beste scenario', bestScenario.naam);
+
+        // Metadata
+        formData.append('Bron', 'Vastgoed Scenario Calculator 2026');
+        formData.append('Pagina URL', window.location.href);
+
+        try {
+          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+          setSubmitted(true);
+        } catch (error) {
+          console.error('Form submission error:', error);
+          setSubmitted(true);
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis DGA Calculator</div>
+            <h1>Vastgoed Scenario Vergelijker <span className="year-badge">2026</span></h1>
+            <p>Vergelijk: Dividend naar Privé vs. Lenen van BV vs. Aankopen in de BV</p>
+          </div>
+
+          <div className="card">
+            <h3 className="card-title">🏢 Investering & Rendement</h3>
+            <div className="input-grid">
+              <div className="input-group">
+                <label className="input-label">Aankoopprijs vastgoed</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="200000" max="2000000" step="25000" value={aankoopprijs} onChange={(e) => { setAankoopprijs(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(aankoopprijs)}</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Eigen inbreng (vanuit BV)</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="50000" max={aankoopprijs * 0.5} step="10000" value={eigenInbreng} onChange={(e) => { setEigenInbreng(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(eigenInbreng)}</div>
+                </div>
+                <p className="input-hint">LTV: {formatPercent((aankoopprijs - eigenInbreng) / aankoopprijs)} | Hypotheek: {formatCurrency(aankoopprijs - eigenInbreng)}</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Bruto huurrendement</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="3" max="10" step="0.5" value={brutoHuur} onChange={(e) => { setBrutoHuur(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{brutoHuur}%</div>
+                </div>
+                <p className="input-hint">Bruto huur/jaar: {formatCurrency(aankoopprijs * brutoHuur / 100)}</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Planningshorizon</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="5" max="25" step="1" value={horizon} onChange={(e) => { setHorizon(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{horizon} jaar</div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="params-info">
+              <strong>Fiscale parameters 2026:</strong> Box 2: 24,5%/31% (grens €68.843) | VPB: 19%/25,8% (grens €200k) | Box 3: 6% × 36% | R/C rente: 6%
+            </div>
+            
+            <button className="btn" style={{marginTop: '16px'}} onClick={() => setShowResults(true)}>Vergelijk scenario's →</button>
+          </div>
+
+          {showResults && (
+            <>
+              <div className="assumptions-card">
+                <div className="assumptions-title">📊 Modelaannames</div>
+                <div className="assumptions-grid">
+                  <div className="assumption-item">• Hypotheekrente: {(AANNAMES.hypotheekRente * 100)}%</div>
+                  <div className="assumption-item">• Waardestijging: {(AANNAMES.waardestijging * 100)}%/jaar</div>
+                  <div className="assumption-item">• Exploitatiekosten: {(AANNAMES.exploitatieKosten * 100)}% van huur</div>
+                  <div className="assumption-item">• R/C rente: {(PARAMS.rcRente * 100)}% (marktconform)</div>
+                </div>
+              </div>
+
+              <div className="scenario-grid">
+                {scenarios.map((s, i) => (
+                  <div key={i} className={`scenario-card ${s.naam === bestScenario.naam ? 'best' : ''}`}>
+                    <span className="scenario-badge">★ Beste optie</span>
+                    <div className="scenario-name">{s.naam}</div>
+                    <div className="scenario-value">{formatCurrency(s.nettoEind)}</div>
+                    <div className="scenario-label">Netto eindvermogen na {horizon} jaar</div>
+                    <div style={{fontSize: 11, color: '#666', marginBottom: 12, fontStyle: 'italic'}}>{s.beschrijving}</div>
+                    <div className="scenario-detail">
+                      <span className="detail-label">Netto cashflow/jaar</span>
+                      <span className={`detail-value ${s.nettoJaar >= 0 ? 'positive' : 'negative'}`}>{formatCurrency(s.nettoJaar)}</span>
+                    </div>
+                    <div className="scenario-detail">
+                      <span className="detail-label">Belasting vooraf</span>
+                      <span className="detail-value negative">{s.belastingVooraf > 0 ? formatCurrency(s.belastingVooraf) : '—'}</span>
+                    </div>
+                    <div className="scenario-detail">
+                      <span className="detail-label">Belasting/jaar</span>
+                      <span className="detail-value negative">{formatCurrency(s.belastingJaar)}</span>
+                    </div>
+                    <div className="scenario-detail">
+                      <span className="detail-label">Latente belasting</span>
+                      <span className="detail-value negative">{s.latent > 0 ? formatCurrency(s.latent) : '—'}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div className="cta-icon">🏢</div>
+                  <h3 className="cta-title">Wil je een uitgebreid scenariorapport?</h3>
+                  <p className="cta-text">Ontvang een persoonlijk PDF-rapport met {horizon}-jaar doorrekening, risico-analyse en concrete aanbevelingen</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input 
+                      type="text" 
+                      className="form-input" 
+                      placeholder="Je naam" 
+                      value={naam} 
+                      onChange={(e) => setNaam(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="email" 
+                      className="form-input" 
+                      placeholder="je@email.nl" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="tel" 
+                      className="form-input" 
+                      placeholder="Telefoonnummer (optioneel)" 
+                      value={telefoon} 
+                      onChange={(e) => setTelefoon(e.target.value)} 
+                    />
+                    <button type="submit" className="btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><span className="spinner"></span>Verzenden...</>
+                      ) : (
+                        'Verstuur mijn rapport →'
+                      )}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div className="success-icon">✅</div>
+                  <h3 className="success-title">Je rapport is onderweg!</h3>
+                  <p style={{color: '#666'}}>Check je inbox voor het volledige scenariorapport met concrete aanbevelingen.</p>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief en gebaseerd op fiscale parameters 2026. 
+                Aannames: {(AANNAMES.waardestijging * 100)}% waardestijging, {(AANNAMES.hypotheekRente * 100)}% hypotheekrente, 
+                {(AANNAMES.exploitatieKosten * 100)}% exploitatiekosten, {(PARAMS.rcRente * 100)}% R/C rente.
+                De werkelijke uitkomst hangt af van persoonlijke situatie, financiering, en marktontwikkelingen.
+                Let op excessief lenen regeling (max €500.000). Raadpleeg een fiscalist voor persoonlijk advies.
+                <br/>© Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

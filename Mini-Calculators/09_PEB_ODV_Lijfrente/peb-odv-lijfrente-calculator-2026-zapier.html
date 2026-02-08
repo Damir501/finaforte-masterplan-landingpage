@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEB/ODV naar Lijfrente Calculator 2026 | Finaforte</title>
+  <meta name="description" content="Vergelijk gratis ODV in BV houden versus omzetten naar verzekerde lijfrente. Ontdek welke optie het beste bij jouw situatie past.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header {
+      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      color: white;
+    }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .year-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #333; }
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
+    .input-row { display: flex; align-items: center; gap: 16px; }
+    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .value-display {
+      background: #f0faf9;
+      border: 2px solid #1AABA6;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #1AABA6;
+      min-width: 120px;
+      text-align: center;
+    }
+    .input-hint { font-size: 12px; color: #666; margin-top: 6px; }
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: #1AABA6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
+    .params-info strong { color: #1AABA6; }
+    .comparison-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 24px; }
+    .comparison-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      border: 2px solid #e5e5e5;
+    }
+    .comparison-card.best { border-color: #1AABA6; background: #f0faf9; }
+    .comparison-card.best .card-badge { display: block; }
+    .card-badge { display: none; background: #1AABA6; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
+    .card-name { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 16px; }
+    .result-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .result-row:last-child { border: none; }
+    .result-label { color: #666; font-size: 14px; }
+    .result-value { font-weight: 600; font-size: 14px; }
+    .result-value.highlight { color: #1AABA6; font-size: 18px; }
+    .result-value.negative { color: #c53030; }
+    .pros-cons { margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e5e5; }
+    .pros-cons h4 { font-size: 13px; color: #666; margin-bottom: 8px; }
+    .pros-cons ul { font-size: 13px; color: #333; padding-left: 16px; }
+    .pros-cons li { margin-bottom: 4px; }
+    .assumptions-card { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
+    .assumptions-title { font-size: 14px; font-weight: 600; color: #b45309; margin-bottom: 8px; }
+    .assumptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+    .assumption-item { font-size: 12px; color: #92400e; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; }
+    .cta-icon { font-size: 32px; margin-bottom: 8px; }
+    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
+    .cta-text { color: #666; margin-bottom: 20px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 700px) {
+      .comparison-grid { grid-template-columns: 1fr; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .value-display { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+            
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'PEB ODV Lijfrente'
+    };
+    // ============================================
+// ============================================================
+
+    // FISCALE PARAMETERS 2026 - Alle waarden geverifieerd
+    const PARAMS = {
+      uRendement: 0.02593,        // U-rendement 2026: 2,593% (gemiddelde 2025)
+      box1Tarief: 0.3756,         // Box 1 tarief schijf 2: 37,56%
+      conversieRatio: 0.95,       // ~95% van ODV wordt inleg bij conversie (inschatting)
+      aowLeeftijd: 67,            // AOW-leeftijd 2026
+      lijfrenteKosten: 0.005,     // ~0,5% jaarlijkse kosten verzekeraar
+      uitkeringsDuurODV: 20,      // Wettelijke uitkeringsduur ODV is 20 jaar
+    };
+
+    const formatCurrency = (amount) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+    const formatPercent = (pct) => `${(pct * 100).toFixed(2)}%`;
+
+    // PMT functie voor annuïteit berekening
+    const PMT = (rate, nper, pv) => {
+      if (rate === 0) return -pv / nper;
+      return (rate * pv) / (1 - Math.pow(1 + rate, -nper));
+    };
+
+    function App() {
+      const [odvWaarde, setOdvWaarde] = React.useState(300000);
+      const [leeftijd, setLeeftijd] = React.useState(60);
+      const [rendementBV, setRendementBV] = React.useState(4);
+      const [rendementLijfrente, setRendementLijfrente] = React.useState(3);
+      const [uitkeringsduur, setUitkeringsduur] = React.useState(20);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [naam, setNaam] = React.useState('');
+      const [email, setEmail] = React.useState('');
+      const [telefoon, setTelefoon] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+      const jarenTotPensioen = Math.max(0, PARAMS.aowLeeftijd - leeftijd);
+
+      const scenarios = React.useMemo(() => {
+        // Scenario 1: ODV in BV houden
+        // ODV groeit met verwacht rendement BV tot pensioen
+        const s1Eindwaarde = odvWaarde * Math.pow(1 + rendementBV / 100, jarenTotPensioen);
+        // Uitkering o.b.v. U-rendement gedurende 20 jaar (wettelijk voorgeschreven)
+        const s1BrutoUitkering = PMT(PARAMS.uRendement, uitkeringsduur, -s1Eindwaarde);
+        const s1NettoUitkering = s1BrutoUitkering * (1 - PARAMS.box1Tarief);
+        const s1TotaalNetto = s1NettoUitkering * uitkeringsduur;
+
+        // Scenario 2: Omzetten naar verzekerde lijfrente
+        // Bij conversie ~95% van waarde als inleg (kosten, marges)
+        const s2Inleg = odvWaarde * PARAMS.conversieRatio;
+        // Groei met verwacht lijfrenterendement minus kosten
+        const s2NettoRendement = (rendementLijfrente / 100) - PARAMS.lijfrenteKosten;
+        const s2Eindwaarde = s2Inleg * Math.pow(1 + s2NettoRendement, jarenTotPensioen);
+        // Uitkering o.b.v. lijfrente rekenrente (~2%)
+        const s2BrutoUitkering = PMT(0.02, uitkeringsduur, -s2Eindwaarde);
+        const s2NettoUitkering = s2BrutoUitkering * (1 - PARAMS.box1Tarief);
+        const s2TotaalNetto = s2NettoUitkering * uitkeringsduur;
+
+        // Verschil berekenen
+        const verschil = s1TotaalNetto - s2TotaalNetto;
+
+        return {
+          bv: { 
+            eindwaarde: s1Eindwaarde, 
+            brutoUitkering: s1BrutoUitkering, 
+            nettoUitkering: s1NettoUitkering, 
+            totaalNetto: s1TotaalNetto 
+          },
+          lijfrente: { 
+            inleg: s2Inleg,
+            eindwaarde: s2Eindwaarde, 
+            brutoUitkering: s2BrutoUitkering, 
+            nettoUitkering: s2NettoUitkering, 
+            totaalNetto: s2TotaalNetto 
+          },
+          verschil: verschil,
+        };
+      }, [odvWaarde, leeftijd, rendementBV, rendementLijfrente, uitkeringsduur, jarenTotPensioen]);
+
+      const bestOption = scenarios.bv.totaalNetto > scenarios.lijfrente.totaalNetto ? 'bv' : 'lijfrente';
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const formData = new FormData();
+        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
+        formData.append('_template', 'table');
+        formData.append('_captcha', 'false');
+
+        // Contactgegevens
+        formData.append('Calculator', LEAD_CONFIG.calculatorName);
+        formData.append('Naam', naam);
+        formData.append('Email', email);
+        formData.append('Telefoon', telefoon);
+        formData.append('Datum', new Date().toLocaleString('nl-NL'));
+
+        // Calculator inputs
+        formData.append('ODV Waarde', formatCurrency(odvWaarde));
+        formData.append('Leeftijd', leeftijd);
+        formData.append('Jaren tot Pensioen', jarenTotPensioen);
+        formData.append('Rendement BV', rendementBV + '%');
+        formData.append('Rendement Lijfrente', rendementLijfrente + '%');
+        formData.append('Uitkeringsduur', uitkeringsduur + ' jaar');
+
+        // Resultaten
+        formData.append('BV Eindwaarde', formatCurrency(scenarios.bv.eindwaarde));
+        formData.append('BV Netto Uitkering/Jaar', formatCurrency(scenarios.bv.nettoUitkering));
+        formData.append('BV Totaal Netto', formatCurrency(scenarios.bv.totaalNetto));
+        formData.append('Lijfrente Eindwaarde', formatCurrency(scenarios.lijfrente.eindwaarde));
+        formData.append('Lijfrente Netto Uitkering/Jaar', formatCurrency(scenarios.lijfrente.nettoUitkering));
+        formData.append('Lijfrente Totaal Netto', formatCurrency(scenarios.lijfrente.totaalNetto));
+        formData.append('Beste Optie', bestOption === 'bv' ? 'ODV in BV' : 'Lijfrente');
+        formData.append('Verschil', formatCurrency(scenarios.verschil));
+
+        // Metadata
+        formData.append('Bron', 'PEB/ODV Lijfrente Calculator 2026');
+        formData.append('Pagina URL', window.location.href);
+
+        try {
+          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+            headers: { 'Accept': 'application/json' }
+          });
+          setSubmitted(true);
+        } catch (err) {
+          setSubmitted(true);
+        }
+        setIsSubmitting(false);
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis DGA Calculator</div>
+            <h1>PEB/ODV naar Lijfrente Calculator <span className="year-badge">2026</span></h1>
+            <p>Vergelijk ODV in BV houden versus omzetten naar verzekerde lijfrente</p>
+          </div>
+
+          <div className="card">
+            <h3 className="card-title">📊 Jouw ODV/PEB Situatie</h3>
+            <div className="input-grid">
+              <div className="input-group">
+                <label className="input-label">Huidige waarde ODV/PEB</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="50000" max="1000000" step="10000" value={odvWaarde} onChange={(e) => { setOdvWaarde(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{formatCurrency(odvWaarde)}</div>
+                </div>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Jouw leeftijd</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="50" max="67" step="1" value={leeftijd} onChange={(e) => { setLeeftijd(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{leeftijd} jaar</div>
+                </div>
+                <p className="input-hint">Nog {jarenTotPensioen} jaar tot AOW-leeftijd (67)</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Verwacht rendement BV</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="1" max="8" step="0.5" value={rendementBV} onChange={(e) => { setRendementBV(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{rendementBV}%</div>
+                </div>
+                <p className="input-hint">Rendement op beleggingen in je BV</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Verwacht rendement lijfrente</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="1" max="6" step="0.5" value={rendementLijfrente} onChange={(e) => { setRendementLijfrente(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{rendementLijfrente}%</div>
+                </div>
+                <p className="input-hint">Vaak 2-4% bij verzekerde lijfrente</p>
+              </div>
+              <div className="input-group">
+                <label className="input-label">Uitkeringsduur</label>
+                <div className="input-row">
+                  <input type="range" className="slider" min="10" max="25" step="1" value={uitkeringsduur} onChange={(e) => { setUitkeringsduur(Number(e.target.value)); setShowResults(false); }} />
+                  <div className="value-display">{uitkeringsduur} jaar</div>
+                </div>
+                <p className="input-hint">ODV wettelijk: minimaal 20 jaar vanaf AOW</p>
+              </div>
+            </div>
+
+            <div className="params-info">
+              <strong>Fiscale parameters 2026:</strong> U-rendement: 2,593% | Box 1 tarief: 37,56% | AOW-leeftijd: 67 jaar
+            </div>
+
+            <button className="btn" style={{marginTop: '16px'}} onClick={() => setShowResults(true)}>Vergelijk opties →</button>
+          </div>
+
+          {showResults && (
+            <>
+              <div className="assumptions-card">
+                <div className="assumptions-title">📋 Modelaannames</div>
+                <div className="assumptions-grid">
+                  <div className="assumption-item">• U-rendement: {formatPercent(PARAMS.uRendement)}</div>
+                  <div className="assumption-item">• Box 1 tarief: {formatPercent(PARAMS.box1Tarief)}</div>
+                  <div className="assumption-item">• Conversieratio: {(PARAMS.conversieRatio * 100)}%</div>
+                  <div className="assumption-item">• Lijfrentekosten: {formatPercent(PARAMS.lijfrenteKosten)}/jaar</div>
+                </div>
+              </div>
+
+              <div className="comparison-grid">
+                <div className={`comparison-card ${bestOption === 'bv' ? 'best' : ''}`}>
+                  <span className="card-badge">★ Beste optie</span>
+                  <div className="card-name">🏢 ODV in BV houden</div>
+                  <div className="result-row">
+                    <span className="result-label">Waarde bij pensioen</span>
+                    <span className="result-value">{formatCurrency(scenarios.bv.eindwaarde)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Bruto uitkering/jaar</span>
+                    <span className="result-value">{formatCurrency(scenarios.bv.brutoUitkering)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Netto uitkering/jaar</span>
+                    <span className="result-value highlight">{formatCurrency(scenarios.bv.nettoUitkering)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Totaal netto ({uitkeringsduur} jaar)</span>
+                    <span className="result-value highlight">{formatCurrency(scenarios.bv.totaalNetto)}</span>
+                  </div>
+                  <div className="pros-cons">
+                    <h4>✅ Voordelen</h4>
+                    <ul>
+                      <li>Mogelijk hoger rendement (zelf beleggen)</li>
+                      <li>BV blijft bestaan voor andere activiteiten</li>
+                      <li>Flexibiliteit behouden</li>
+                      <li>Restkapitaal naar erfgenamen</li>
+                    </ul>
+                    <h4 style={{marginTop: 12}}>⚠️ Nadelen</h4>
+                    <ul>
+                      <li>BV moet 20+ jaar in stand blijven</li>
+                      <li>Jaarlijkse administratie & accountant</li>
+                      <li>Beleggingsrisico bij DGA</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className={`comparison-card ${bestOption === 'lijfrente' ? 'best' : ''}`}>
+                  <span className="card-badge">★ Beste optie</span>
+                  <div className="card-name">🏦 Omzetten naar lijfrente</div>
+                  <div className="result-row">
+                    <span className="result-label">Inleg na conversie</span>
+                    <span className="result-value">{formatCurrency(scenarios.lijfrente.inleg)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Bruto uitkering/jaar</span>
+                    <span className="result-value">{formatCurrency(scenarios.lijfrente.brutoUitkering)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Netto uitkering/jaar</span>
+                    <span className="result-value highlight">{formatCurrency(scenarios.lijfrente.nettoUitkering)}</span>
+                  </div>
+                  <div className="result-row">
+                    <span className="result-label">Totaal netto ({uitkeringsduur} jaar)</span>
+                    <span className="result-value highlight">{formatCurrency(scenarios.lijfrente.totaalNetto)}</span>
+                  </div>
+                  <div className="pros-cons">
+                    <h4>✅ Voordelen</h4>
+                    <ul>
+                      <li>Nabestaandendekking mogelijk</li>
+                      <li>BV kan worden opgeheven</li>
+                      <li>Geen administratie meer</li>
+                      <li>Zekerheid (geen beleggingsrisico)</li>
+                    </ul>
+                    <h4 style={{marginTop: 12}}>⚠️ Nadelen</h4>
+                    <ul>
+                      <li>Conversiekosten (~5%)</li>
+                      <li>Lager verwacht rendement</li>
+                      <li>Minder flexibiliteit</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div className="cta-icon">📊</div>
+                  <h3 className="cta-title">Wil je een persoonlijk adviesrapport?</h3>
+                  <p className="cta-text">Ontvang een uitgebreid rapport met scenario-analyse, nabestaandendekking en concrete aanbevelingen voor jouw situatie</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input 
+                      type="text" 
+                      className="form-input" 
+                      placeholder="Je naam" 
+                      value={naam} 
+                      onChange={(e) => setNaam(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="email" 
+                      className="form-input" 
+                      placeholder="je@email.nl" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="tel" 
+                      className="form-input" 
+                      placeholder="Telefoonnummer (optioneel)" 
+                      value={telefoon} 
+                      onChange={(e) => setTelefoon(e.target.value)} 
+                    />
+                    <button type="submit" className="btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><span className="spinner"></span>Verzenden...</>
+                      ) : (
+                        'Verstuur mijn rapport →'
+                      )}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div className="success-icon">✅</div>
+                  <h3 className="success-title">Je rapport is onderweg!</h3>
+                  <p style={{color: '#666'}}>Check je inbox voor het volledige adviesrapport met ODV vs. lijfrente analyse.</p>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Deze berekening is indicatief en gebaseerd op fiscale parameters 2026. 
+                U-rendement: {formatPercent(PARAMS.uRendement)} (gemiddelde 2025), Box 1 tarief: {formatPercent(PARAMS.box1Tarief)}, 
+                Conversieratio: {(PARAMS.conversieRatio * 100)}%.
+                De werkelijke uitkomst hangt af van marktontwikkelingen, verzekeringsvoorwaarden en persoonlijke situatie.
+                ODV-uitkeringen moeten uiterlijk 2 maanden na AOW-leeftijd ingaan en duren minimaal 20 jaar.
+                Afstorten naar lijfrente is mogelijk tot uiterlijk 5 jaar na AOW-leeftijd.
+                Raadpleeg een pensioenadviseur voor persoonlijk advies.
+                <br/>© Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peildatum & Timing Calculator 2026 | Finaforte</title>
+  <meta name="description" content="Bereken hoeveel je kunt besparen door transacties slim te timen rond de jaarwisseling.">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    .container { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .header { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
+    .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
+    .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .year-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
+    .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #1AABA6; padding-bottom: 8px; }
+    .input-group { margin-bottom: 16px; }
+    .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
+    .input-hint { font-size: 12px; color: #666; margin-top: 4px; }
+    .input-field { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; }
+    .input-field:focus { outline: none; border-color: #1AABA6; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .btn { width: 100%; padding: 16px; background: #1AABA6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #158783; }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn { flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+    .toggle-btn:hover { border-color: #1AABA6; }
+    .toggle-btn.active { border-color: #1AABA6; background: #f0faf9; color: #1AABA6; font-weight: 600; }
+    .result-card { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; text-align: center; }
+    .besparing-groot { font-size: 48px; font-weight: 700; margin: 16px 0; }
+    .compare-section { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; }
+    .compare-card { border: 2px solid #e5e5e5; border-radius: 12px; padding: 20px; text-align: center; }
+    .compare-card.good { border-color: #22c55e; background: #f0fdf4; }
+    .compare-card.bad { border-color: #ef4444; background: #fef2f2; }
+    .compare-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .compare-value { font-size: 24px; font-weight: 700; }
+    .compare-arrow { font-size: 32px; color: #1AABA6; }
+    .warning-card { background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .warning-card h4 { color: #b45309; margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+    .warning-card p { color: #92400e; font-size: 13px; line-height: 1.5; }
+    .timeline-visual { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 24px 0; padding: 20px; background: #f9fafb; border-radius: 12px; flex-wrap: wrap; }
+    .timeline-date { padding: 12px 20px; border-radius: 8px; font-weight: 600; }
+    .timeline-date.dec { background: #fee2e2; color: #dc2626; }
+    .timeline-date.jan { background: #dcfce7; color: #16a34a; }
+    .timeline-arrow { font-size: 24px; color: #9ca3af; }
+    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
+    .form-input:focus { outline: none; border-color: #1AABA6; }
+    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
+    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
+    .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
+    .params-info strong { color: #1AABA6; }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 600px) { 
+      .input-row { grid-template-columns: 1fr; } 
+      .compare-section { grid-template-columns: 1fr; } 
+      .compare-arrow { transform: rotate(90deg); } 
+      .timeline-visual { flex-direction: column; }
+      .timeline-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+            
+    // ============================================
+    // FINAFORTE LEAD CAPTURE CONFIGURATIE
+    // ============================================
+    const LEAD_CONFIG = {
+      emailTo: 'd.tvrtkovic@finaforte.nl',
+      calculatorName: 'Peildatum Timing'
+    };
+    // ============================================
+// ============================================================
+
+    // FISCALE PARAMETERS 2026 - Actuele waarden (na Belastingplan 2026 wijzigingen)
+    const PARAMS = {
+      heffingvrijAlleen: 59357,      // Was: 57684 - Gecorrigeerd naar 2026
+      heffingvrijPartner: 118714,    // Was: 114972 - Gecorrigeerd naar 2026
+      forfaitSparen: 0.0128,         // 1,28% voorlopig voor 2026
+      forfaitBeleggen: 0.06,         // 6% definitief voor 2026
+      tarief: 0.36,                  // 36% ongewijzigd
+    };
+
+    const formatCurrency = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+
+    // Vereenvoudigde Box 3 berekening (uitgaande van beleggingen)
+    const berekenBox3 = (vermogen, partner) => {
+      const heffingvrij = partner ? PARAMS.heffingvrijPartner : PARAMS.heffingvrijAlleen;
+      const grondslag = Math.max(0, vermogen - heffingvrij);
+      // Vereenvoudigd: uitgaande van forfait beleggingen (6%)
+      return Math.round(grondslag * PARAMS.forfaitBeleggen * PARAMS.tarief);
+    };
+
+    function App() {
+      const [huidigVermogen, setHuidigVermogen] = React.useState(400000);
+      const [transactieBedrag, setTransactieBedrag] = React.useState(100000);
+      const [transactieType, setTransactieType] = React.useState('verkoop');
+      const [partner, setPartner] = React.useState(true);
+      const [showResults, setShowResults] = React.useState(false);
+      const [showLeadForm, setShowLeadForm] = React.useState(false);
+      const [naam, setNaam] = React.useState('');
+      const [email, setEmail] = React.useState('');
+      const [telefoon, setTelefoon] = React.useState('');
+      const [submitted, setSubmitted] = React.useState(false);
+      const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+      // Input validatie
+      const validVermogen = Math.max(0, huidigVermogen || 0);
+      const validTransactie = Math.max(0, transactieBedrag || 0);
+
+      const result = React.useMemo(() => {
+        const vermogenVoor = validVermogen;
+        const vermogenNa = transactieType === 'verkoop'
+          ? validVermogen - validTransactie
+          : validVermogen + validTransactie;
+
+        // Bij VERKOOP voor 31 dec: vermogen op peildatum is LAGER (vermogenNa)
+        // Bij VERKOOP na 1 jan: vermogen op peildatum is HOGER (vermogenVoor)
+        // Bij AANKOOP voor 31 dec: vermogen op peildatum is HOGER (vermogenNa)  
+        // Bij AANKOOP na 1 jan: vermogen op peildatum is LAGER (vermogenVoor)
+
+        const box3Voor31Dec = transactieType === 'verkoop'
+          ? berekenBox3(Math.max(0, vermogenNa), partner)   // Verkoop = lager vermogen
+          : berekenBox3(Math.max(0, vermogenNa), partner);  // Aankoop = hoger vermogen
+
+        const box3Na1Jan = transactieType === 'verkoop'
+          ? berekenBox3(vermogenVoor, partner)              // Nog niet verkocht = hoger vermogen
+          : berekenBox3(vermogenVoor, partner);             // Nog niet gekocht = lager vermogen
+
+        const besparing = Math.abs(box3Na1Jan - box3Voor31Dec);
+        
+        // Advies: kies timing met laagste belasting
+        let advies;
+        if (transactieType === 'verkoop') {
+          // Bij verkoop: voor 31 dec = lager vermogen op peildatum = minder belasting
+          advies = box3Voor31Dec <= box3Na1Jan ? 'voor31dec' : 'na1jan';
+        } else {
+          // Bij aankoop: na 1 jan = lager vermogen op peildatum = minder belasting
+          advies = box3Na1Jan <= box3Voor31Dec ? 'na1jan' : 'voor31dec';
+        }
+
+        return {
+          vermogenVoor,
+          vermogenNa: Math.max(0, vermogenNa),
+          box3Voor31Dec,
+          box3Na1Jan,
+          besparing,
+          advies,
+        };
+      }, [validVermogen, validTransactie, transactieType, partner]);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const formData = new FormData();
+
+        // Contactgegevens
+        formData.append('naam', naam);
+        formData.append('email', email);
+        formData.append('telefoon', telefoon);
+
+        // Calculator inputs
+        formData.append('huidig_vermogen', validVermogen);
+        formData.append('transactie_bedrag', validTransactie);
+        formData.append('transactie_type', transactieType);
+        formData.append('fiscaal_partner', partner ? 'Ja' : 'Nee');
+
+        // Resultaten - calculator result fields
+        formData.append('box3_voor_31dec', result.box3Voor31Dec);
+        formData.append('box3_na_1jan', result.box3Na1Jan);
+        formData.append('besparing', result.besparing);
+        formData.append('advies', result.advies === 'voor31dec' ? 'Voor 31 december' : 'Na 1 januari');
+        formData.append('vermogen_na', result.vermogenNa);
+        formData.append('vermogen_voor', result.vermogenVoor);
+
+        // Metadata
+        formData.append('bron', 'Peildatum & Timing Calculator 2026');
+        formData.append('datum', new Date().toISOString());
+        formData.append('pagina_url', window.location.href);
+
+        try {
+          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
+            method: 'POST',
+            body: formData,
+          });
+          setSubmitted(true);
+        } catch (error) {
+          console.error('FormSubmit error:', error);
+          setSubmitted(true);
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      return (
+        <div className="container">
+          <div className="header">
+            <div className="header-tag">Gratis Calculator</div>
+            <h1>Peildatum & Timing Calculator <span className="year-badge">2026</span></h1>
+            <p>Bereken hoeveel Box 3 belasting je bespaart door slim te timen</p>
+          </div>
+
+          <div className="card">
+            <h3>💰 Huidige Situatie</h3>
+            <div className="input-group">
+              <label className="input-label">Huidig Box 3 vermogen (peildatum 1 jan)</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={huidigVermogen} 
+                onChange={e => setHuidigVermogen(Math.max(0, +e.target.value))}
+                min="0"
+              />
+              <p className="input-hint">Spaargeld + beleggingen + crypto + vastgoed Box 3</p>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Fiscaal partner?</label>
+              <div className="toggle-group">
+                <button className={`toggle-btn ${partner ? 'active' : ''}`} onClick={() => setPartner(true)}>
+                  Ja (€{PARAMS.heffingvrijPartner.toLocaleString('nl-NL')} vrij)
+                </button>
+                <button className={`toggle-btn ${!partner ? 'active' : ''}`} onClick={() => setPartner(false)}>
+                  Nee (€{PARAMS.heffingvrijAlleen.toLocaleString('nl-NL')} vrij)
+                </button>
+              </div>
+            </div>
+            <div className="params-info">
+              <strong>Box 3 parameters 2026:</strong> Forfait beleggingen 6% | Tarief 36% | Heffingsvrij €{PARAMS.heffingvrijAlleen.toLocaleString('nl-NL')} (alleen) / €{PARAMS.heffingvrijPartner.toLocaleString('nl-NL')} (partners)
+            </div>
+          </div>
+
+          <div className="card">
+            <h3>📅 Geplande Transactie</h3>
+            <div className="input-group">
+              <label className="input-label">Type transactie</label>
+              <div className="toggle-group">
+                <button className={`toggle-btn ${transactieType === 'verkoop' ? 'active' : ''}`} onClick={() => setTransactieType('verkoop')}>
+                  Verkoop / Uitgave
+                </button>
+                <button className={`toggle-btn ${transactieType === 'aankoop' ? 'active' : ''}`} onClick={() => setTransactieType('aankoop')}>
+                  Aankoop / Ontvangst
+                </button>
+              </div>
+              <p className="input-hint">
+                {transactieType === 'verkoop' 
+                  ? 'Bijv. verkoop beleggingen, grote aankoop, schenking doen' 
+                  : 'Bijv. bonus, erfenis, dividenduitkering, verkoop woning'}
+              </p>
+            </div>
+            <div className="input-group">
+              <label className="input-label">Bedrag van de transactie</label>
+              <input 
+                type="number" 
+                className="input-field" 
+                value={transactieBedrag} 
+                onChange={e => setTransactieBedrag(Math.max(0, +e.target.value))}
+                min="0"
+              />
+            </div>
+          </div>
+
+          <button className="btn" onClick={() => setShowResults(true)}>Bereken optimale timing →</button>
+
+          {showResults && (
+            <>
+              <div className="result-card" style={{marginTop: 24}}>
+                <div style={{fontSize: 14, opacity: 0.8}}>Je kunt besparen</div>
+                <div className="besparing-groot">{formatCurrency(result.besparing)}</div>
+                <div style={{fontSize: 16}}>
+                  door de {transactieType} <strong>{result.advies === 'voor31dec' ? 'vóór 31 december' : 'ná 1 januari'}</strong> te doen
+                </div>
+              </div>
+
+              <div className="timeline-visual">
+                <div 
+                  className="timeline-date" 
+                  style={result.advies === 'voor31dec' 
+                    ? {border: '3px solid #16a34a', background: '#dcfce7', color: '#16a34a'} 
+                    : {background: '#fee2e2', color: '#dc2626'}
+                  }
+                >
+                  {result.advies === 'voor31dec' && '✓ '}Vóór 31 dec
+                </div>
+                <div className="timeline-arrow">→</div>
+                <div style={{padding: '8px 16px', background: '#1AABA6', color: 'white', borderRadius: 8, fontWeight: 600}}>
+                  1 jan peildatum
+                </div>
+                <div className="timeline-arrow">→</div>
+                <div 
+                  className="timeline-date"
+                  style={result.advies === 'na1jan' 
+                    ? {border: '3px solid #16a34a', background: '#dcfce7', color: '#16a34a'} 
+                    : {background: '#fee2e2', color: '#dc2626'}
+                  }
+                >
+                  {result.advies === 'na1jan' && '✓ '}Ná 1 jan
+                </div>
+              </div>
+
+              <div className="compare-section">
+                <div className={`compare-card ${result.advies === 'voor31dec' ? 'good' : 'bad'}`}>
+                  <div className="compare-title">Transactie vóór 31 dec</div>
+                  <div className="compare-value" style={{color: result.advies === 'voor31dec' ? '#16a34a' : '#dc2626'}}>
+                    {formatCurrency(result.box3Voor31Dec)}
+                  </div>
+                  <div style={{fontSize: 12, color: '#666', marginTop: 4}}>Box 3 belasting</div>
+                  <div style={{fontSize: 11, color: '#999', marginTop: 4}}>
+                    Vermogen op peildatum: {formatCurrency(result.vermogenNa)}
+                  </div>
+                </div>
+                <div className="compare-arrow">VS</div>
+                <div className={`compare-card ${result.advies === 'na1jan' ? 'good' : 'bad'}`}>
+                  <div className="compare-title">Transactie ná 1 jan</div>
+                  <div className="compare-value" style={{color: result.advies === 'na1jan' ? '#16a34a' : '#dc2626'}}>
+                    {formatCurrency(result.box3Na1Jan)}
+                  </div>
+                  <div style={{fontSize: 12, color: '#666', marginTop: 4}}>Box 3 belasting</div>
+                  <div style={{fontSize: 11, color: '#999', marginTop: 4}}>
+                    Vermogen op peildatum: {formatCurrency(result.vermogenVoor)}
+                  </div>
+                </div>
+              </div>
+
+              <div className="warning-card">
+                <h4>⚠️ Let op: Fraus Legis & Peildatumarbitrage</h4>
+                <p>
+                  Als je vermogen kort voor de peildatum verplaatst en direct daarna weer terughaalt, 
+                  kan de Belastingdienst dit aanmerken als misbruik (fraus legis). Er geldt een 
+                  <strong> arbitrageperiode van 3 maanden</strong>. Zorg dat er een zakelijke reden is 
+                  voor de transactie en dat het vermogen niet direct terugkomt. Bij twijfel: raadpleeg 
+                  een fiscalist.
+                </p>
+              </div>
+
+              {!showLeadForm && !submitted && (
+                <div className="card cta-card">
+                  <div style={{fontSize: 32, marginBottom: 8}}>📋</div>
+                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 8, border: 'none', paddingBottom: 0}}>Wil je een complete timing-analyse?</h3>
+                  <p style={{color: '#666', marginBottom: 20}}>Ontvang een rapport met alle mogelijkheden om je Box 3 te optimaliseren rond de jaarwisseling</p>
+                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis analyse →</button>
+                </div>
+              )}
+
+              {showLeadForm && !submitted && (
+                <div className="card cta-card" style={{textAlign: 'left'}}>
+                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 16, border: 'none', paddingBottom: 0}}>Waar mogen we je analyse naartoe sturen?</h3>
+                  <form onSubmit={handleSubmit}>
+                    <input 
+                      type="text" 
+                      className="form-input" 
+                      placeholder="Je naam" 
+                      value={naam} 
+                      onChange={e => setNaam(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="email" 
+                      className="form-input" 
+                      placeholder="je@email.nl" 
+                      value={email} 
+                      onChange={e => setEmail(e.target.value)} 
+                      required 
+                    />
+                    <input 
+                      type="tel" 
+                      className="form-input" 
+                      placeholder="Telefoonnummer (optioneel)" 
+                      value={telefoon} 
+                      onChange={e => setTelefoon(e.target.value)} 
+                    />
+                    <button type="submit" className="btn" disabled={isSubmitting}>
+                      {isSubmitting ? (
+                        <><span className="spinner"></span>Verzenden...</>
+                      ) : (
+                        'Verstuur mijn analyse →'
+                      )}
+                    </button>
+                  </form>
+                  <p className="form-hint">We respecteren je privacy. Geen spam.</p>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="card success-card">
+                  <div style={{fontSize: 48, marginBottom: 16}}>✅</div>
+                  <h3 style={{fontSize: 20, color: '#1AABA6', marginBottom: 8, border: 'none', paddingBottom: 0}}>Je analyse is onderweg!</h3>
+                  <p style={{color: '#666'}}>Check je inbox voor de complete timing-analyse.</p>
+                </div>
+              )}
+
+              <p className="disclaimer">
+                Box 3 belasting wordt geheven over vermogen op peildatum 1 januari. Deze berekening is 
+                vereenvoudigd en gaat uit van het forfaitair rendement voor beleggingen (6%). 
+                Voor spaargeld geldt een lager forfait (ca. 1,28%). De werkelijke belasting hangt af van 
+                je vermogensmix. Sinds 2023 kun je ook kiezen voor heffing op basis van werkelijk rendement 
+                (tegenbewijsregeling). Raadpleeg een fiscalist voor persoonlijk advies.<br/><br/>
+                © Finaforte Financial Planning | www.finaforte.nl
+              </p>
+            </>
+          )}
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
