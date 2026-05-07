@@ -14,6 +14,71 @@
 <body>
 
 <!-- ============================================================ -->
+<!-- LEAD-CAPTURE GATE (vanilla, hooks into FinaforteAccess)       -->
+<!-- ============================================================ -->
+<div id="ff-gate" style="display:none;position:fixed;inset:0;background:#fff;z-index:99999;overflow:auto;font-family:system-ui,-apple-system,sans-serif;">
+  <div style="max-width:460px;margin:0 auto;padding:60px 24px;text-align:center;">
+    <div style="font-size:64px;margin-bottom:16px;opacity:.6">&#128275;</div>
+    <h2 style="font-size:22px;color:#2D2D2D;margin:0 0 8px;">Ontgrendel deze calculator</h2>
+    <p style="color:#666;font-size:16px;margin:0 0 24px;line-height:1.6;">Vul je gegevens in om gratis toegang te krijgen tot deze professionele calculator met PDF-rapport.</p>
+    <form id="ff-gate-form">
+      <input type="text" id="ff-gate-naam" placeholder="Je naam" required style="width:100%;padding:14px;border:2px solid #e5e5e5;border-radius:8px;font-size:16px;margin-bottom:12px;box-sizing:border-box;outline:none;">
+      <input type="email" id="ff-gate-email" placeholder="je@email.nl" required style="width:100%;padding:14px;border:2px solid #e5e5e5;border-radius:8px;font-size:16px;margin-bottom:12px;box-sizing:border-box;outline:none;">
+      <p id="ff-gate-error" style="color:#c53030;font-size:14px;margin:0 0 12px;display:none;"></p>
+      <button type="submit" id="ff-gate-btn" style="width:100%;padding:16px;background:#F28E18;color:white;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Ontgrendel calculator &rarr;</button>
+    </form>
+    <p style="color:#999;font-size:12px;margin-top:16px;">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
+    <div style="margin-top:24px;padding-top:24px;border-top:1px solid #e5e5e5;">
+      <p style="color:#999;font-size:13px;margin:0;">Al een toegangslink ontvangen?</p>
+      <p style="color:#999;font-size:13px;margin:4px 0 0;">Plak de link in je adresbalk om direct toegang te krijgen.</p>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function unlocked(){
+    return (window.FinaforteAccess && window.FinaforteAccess.isValid)
+      || sessionStorage.getItem('ff_email_access');
+  }
+  function init(){
+    if (unlocked()) return;
+    var gate = document.getElementById('ff-gate');
+    gate.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('ff-gate-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      var naam = document.getElementById('ff-gate-naam').value.trim();
+      var email = document.getElementById('ff-gate-email').value.trim();
+      if (!naam || !email) return;
+      var btn = document.getElementById('ff-gate-btn');
+      btn.disabled = true; btn.textContent = 'Even geduld...';
+      var fd = new FormData();
+      fd.append('_subject', 'Nieuwe Calculator Lead: ' + naam);
+      fd.append('_template', 'table');
+      fd.append('_captcha', 'false');
+      fd.append('Naam', naam);
+      fd.append('Email', email);
+      fd.append('Datum', new Date().toLocaleString('nl-NL'));
+      fd.append('Pagina', window.location.href);
+      fd.append('Calculator', document.title || 'Box 3 Impact 2028');
+      function done(){
+        sessionStorage.setItem('ff_email_access', email);
+        window.location.reload();
+      }
+      fetch('https://formsubmit.co/ajax/info@finaforte.nl', {
+        method:'POST', body: fd, headers:{ 'Accept':'application/json' }
+      }).then(done).catch(done);
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+<!-- ============================================================ -->
 <!-- BEGIN FF-BOX3 — copy van hier...                               -->
 <!-- ============================================================ -->
 
