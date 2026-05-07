@@ -48,41 +48,33 @@ Dit commit + pusht je wijzigingen naar GitHub. cPanel pikt het automatisch op (n
 ## Workflow
 
 ```
-┌──────────┐     ./deploy.sh      ┌──────────┐    auto-pull    ┌──────────┐
-│  LOKAAL  │ ───────────────────▶ │  GITHUB  │ ───────────────▶│  cPANEL  │
-│  (Mac)   │                      │   main   │                 │  (live)  │
-└──────────┘                      └──────────┘                 └──────────┘
+┌──────────┐   ./deploy.sh   ┌──────────┐  GitHub Actions  ┌──────────┐
+│  LOKAAL  │ ───────────────▶│  GITHUB  │ ────FTP sync────▶│  cPANEL  │
+│  (Mac)   │                 │   main   │                  │  (live)  │
+└──────────┘                 └──────────┘                  └──────────┘
 ```
 
 1. Edit lokaal in je editor
 2. `./dev.sh` → preview op `localhost:8000`
 3. `./deploy.sh "boodschap"` → naar GitHub
-4. cPanel haalt automatisch op → live binnen seconden
+4. GitHub Actions FTP-synct naar cPanel → live binnen ±1 minuut
+
+Status van elke deploy: https://github.com/Damir501/finaforte-masterplan-landingpage/actions
 
 ---
 
-## Eenmalige cPanel setup
+## Eenmalige setup — GitHub Secrets voor FTP
 
-(Deze stappen zijn nodig voor de automatische deploy. Eenmalig doen.)
+Deze drie secrets zet je één keer in GitHub:
+`Settings → Secrets and variables → Actions → New repository secret`
 
-### Stap 1 — Live site naar GitHub syncen
-Voordat we auto-deploy aanzetten moet GitHub de **huidige live versie** bevatten, anders overschrijft de eerste deploy de live site met oude code.
+| Secret naam     | Waarde                                                       |
+|-----------------|--------------------------------------------------------------|
+| `FTP_SERVER`    | FTP-host uit cPanel (bijv. `masterplan.finaforte.nl` of `ftp.finaforte.nl`) |
+| `FTP_USERNAME`  | FTP-gebruikersnaam (cPanel → FTP Accounts)                   |
+| `FTP_PASSWORD`  | FTP-wachtwoord                                                |
 
-### Stap 2 — cPanel Git Version Control aanzetten
-1. Login cPanel → "Git™ Version Control"
-2. Klik "Create"
-3. Clone URL: `https://github.com/Damir501/finaforte-masterplan-landingpage.git`
-4. Repository Path: `/home/masterplanfinafo/repositories/finaforte-masterplan-landingpage`
-5. Repository Name: `Masterplan Landingpage`
-6. Klik "Create"
-
-### Stap 3 — Eerste deploy
-1. In Git Version Control → klik op de repo
-2. Tab "Pull or Deploy"
-3. Klik "Update from Remote"
-4. Klik "Deploy HEAD Commit"
-
-Klaar — de live site staat nu klaar voor automatische updates bij elke `./deploy.sh`.
+De workflow staat in `.github/workflows/deploy.yml` en uploadt alleen gewijzigde bestanden via FTPS naar `/public_html/`.
 
 ---
 
