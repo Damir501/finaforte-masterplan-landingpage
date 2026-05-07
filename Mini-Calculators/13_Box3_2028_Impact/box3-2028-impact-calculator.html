@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box 3 Impact Tool 2028 — Embed Preview</title>
+<style>
+  /* Demo page only — NIET kopiëren naar je landingspagina */
+  body { margin: 0; font-family: system-ui, sans-serif; background: #eef2f3; padding: 40px 20px; }
+  .demo-note { max-width: 880px; margin: 0 auto 24px; padding: 16px 20px; background: #fff8e6; border-left: 4px solid #F28E18; border-radius: 8px; font-size: 14px; color: #5a4400; }
+  .demo-note code { background: #f3e5c4; padding: 2px 6px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="demo-note">
+  <strong>Embed preview.</strong> Alles binnen <code>&lt;!-- BEGIN/END FF-BOX3 --&gt;</code> markers hieronder is wat je in je landingspagina plakt. Werkt zonder externe dependencies. Tracking events worden automatisch gepusht naar GTM (<code>dataLayer</code>), GA4 (<code>gtag</code>), Plausible en Matomo als die op de pagina aanwezig zijn.
+</div>
+
+<!-- ============================================================ -->
+<!-- BEGIN FF-BOX3 — copy van hier...                               -->
+<!-- ============================================================ -->
+
+<!-- SECTIE 1/3 — STYLES (in <head> of bovenaan de pagina) -->
+<style>
+  .ff-box3 {
+    --ff-mint: #00A2AA;
+    --ff-darkgreen: #00292B;
+    --ff-softorange: #F6A75B;
+    --ff-orange: #F28E18;
+    --ff-white: #FFFFFF;
+    --ff-darkgrey: #2D2D2D;
+    --ff-lightbg: #F5F9FA;
+    --ff-border: #E2EBEC;
+    --ff-font: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --ff-font-display: 'Arvo', Georgia, serif;
+    font-family: var(--ff-font);
+    color: var(--ff-darkgrey);
+    line-height: 1.55;
+    max-width: 880px;
+    margin: 0 auto;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+  }
+  .ff-box3 *, .ff-box3 *::before, .ff-box3 *::after { box-sizing: border-box; }
+
+  .ff-box3 .ff-header {
+    background: var(--ff-darkgreen);
+    color: var(--ff-white);
+    padding: 40px 32px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ff-box3 .ff-header::after {
+    content: ""; position: absolute; right: -40px; top: -40px;
+    width: 200px; height: 200px; background: var(--ff-mint);
+    opacity: 0.15; border-radius: 50%;
+  }
+  .ff-box3 .ff-eyebrow {
+    color: var(--ff-softorange); font-weight: 700; font-size: 13px;
+    letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px;
+    position: relative; z-index: 1;
+  }
+  .ff-box3 .ff-h1 {
+    font-size: 36px; font-weight: 800; line-height: 1.1; margin: 0 0 12px;
+    color: var(--ff-white); position: relative; z-index: 1;
+  }
+  .ff-box3 .ff-h1 span { color: var(--ff-mint); }
+  .ff-box3 .ff-header p {
+    font-size: 16px; color: rgba(255,255,255,0.85); max-width: 560px;
+    margin: 0; position: relative; z-index: 1;
+  }
+
+  .ff-box3 .ff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 720px) { .ff-box3 .ff-grid { grid-template-columns: 1fr; } }
+
+  .ff-box3 .ff-card {
+    background: var(--ff-white); border: 1px solid var(--ff-border);
+    border-radius: 16px; padding: 28px;
+  }
+  .ff-box3 .ff-h2 {
+    font-size: 18px; font-weight: 700; color: var(--ff-darkgreen);
+    margin: 0 0 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .ff-box3 .ff-h2::before {
+    content: ""; width: 4px; height: 22px;
+    background: var(--ff-mint); border-radius: 2px;
+  }
+
+  .ff-box3 .ff-field { margin-bottom: 20px; }
+  .ff-box3 .ff-field label {
+    display: block; font-size: 14px; font-weight: 600;
+    color: var(--ff-darkgrey); margin-bottom: 8px;
+  }
+  .ff-box3 .ff-hint {
+    display: block; font-size: 12px; color: #6b7a7c;
+    font-weight: 400; margin-top: 4px;
+  }
+  .ff-box3 .ff-input-row {
+    display: flex; align-items: center;
+    border: 2px solid var(--ff-border); border-radius: 10px;
+    overflow: hidden; transition: border-color 0.15s;
+  }
+  .ff-box3 .ff-input-row:focus-within { border-color: var(--ff-mint); }
+  .ff-box3 .ff-prefix, .ff-box3 .ff-suffix {
+    background: var(--ff-lightbg); color: var(--ff-darkgreen);
+    font-weight: 700; padding: 12px 14px; font-size: 16px;
+  }
+  .ff-box3 .ff-input-row input {
+    flex: 1; border: 0; outline: 0; padding: 12px 14px;
+    font-size: 16px; font-family: inherit; background: transparent;
+    color: var(--ff-darkgrey); width: 100%;
+  }
+
+  .ff-box3 .ff-toggle {
+    display: flex; background: var(--ff-lightbg);
+    border-radius: 10px; padding: 4px; gap: 4px;
+  }
+  .ff-box3 .ff-toggle button {
+    flex: 1; padding: 10px; border: 0; background: transparent;
+    border-radius: 8px; font-family: inherit; font-size: 14px;
+    font-weight: 600; color: var(--ff-darkgrey);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .ff-box3 .ff-toggle button.is-active {
+    background: var(--ff-white); color: var(--ff-mint);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .ff-box3 .ff-result {
+    background: var(--ff-darkgreen); color: var(--ff-white); border: 0;
+  }
+  .ff-box3 .ff-result .ff-h2 { color: var(--ff-white); }
+  .ff-box3 .ff-result .ff-h2::before { background: var(--ff-softorange); }
+
+  .ff-box3 .ff-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .ff-box3 .ff-row:last-of-type { border-bottom: 0; }
+  .ff-box3 .ff-row-label { font-size: 14px; color: rgba(255,255,255,0.75); }
+  .ff-box3 .ff-row-value {
+    font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums;
+  }
+  .ff-box3 .ff-row-value.is-mint { color: var(--ff-mint); }
+  .ff-box3 .ff-row-value.is-orange { color: var(--ff-softorange); }
+
+  .ff-box3 .ff-delta {
+    margin-top: 18px;
+    background: rgba(246,167,91,0.12);
+    border: 1px solid rgba(246,167,91,0.3);
+    border-radius: 10px; padding: 16px;
+  }
+  .ff-box3 .ff-delta-lbl {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--ff-softorange); font-weight: 700; margin-bottom: 6px;
+  }
+  .ff-box3 .ff-delta-val {
+    font-size: 28px; font-weight: 800; color: var(--ff-white);
+    font-variant-numeric: tabular-nums;
+  }
+  .ff-box3 .ff-delta-sub {
+    font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px;
+  }
+
+  .ff-box3 .ff-bars { margin-top: 20px; }
+  .ff-box3 .ff-bar {
+    height: 36px; background: rgba(255,255,255,0.08);
+    border-radius: 8px; margin-bottom: 10px;
+    position: relative; overflow: hidden;
+  }
+  .ff-box3 .ff-bar-fill {
+    height: 100%; border-radius: 8px;
+    transition: width 0.4s ease;
+    display: flex; align-items: center; padding: 0 12px;
+    font-size: 13px; font-weight: 700; color: var(--ff-white);
+    white-space: nowrap;
+  }
+  .ff-box3 .ff-bar-fill.is-mint { background: var(--ff-mint); }
+  .ff-box3 .ff-bar-fill.is-orange { background: var(--ff-orange); }
+  .ff-box3 .ff-bar-label {
+    font-size: 12px; color: rgba(255,255,255,0.7); margin-bottom: 4px;
+  }
+
+  .ff-box3 .ff-breakeven {
+    background: var(--ff-lightbg);
+    border-left: 4px solid var(--ff-mint);
+    padding: 18px 20px; border-radius: 8px;
+    margin-top: 20px; font-size: 14px;
+  }
+  .ff-box3 .ff-breakeven strong {
+    color: var(--ff-darkgreen); font-size: 18px;
+    display: block; margin-top: 4px;
+  }
+
+  .ff-box3 .ff-cta {
+    background: linear-gradient(135deg, var(--ff-mint) 0%, #008c93 100%);
+    color: var(--ff-white); border-radius: 16px;
+    padding: 32px; margin-top: 24px; text-align: center;
+  }
+  .ff-box3 .ff-cta h3 {
+    font-family: var(--ff-font-display); font-size: 22px;
+    margin: 0 0 8px; color: var(--ff-white);
+  }
+  .ff-box3 .ff-cta p {
+    font-size: 15px; opacity: 0.9; margin: 0 0 20px;
+    max-width: 440px; margin-left: auto; margin-right: auto;
+    color: var(--ff-white);
+  }
+  .ff-box3 .ff-cta a {
+    display: inline-block; background: var(--ff-white);
+    color: var(--ff-mint); text-decoration: none;
+    font-weight: 700; padding: 14px 28px; border-radius: 10px;
+    transition: transform 0.15s;
+  }
+  .ff-box3 .ff-cta a:hover { transform: translateY(-2px); }
+
+  .ff-box3 .ff-disclaimer {
+    margin-top: 28px; font-size: 12px; color: #6b7a7c;
+    text-align: center; line-height: 1.6;
+  }
+</style>
+
+<!-- SECTIE 2/3 — HTML (op de plek waar de tool moet komen) -->
+<div class="ff-box3" data-ff-tool="box3-2028">
+
+  <div class="ff-header">
+    <div class="ff-eyebrow">Box 3 — Wetsvoorstel 2028</div>
+    <h2 class="ff-h1">Wat kost het nieuwe<br>Box 3 stelsel <span>jou?</span></h2>
+    <p>Reken in 30 seconden uit hoeveel meer (of minder) belasting je betaalt onder de vermogensaanwasbelasting per 2028 — vergeleken met het huidige stelsel.</p>
+  </div>
+
+  <div class="ff-grid">
+    <div class="ff-card">
+      <h3 class="ff-h2">Jouw situatie</h3>
+
+      <div class="ff-field">
+        <label for="ff-vermogen">Belegd vermogen
+          <span class="ff-hint">Beleggingen, crypto, tweede woning — Box 3 grondslag</span>
+        </label>
+        <div class="ff-input-row">
+          <span class="ff-prefix">€</span>
+          <input id="ff-vermogen" type="number" min="0" step="1000" value="100000" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="ff-field">
+        <label for="ff-rendement">Verwacht jaarrendement
+          <span class="ff-hint">S&amp;P 500 doet historisch ~10% per jaar</span>
+        </label>
+        <div class="ff-input-row">
+          <input id="ff-rendement" type="number" min="0" max="100" step="0.1" value="7" inputmode="decimal">
+          <span class="ff-suffix">%</span>
+        </div>
+      </div>
+
+      <div class="ff-field">
+        <label>Fiscaal partner</label>
+        <div class="ff-toggle" data-ff-partner>
+          <button type="button" data-val="0" class="is-active">Nee</button>
+          <button type="button" data-val="1">Ja</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ff-card ff-result">
+      <h3 class="ff-h2">Belastingdruk</h3>
+
+      <div class="ff-row">
+        <span class="ff-row-label">Huidig stelsel (2026)</span>
+        <span class="ff-row-value is-mint" data-ff-out="huidig">€0</span>
+      </div>
+      <div class="ff-row">
+        <span class="ff-row-label">Nieuw stelsel (2028)</span>
+        <span class="ff-row-value is-orange" data-ff-out="nieuw">€0</span>
+      </div>
+
+      <div class="ff-delta">
+        <div class="ff-delta-lbl" data-ff-out="delta-label">Verschil</div>
+        <div class="ff-delta-val" data-ff-out="delta">€0</div>
+        <div class="ff-delta-sub" data-ff-out="delta-sub">per jaar</div>
+      </div>
+
+      <div class="ff-bars">
+        <div class="ff-bar-label">Huidig stelsel</div>
+        <div class="ff-bar"><div class="ff-bar-fill is-mint" data-ff-out="bar-huidig" style="width:0%">€0</div></div>
+        <div class="ff-bar-label">Nieuw stelsel (2028)</div>
+        <div class="ff-bar"><div class="ff-bar-fill is-orange" data-ff-out="bar-nieuw" style="width:0%">€0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ff-card ff-breakeven">
+    <div>Vanaf welk rendement betaal je in 2028 méér dan nu?</div>
+    <strong data-ff-out="breakeven">—</strong>
+    <div style="font-size:12px;color:#6b7a7c;margin-top:6px;">Boven dit percentage val je slechter uit onder het nieuwe stelsel.</div>
+  </div>
+
+  <div class="ff-cta">
+    <h3>Wil je weten wat dit voor jouw plan betekent?</h3>
+    <p>Wij brengen je hele financiële plaatje in kaart — Box 3, BV-structuur, pensioen en hypotheek — en laten zien waar de optimalisatiekansen liggen.</p>
+    <a href="https://finaforte.nl/contact" data-ff-cta>Plan een gratis adviesgesprek →</a>
+  </div>
+
+  <p class="ff-disclaimer">
+    Indicatieve berekening op basis van het wetsvoorstel Wet werkelijk rendement Box 3 en het Box 3 forfait beleggingen 2026 (6,00%) met tarief 36%. Heffingsvrij vermogen 2026: €59.357 p.p. (€118.714 met fiscaal partner) — vrijstelling rendement 2028: €1.800 p.p. Geen rekening gehouden met spaargeld, schulden of tweede woning eigen gebruik. Geen advies — vraag een persoonlijke berekening op.
+  </p>
+
+</div>
+
+<!-- SECTIE 3/3 — SCRIPT (vlak boven </body>) -->
+<script>
+(function() {
+  'use strict';
+
+  var root = document.querySelector('[data-ff-tool="box3-2028"]');
+  if (!root) return;
+
+  // ---------- Constants ----------
+  var FORFAIT_BELEGGINGEN = 0.06;
+  var TARIEF = 0.36;
+  var VRIJSTELLING_HUIDIG_PP = 59357;
+  var VRIJSTELLING_NIEUW_PP = 1800;
+
+  // ---------- Helpers ----------
+  function $(sel, ctx) { return (ctx || root).querySelector(sel); }
+  function $$(sel, ctx) { return Array.prototype.slice.call((ctx || root).querySelectorAll(sel)); }
+  function out(name) { return $('[data-ff-out="' + name + '"]'); }
+  function fmt(n) { return '€' + Math.round(n).toLocaleString('nl-NL'); }
+  function pct(n) { return (n * 100).toFixed(2).replace('.', ',') + '%'; }
+  function vermogenBucket(v) {
+    if (v < 50000) return '0-50k';
+    if (v < 100000) return '50-100k';
+    if (v < 250000) return '100-250k';
+    if (v < 500000) return '250-500k';
+    if (v < 1000000) return '500k-1m';
+    return '1m+';
+  }
+  function rendementBucket(r) {
+    if (r < 2) return '<2%';
+    if (r < 4) return '2-4%';
+    if (r < 6) return '4-6%';
+    if (r < 8) return '6-8%';
+    if (r < 12) return '8-12%';
+    return '12%+';
+  }
+
+  // ---------- Tracking ----------
+  // Detects GTM (dataLayer), GA4 (gtag), Plausible, Matomo. No-op if none present.
+  function track(name, props) {
+    props = props || {};
+    try {
+      if (window.dataLayer && typeof window.dataLayer.push === 'function') {
+        window.dataLayer.push(Object.assign({ event: name }, props));
+      }
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', name, props);
+      }
+      if (typeof window.plausible === 'function') {
+        window.plausible(name, { props: props });
+      }
+      if (window._paq && typeof window._paq.push === 'function') {
+        window._paq.push(['trackEvent', 'Box3Tool', name, JSON.stringify(props)]);
+      }
+    } catch (e) { /* swallow tracking errors */ }
+  }
+
+  var trackedLoaded = false;
+  var trackedFirstCalc = false;
+  var calcDebounce = null;
+
+  // ---------- Calculation ----------
+  function calc() {
+    var V = Math.max(0, parseFloat($('#ff-vermogen').value) || 0);
+    var rPct = Math.max(0, parseFloat($('#ff-rendement').value) || 0);
+    var r = rPct / 100;
+    var partner = $('[data-ff-partner] button.is-active').dataset.val === '1';
+
+    var vrijHuidig = VRIJSTELLING_HUIDIG_PP * (partner ? 2 : 1);
+    var vrijNieuw = VRIJSTELLING_NIEUW_PP * (partner ? 2 : 1);
+
+    var grondslagHuidig = Math.max(0, V - vrijHuidig);
+    var belastingHuidig = grondslagHuidig * FORFAIT_BELEGGINGEN * TARIEF;
+
+    var werkelijkRendement = V * r;
+    var grondslagNieuw = Math.max(0, werkelijkRendement - vrijNieuw);
+    var belastingNieuw = grondslagNieuw * TARIEF;
+
+    var delta = belastingNieuw - belastingHuidig;
+
+    out('huidig').textContent = fmt(belastingHuidig);
+    out('nieuw').textContent = fmt(belastingNieuw);
+
+    var deltaEl = out('delta');
+    var deltaLbl = out('delta-label');
+    var deltaSub = out('delta-sub');
+    if (delta > 0) {
+      deltaEl.textContent = '+ ' + fmt(delta);
+      deltaLbl.textContent = 'Je betaalt méér in 2028';
+      deltaSub.textContent = 'per jaar — over rendement dat nog niet op je rekening staat';
+    } else if (delta < 0) {
+      deltaEl.textContent = '− ' + fmt(Math.abs(delta));
+      deltaLbl.textContent = 'Je betaalt minder in 2028';
+      deltaSub.textContent = 'per jaar — bij dit verwachte rendement';
+    } else {
+      deltaEl.textContent = '€0';
+      deltaLbl.textContent = 'Geen verschil';
+      deltaSub.textContent = 'Beide stelsels komen op hetzelfde uit';
+    }
+
+    var max = Math.max(belastingHuidig, belastingNieuw, 1);
+    var bH = out('bar-huidig'), bN = out('bar-nieuw');
+    bH.style.width = Math.max(8, (belastingHuidig / max) * 100) + '%';
+    bN.style.width = Math.max(8, (belastingNieuw / max) * 100) + '%';
+    bH.textContent = fmt(belastingHuidig);
+    bN.textContent = fmt(belastingNieuw);
+
+    var beEl = out('breakeven');
+    if (V === 0) {
+      beEl.textContent = '—';
+    } else if (V <= vrijHuidig) {
+      beEl.textContent = pct(vrijNieuw / V) + ' rendement';
+    } else {
+      var breakevenR = ((V - vrijHuidig) * FORFAIT_BELEGGINGEN + vrijNieuw) / V;
+      beEl.textContent = pct(breakevenR) + ' rendement';
+    }
+
+    // Debounced tracking — alleen wanneer waarden settelen, geen PII
+    if (calcDebounce) clearTimeout(calcDebounce);
+    calcDebounce = setTimeout(function() {
+      var props = {
+        vermogen_range: vermogenBucket(V),
+        rendement_range: rendementBucket(rPct),
+        partner: partner,
+        delta_sign: delta > 0 ? 'meer' : (delta < 0 ? 'minder' : 'gelijk')
+      };
+      if (!trackedFirstCalc) {
+        trackedFirstCalc = true;
+        track('box3_tool_first_calc', props);
+      } else {
+        track('box3_tool_calculated', props);
+      }
+    }, 1500);
+  }
+
+  // ---------- Events ----------
+  $('#ff-vermogen').addEventListener('input', calc);
+  $('#ff-rendement').addEventListener('input', calc);
+
+  $$('[data-ff-partner] button').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      $$('[data-ff-partner] button').forEach(function(b) { b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      calc();
+      track('box3_tool_partner_toggle', { partner: btn.dataset.val === '1' });
+    });
+  });
+
+  var ctaEl = $('[data-ff-cta]');
+  if (ctaEl) {
+    ctaEl.addEventListener('click', function() {
+      track('box3_tool_cta_click', {
+        href: ctaEl.getAttribute('href') || ''
+      });
+    });
+  }
+
+  // Initial render + load tracking
+  calc();
+  if (!trackedLoaded) {
+    trackedLoaded = true;
+    track('box3_tool_loaded', {});
+  }
+})();
+</script>
+
+<!-- ============================================================ -->
+<!-- END FF-BOX3 — ...tot hier kopiëren                             -->
+<!-- ============================================================ -->
+
+</body>
+</html>
