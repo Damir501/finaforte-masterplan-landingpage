@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files (NOOIT credentials committen)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# OS
+Thumbs.db

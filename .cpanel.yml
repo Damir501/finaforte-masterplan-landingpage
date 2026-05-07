@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/masterplanfinafo/public_html
+    - /bin/cp -R index.html $DEPLOYPATH/
+    - /bin/cp -R Mini-Calculators $DEPLOYPATH/
+    - /bin/cp -R shared $DEPLOYPATH/ 2>/dev/null || true
+    - /bin/cp -R tsolingkas $DEPLOYPATH/ 2>/dev/null || true
