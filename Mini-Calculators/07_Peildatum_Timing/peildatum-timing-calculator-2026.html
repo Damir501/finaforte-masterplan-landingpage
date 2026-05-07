@@ -8,6 +8,11 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="/shared/jspdf.umd.min.js"></script>
+  <script src="/shared/jspdf.plugin.autotable.min.js"></script>
+  <script src="/shared/pdf-generator.js"></script>
+  <script src="/shared/token-guard.js"></script>
+  <link rel="stylesheet" href="/shared/access-gate.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
@@ -49,20 +54,16 @@
     .timeline-date.dec { background: #fee2e2; color: #dc2626; }
     .timeline-date.jan { background: #dcfce7; color: #16a34a; }
     .timeline-arrow { font-size: 24px; color: #9ca3af; }
-    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
-    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
-    .form-input:focus { outline: none; border-color: #1AABA6; }
-    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
-    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
     .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
     .params-info strong { color: #1AABA6; }
-    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @media (max-width: 600px) { 
-      .input-row { grid-template-columns: 1fr; } 
-      .compare-section { grid-template-columns: 1fr; } 
-      .compare-arrow { transform: rotate(90deg); } 
+    .btn-pdf { width: 100%; padding: 14px; background: #F28E18; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+    .btn-pdf:hover { background: #d97a0e; }
+    .btn-pdf:disabled { background: #ccc; cursor: not-allowed; }
+    @media (max-width: 600px) {
+      .input-row { grid-template-columns: 1fr; }
+      .compare-section { grid-template-columns: 1fr; }
+      .compare-arrow { transform: rotate(90deg); }
       .timeline-visual { flex-direction: column; }
       .timeline-arrow { transform: rotate(90deg); }
     }
@@ -72,16 +73,6 @@
   <div id="root"></div>
   <script type="text/babel">
             
-    // ============================================
-    // FINAFORTE LEAD CAPTURE CONFIGURATIE
-    // ============================================
-    const LEAD_CONFIG = {
-      emailTo: 'd.tvrtkovic@finaforte.nl',
-      calculatorName: 'Peildatum Timing'
-    };
-    // ============================================
-// ============================================================
-
     // FISCALE PARAMETERS 2026 - Actuele waarden (na Belastingplan 2026 wijzigingen)
     const PARAMS = {
       heffingvrijAlleen: 59357,      // Was: 57684 - Gecorrigeerd naar 2026
@@ -107,12 +98,7 @@
       const [transactieType, setTransactieType] = React.useState('verkoop');
       const [partner, setPartner] = React.useState(true);
       const [showResults, setShowResults] = React.useState(false);
-      const [showLeadForm, setShowLeadForm] = React.useState(false);
-      const [naam, setNaam] = React.useState('');
-      const [email, setEmail] = React.useState('');
-      const [telefoon, setTelefoon] = React.useState('');
-      const [submitted, setSubmitted] = React.useState(false);
-      const [isSubmitting, setIsSubmitting] = React.useState(false);
+      const [pdfLoading, setPdfLoading] = React.useState(false);
 
       // Input validatie
       const validVermogen = Math.max(0, huidigVermogen || 0);
@@ -159,49 +145,47 @@
         };
       }, [validVermogen, validTransactie, transactieType, partner]);
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        const formData = new FormData();
-
-        // Contactgegevens
-        formData.append('naam', naam);
-        formData.append('email', email);
-        formData.append('telefoon', telefoon);
-
-        // Calculator inputs
-        formData.append('huidig_vermogen', validVermogen);
-        formData.append('transactie_bedrag', validTransactie);
-        formData.append('transactie_type', transactieType);
-        formData.append('fiscaal_partner', partner ? 'Ja' : 'Nee');
-
-        // Resultaten - calculator result fields
-        formData.append('box3_voor_31dec', result.box3Voor31Dec);
-        formData.append('box3_na_1jan', result.box3Na1Jan);
-        formData.append('besparing', result.besparing);
-        formData.append('advies', result.advies === 'voor31dec' ? 'Voor 31 december' : 'Na 1 januari');
-        formData.append('vermogen_na', result.vermogenNa);
-        formData.append('vermogen_voor', result.vermogenVoor);
-
-        // Metadata
-        formData.append('bron', 'Peildatum & Timing Calculator 2026');
-        formData.append('datum', new Date().toISOString());
-        formData.append('pagina_url', window.location.href);
-
+      const handleDownloadPDF = async () => {
+        setPdfLoading(true);
         try {
-          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
-            method: 'POST',
-            body: formData,
+          const adviesText = result.advies === 'voor31dec' ? 'voor 31 december' : 'na 1 januari';
+          await window.FinafortePDF.generate({
+            calculatorName: 'Peildatum & Timing Rapport',
+            subtitle: `Box 3 optimalisatie door slim timen van ${transactieType}`,
+            inputSummary: `Vermogen: ${formatCurrency(validVermogen)} | ${transactieType === 'verkoop' ? 'Verkoop' : 'Aankoop'}: ${formatCurrency(validTransactie)} | ${partner ? 'Met partner' : 'Alleenstaand'}`,
+            keyMetrics: [
+              { label: 'Besparing', value: formatCurrency(result.besparing), sub: `Door ${adviesText} te handelen` },
+              { label: 'Box 3 voor 31 dec', value: formatCurrency(result.box3Voor31Dec), sub: `Vermogen: ${formatCurrency(result.vermogenNa)}` },
+              { label: 'Box 3 na 1 jan', value: formatCurrency(result.box3Na1Jan), sub: `Vermogen: ${formatCurrency(result.vermogenVoor)}` },
+              { label: 'Advies', value: adviesText.charAt(0).toUpperCase() + adviesText.slice(1), sub: `Optimale timing voor ${transactieType}` },
+            ],
+            table: {
+              headers: ['Scenario', 'Vermogen peildatum', 'Box 3 belasting'],
+              rows: [
+                ['Huidig vermogen', formatCurrency(result.vermogenVoor), '—'],
+                [`Transactie (${transactieType})`, formatCurrency(validTransactie), '—'],
+                ['Voor 31 december', formatCurrency(result.vermogenNa), formatCurrency(result.box3Voor31Dec)],
+                ['Na 1 januari', formatCurrency(result.vermogenVoor), formatCurrency(result.box3Na1Jan)],
+                ['Verschil / besparing', '—', formatCurrency(result.besparing)],
+              ],
+              negativeRows: [2, 3],
+              highlightRows: [4],
+            },
+            highlights: [
+              { title: 'Optimale timing', text: `Voer de ${transactieType} ${adviesText} uit om ${formatCurrency(result.besparing)} Box 3 belasting te besparen.` },
+              { title: 'Peildatum 1 januari', text: 'Box 3 belasting wordt berekend over je vermogen op 1 januari. Timing van transacties kan het verschil maken.' },
+              { title: 'Let op fraus legis', text: 'Vermogen kort voor peildatum verplaatsen en direct terugzetten kan als misbruik worden aangemerkt. Houd minimaal 3 maanden aan.' },
+              { title: 'Tegenbewijsregeling', text: 'Sinds 2023 kun je kiezen voor heffing op basis van werkelijk rendement als dat lager is dan het forfait.' },
+            ],
           });
-          setSubmitted(true);
-        } catch (error) {
-          console.error('FormSubmit error:', error);
-          setSubmitted(true);
-        } finally {
-          setIsSubmitting(false);
-        }
+        } catch (err) { console.error('PDF error:', err); }
+        setPdfLoading(false);
       };
+
+      // Token toegangscontrole
+      if (!window.FinaforteAccess || !window.FinaforteAccess.isValid) {
+        return React.createElement(window.FinaforteLockedState);
+      }
 
       return (
         <div className="container">
@@ -215,11 +199,12 @@
             <h3>💰 Huidige Situatie</h3>
             <div className="input-group">
               <label className="input-label">Huidig Box 3 vermogen (peildatum 1 jan)</label>
-              <input 
-                type="number" 
-                className="input-field" 
-                value={huidigVermogen} 
+              <input
+                type="text" inputMode="numeric"
+                className="input-field"
+                value={huidigVermogen}
                 onChange={e => setHuidigVermogen(Math.max(0, +e.target.value))}
+                onFocus={(e) => e.target.select()}
                 min="0"
               />
               <p className="input-hint">Spaargeld + beleggingen + crypto + vastgoed Box 3</p>
@@ -260,11 +245,12 @@
             </div>
             <div className="input-group">
               <label className="input-label">Bedrag van de transactie</label>
-              <input 
-                type="number" 
-                className="input-field" 
-                value={transactieBedrag} 
+              <input
+                type="text" inputMode="numeric"
+                className="input-field"
+                value={transactieBedrag}
                 onChange={e => setTransactieBedrag(Math.max(0, +e.target.value))}
+                onFocus={(e) => e.target.select()}
                 min="0"
               />
             </div>
@@ -343,61 +329,15 @@
                 </p>
               </div>
 
-              {!showLeadForm && !submitted && (
-                <div className="card cta-card">
-                  <div style={{fontSize: 32, marginBottom: 8}}>📋</div>
-                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 8, border: 'none', paddingBottom: 0}}>Wil je een complete timing-analyse?</h3>
-                  <p style={{color: '#666', marginBottom: 20}}>Ontvang een rapport met alle mogelijkheden om je Box 3 te optimaliseren rond de jaarwisseling</p>
-                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis analyse →</button>
-                </div>
-              )}
+              <div className="card" style={{textAlign: 'center', border: '2px solid #F28E18'}}>
+                <div style={{fontSize: '32px', marginBottom: '8px'}}>📥</div>
+                <h3 style={{fontSize: '20px', color: '#333', marginBottom: '8px', border: 'none', paddingBottom: 0}}>Download je persoonlijke rapport</h3>
+                <p style={{color: '#666', marginBottom: '16px'}}>Ontvang direct een PDF met jouw berekeningen en optimalisatieadvies</p>
+                <button className="btn-pdf" style={{width: 'auto', padding: '14px 32px', display: 'inline-block'}} onClick={handleDownloadPDF} disabled={pdfLoading}>
+                  {pdfLoading ? 'PDF genereren...' : 'Download PDF Rapport →'}
+                </button>
+              </div>
 
-              {showLeadForm && !submitted && (
-                <div className="card cta-card" style={{textAlign: 'left'}}>
-                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 16, border: 'none', paddingBottom: 0}}>Waar mogen we je analyse naartoe sturen?</h3>
-                  <form onSubmit={handleSubmit}>
-                    <input 
-                      type="text" 
-                      className="form-input" 
-                      placeholder="Je naam" 
-                      value={naam} 
-                      onChange={e => setNaam(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="email" 
-                      className="form-input" 
-                      placeholder="je@email.nl" 
-                      value={email} 
-                      onChange={e => setEmail(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="tel" 
-                      className="form-input" 
-                      placeholder="Telefoonnummer (optioneel)" 
-                      value={telefoon} 
-                      onChange={e => setTelefoon(e.target.value)} 
-                    />
-                    <button type="submit" className="btn" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <><span className="spinner"></span>Verzenden...</>
-                      ) : (
-                        'Verstuur mijn analyse →'
-                      )}
-                    </button>
-                  </form>
-                  <p className="form-hint">We respecteren je privacy. Geen spam.</p>
-                </div>
-              )}
-
-              {submitted && (
-                <div className="card success-card">
-                  <div style={{fontSize: 48, marginBottom: 16}}>✅</div>
-                  <h3 style={{fontSize: 20, color: '#1AABA6', marginBottom: 8, border: 'none', paddingBottom: 0}}>Je analyse is onderweg!</h3>
-                  <p style={{color: '#666'}}>Check je inbox voor de complete timing-analyse.</p>
-                </div>
-              )}
 
               <p className="disclaimer">
                 Box 3 belasting wordt geheven over vermogen op peildatum 1 januari. Deze berekening is 

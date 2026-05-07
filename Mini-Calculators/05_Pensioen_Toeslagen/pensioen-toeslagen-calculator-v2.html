@@ -8,6 +8,11 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="/shared/jspdf.umd.min.js"></script>
+  <script src="/shared/jspdf.plugin.autotable.min.js"></script>
+  <script src="/shared/pdf-generator.js"></script>
+  <script src="/shared/token-guard.js"></script>
+  <link rel="stylesheet" href="/shared/access-gate.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
@@ -42,11 +47,6 @@
     .info-box { background: #f0faf9; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #158783; }
     .progress-bar { background: rgba(255,255,255,0.2); border-radius: 8px; height: 8px; margin-top: 8px; }
     .progress-fill { background: white; border-radius: 8px; height: 100%; transition: width 0.3s; }
-    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
-    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
-    .form-input:focus { outline: none; border-color: #1AABA6; }
-    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
-    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
     .warning-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 13px; color: #dc2626; }
     .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
@@ -55,9 +55,9 @@
     .detail-value { font-weight: 600; color: #333; font-size: 14px; }
     .detail-value.positive { color: #16a34a; }
     .detail-value.negative { color: #dc2626; }
-    .error-msg { color: #c53030; font-size: 14px; margin-bottom: 12px; }
-    .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #fff; border-radius: 50%; border-top-color: transparent; animation: spin 1s linear infinite; margin-right: 8px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-pdf { width: 100%; padding: 14px; background: #F28E18; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+    .btn-pdf:hover { background: #d97a0e; }
+    .btn-pdf:disabled { background: #ccc; cursor: not-allowed; }
     @media (max-width: 600px) { .input-row { grid-template-columns: 1fr; } .result-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -65,15 +65,6 @@
   <div id="root"></div>
   <script type="text/babel">
         
-    // ============================================
-    // FINAFORTE LEAD CAPTURE CONFIGURATIE
-    // ============================================
-    const LEAD_CONFIG = {
-      emailTo: 'd.tvrtkovic@finaforte.nl',
-      calculatorName: 'Pensioen & Toeslagen'
-    };
-    // ============================================
-// ============================================
 
     // Parameters 2026
     const PARAMS = {
@@ -91,21 +82,9 @@
       maxPensioenInkomen: 137800,
       factorAMultiplier: 6.27,
       reserveringsruimteMax: 42753,
-      schijfGrens: 38441,
-      tariefLaag: 0.3597,
+      schijfGrens: 38883,
+      tariefLaag: 0.3575,
       tariefHoog: 0.495,
-    };
-
-    // UTM parameters ophalen
-    const getUTMParams = () => {
-      const params = new URLSearchParams(window.location.search);
-      return {
-        utm_source: params.get('utm_source') || '',
-        utm_medium: params.get('utm_medium') || '',
-        utm_campaign: params.get('utm_campaign') || '',
-        utm_content: params.get('utm_content') || '',
-        utm_term: params.get('utm_term') || '',
-      };
     };
 
     const formatCurrency = (n) => new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
@@ -131,7 +110,7 @@
       return Math.min(nettoJaarruimte, PARAMS.jaarruimteMax);
     };
 
-    const berekenMarginaalTarief = (inkomen) => inkomen > 75518 ? PARAMS.tariefHoog : PARAMS.tariefLaag;
+    const berekenMarginaalTarief = (inkomen) => inkomen > 78426 ? PARAMS.tariefHoog : PARAMS.tariefLaag;
 
     function App() {
       const [salaris, setSalaris] = React.useState(60000);
@@ -141,12 +120,7 @@
       const [partner, setPartner] = React.useState(false);
       const [vermogen, setVermogen] = React.useState(50000);
       const [showResults, setShowResults] = React.useState(false);
-      const [showLeadForm, setShowLeadForm] = React.useState(false);
-      const [email, setEmail] = React.useState('');
-      const [naam, setNaam] = React.useState('');
-      const [submitted, setSubmitted] = React.useState(false);
-      const [loading, setLoading] = React.useState(false);
-      const [error, setError] = React.useState('');
+      const [pdfLoading, setPdfLoading] = React.useState(false);
 
       const result = React.useMemo(() => {
         const brutoInkomen = salaris + pensioenUitkering;
@@ -178,80 +152,54 @@
         };
       }, [salaris, pensioenUitkering, factorA, lijfrentePremie, partner, vermogen]);
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-
-        const utmParams = getUTMParams();
-
-        const formData = new FormData();
-
-        // Contact info
-        formData.append('naam', naam);
-        formData.append('email', email);
-        formData.append('timestamp', new Date().toISOString());
-
-        // Input fields
-        formData.append('salaris', salaris);
-        formData.append('pensioen_uitkering', pensioenUitkering);
-        formData.append('factor_a', factorA);
-        formData.append('lijfrente_premie', lijfrentePremie);
-        formData.append('toeslagpartner', partner ? 'Ja' : 'Nee');
-        formData.append('box3_vermogen', vermogen);
-
-        // Result fields
-        formData.append('bruto_inkomen', result.brutoInkomen);
-        formData.append('toetsingsinkomen', result.toetsingsinkomen);
-        formData.append('zorgtoeslag', result.zorgtoeslag);
-        formData.append('zorgtoeslag_per_maand', result.zorgtoeslagPerMaand);
-        formData.append('jaarruimte', Math.round(result.jaarruimte));
-        formData.append('beschikbare_ruimte', Math.round(result.beschikbareRuimte));
-        formData.append('marginaal_tarief', (result.marginaalTarief * 100).toFixed(1));
-        formData.append('belastingvoordeel_lijfrente', Math.round(result.belastingVoordeelLijfrente));
-
-        // Optimization fields
-        formData.append('kan_optimaliseren', result.kanOptimaliseren ? 'Ja' : 'Nee');
-        formData.append('extra_lijfrente_voor_max_toeslag', Math.round(result.mogelijkVoorMaxToeslag - lijfrentePremie));
-        formData.append('potentiele_extra_zorgtoeslag', result.extraToeslag);
-        formData.append('vermogen_te_hoog', result.vermogenTeHoog ? 'Ja' : 'Nee');
-
-        // UTM parameters
-        formData.append('utm_source', utmParams.utm_source);
-        formData.append('utm_medium', utmParams.utm_medium);
-        formData.append('utm_campaign', utmParams.utm_campaign);
-        formData.append('utm_content', utmParams.utm_content);
-        formData.append('utm_term', utmParams.utm_term);
-
-        // Metadata
-        formData.append('bron', LEAD_CONFIG.calculatorName);
-        formData.append('pagina_url', window.location.href);
-
+      const handleDownloadPDF = async () => {
+        setPdfLoading(true);
         try {
-          const response = await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
-            method: 'POST',
-            body: formData,
+          await window.FinafortePDF.generate({
+            calculatorName: 'Pensioen & Toeslagen Optimalisatie Rapport',
+            subtitle: 'Jaarruimte en zorgtoeslag berekening 2026',
+            inputSummary: `Bruto inkomen: ${formatCurrency(result.brutoInkomen)} | ${partner ? 'Met partner' : 'Alleenstaand'}`,
+            keyMetrics: [
+              { label: 'Zorgtoeslag', value: formatCurrency(result.zorgtoeslag), sub: `${formatCurrency(result.zorgtoeslagPerMaand)}/maand` },
+              { label: 'Jaarruimte 2026', value: formatCurrency(result.jaarruimte), sub: `Nog ${formatCurrency(result.beschikbareRuimte)} beschikbaar` },
+              { label: 'Belastingvoordeel', value: formatCurrency(result.belastingVoordeelLijfrente), sub: `Marginaal tarief ${(result.marginaalTarief * 100).toFixed(1)}%` },
+              { label: 'Extra toeslag mogelijk', value: formatCurrency(result.extraToeslag), sub: result.kanOptimaliseren ? 'Optimalisatie mogelijk' : 'Geen extra ruimte' },
+            ],
+            table: {
+              headers: ['Onderdeel', 'Bedrag'],
+              rows: [
+                ['Bruto inkomen Box 1', formatCurrency(result.brutoInkomen)],
+                ['Af: Lijfrentepremie', `- ${formatCurrency(lijfrentePremie)}`],
+                ['= Toetsingsinkomen', formatCurrency(result.toetsingsinkomen)],
+                ['Zorgtoeslag per jaar', formatCurrency(result.zorgtoeslag)],
+                ['Jaarruimte 2026', formatCurrency(result.jaarruimte)],
+                ['Beschikbare ruimte', formatCurrency(result.beschikbareRuimte)],
+                ['Belastingvoordeel lijfrente', formatCurrency(result.belastingVoordeelLijfrente)],
+                ['Optimale extra inleg', formatCurrency(Math.max(0, result.mogelijkVoorMaxToeslag - lijfrentePremie))],
+                ['Potentieel extra zorgtoeslag', formatCurrency(result.extraToeslag)],
+              ],
+              negativeRows: [1],
+              highlightRows: [3, 4, 8],
+            },
+            highlights: [
+              { title: 'Jaarruimte benutten', text: 'Stort je beschikbare jaarruimte in een lijfrenteproduct voor direct belastingvoordeel.' },
+              { title: 'Toetsingsinkomen verlagen', text: 'Lijfrente-inleg verlaagt je toetsingsinkomen, waardoor je meer zorgtoeslag kunt ontvangen.' },
+              { title: 'Reserveringsruimte', text: `Onbenutte jaarruimte mag je tot 7 jaar later alsnog gebruiken (max ${formatCurrency(PARAMS.reserveringsruimteMax)}).` },
+              { title: 'Vermogensgrens', text: `Let op de vermogensgrens van ${formatCurrency(result.vermogensgrens)} voor zorgtoeslag.` },
+            ],
           });
-
-          if (response.ok) {
-            setSubmitted(true);
-          } else {
-            setError('Er ging iets mis bij het versturen. Probeer het opnieuw.');
-          }
-        } catch (err) {
-          setError('Er ging iets mis. Controleer je internetverbinding.');
-        }
-        setLoading(false);
+        } catch (err) { console.error('PDF error:', err); }
+        setPdfLoading(false);
       };
 
       const resetForm = () => {
         setShowResults(false);
-        setShowLeadForm(false);
-        setSubmitted(false);
-        setEmail('');
-        setNaam('');
-        setError('');
       };
+
+      // Token toegangscontrole
+      if (!window.FinaforteAccess || !window.FinaforteAccess.isValid) {
+        return React.createElement(window.FinaforteLockedState);
+      }
 
       return (
         <div className="container">
@@ -266,12 +214,12 @@
             <div className="input-row">
               <div className="input-group">
                 <label className="input-label">Bruto jaarsalaris</label>
-                <input type="number" className="input-field" value={salaris} onChange={e => setSalaris(+e.target.value)} />
+                <input type="text" inputMode="numeric" className="input-field" value={salaris} onChange={e => setSalaris(+e.target.value)} onFocus={(e) => e.target.select()} />
                 <div className="input-hint">Inclusief vakantiegeld</div>
               </div>
               <div className="input-group">
                 <label className="input-label">Pensioenuitkering (optioneel)</label>
-                <input type="number" className="input-field" value={pensioenUitkering} onChange={e => setPensioenUitkering(+e.target.value)} />
+                <input type="text" inputMode="numeric" className="input-field" value={pensioenUitkering} onChange={e => setPensioenUitkering(+e.target.value)} onFocus={(e) => e.target.select()} />
                 <div className="input-hint">AOW, werkgeverspensioen, etc.</div>
               </div>
             </div>
@@ -282,12 +230,12 @@
             <div className="input-row">
               <div className="input-group">
                 <label className="input-label">Factor A (werkgeverspensioen)</label>
-                <input type="number" className="input-field" value={factorA} onChange={e => setFactorA(+e.target.value)} />
+                <input type="text" inputMode="numeric" className="input-field" value={factorA} onChange={e => setFactorA(+e.target.value)} onFocus={(e) => e.target.select()} />
                 <div className="input-hint">Staat op je UPO • 0 = geen werkgeverspensioen</div>
               </div>
               <div className="input-group">
                 <label className="input-label">Lijfrentepremie (huidige inleg)</label>
-                <input type="number" className="input-field" value={lijfrentePremie} onChange={e => setLijfrentePremie(+e.target.value)} />
+                <input type="text" inputMode="numeric" className="input-field" value={lijfrentePremie} onChange={e => setLijfrentePremie(+e.target.value)} onFocus={(e) => e.target.select()} />
                 <div className="input-hint">Jaarlijkse inleg in lijfrente</div>
               </div>
             </div>
@@ -305,7 +253,7 @@
               </div>
               <div className="input-group">
                 <label className="input-label">Box 3 vermogen (peildatum 1 jan)</label>
-                <input type="number" className="input-field" value={vermogen} onChange={e => setVermogen(+e.target.value)} />
+                <input type="text" inputMode="numeric" className="input-field" value={vermogen} onChange={e => setVermogen(+e.target.value)} onFocus={(e) => e.target.select()} />
                 <div className="input-hint">Grens: {formatCurrency(partner ? PARAMS.vermogensgrensPartner : PARAMS.vermogensgrensAlleen)}</div>
               </div>
             </div>
@@ -431,40 +379,15 @@
                 )}
               </div>
 
-              {!showLeadForm && !submitted && (
-                <div className="card cta-card">
-                  <div style={{fontSize: 32, marginBottom: 8}}>📋</div>
-                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 8, border: 'none'}}>Wil je een persoonlijk optimalisatieplan?</h3>
-                  <p style={{color: '#666', marginBottom: 20}}>Ontvang een rapport met de optimale lijfrente-inleg, reserveringsruimte berekening en meerjarenplanning</p>
-                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis plan →</button>
-                </div>
-              )}
+              <div className="card" style={{textAlign: 'center', border: '2px solid #F28E18'}}>
+                <div style={{fontSize: '32px', marginBottom: '8px'}}>📥</div>
+                <h3 style={{fontSize: '20px', color: '#333', marginBottom: '8px', border: 'none'}}>Download je persoonlijke rapport</h3>
+                <p style={{color: '#666', marginBottom: '16px'}}>Ontvang direct een PDF met jouw berekeningen en optimalisatieadvies</p>
+                <button className="btn-pdf" style={{width: 'auto', padding: '14px 32px', display: 'inline-block'}} onClick={handleDownloadPDF} disabled={pdfLoading}>
+                  {pdfLoading ? 'PDF genereren...' : 'Download PDF Rapport →'}
+                </button>
+              </div>
 
-              {showLeadForm && !submitted && (
-                <div className="card cta-card" style={{textAlign: 'left'}}>
-                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 16, border: 'none'}}>Waar mogen we je plan naartoe sturen?</h3>
-                  <form onSubmit={handleSubmit}>
-                    <input type="text" className="form-input" placeholder="Je naam" value={naam} onChange={e => setNaam(e.target.value)} required />
-                    <input type="email" className="form-input" placeholder="je@email.nl" value={email} onChange={e => setEmail(e.target.value)} required />
-                    {error && <p className="error-msg">{error}</p>}
-                    <button type="submit" className="btn" disabled={loading}>
-                      {loading ? <><span className="loading"></span>Versturen...</> : 'Verstuur mijn plan →'}
-                    </button>
-                  </form>
-                  <p className="form-hint">We respecteren je privacy. Geen spam.</p>
-                </div>
-              )}
-
-              {submitted && (
-                <div className="card success-card">
-                  <div style={{fontSize: 48, marginBottom: 16}}>✅</div>
-                  <h3 style={{fontSize: 20, color: '#1AABA6', marginBottom: 8, border: 'none'}}>Je plan is onderweg!</h3>
-                  <p style={{color: '#666', marginBottom: 16}}>Check je inbox voor je persoonlijke optimalisatieplan.</p>
-                  <button className="btn" style={{width: 'auto', padding: '12px 24px', background: 'transparent', color: '#1AABA6', border: '2px solid #1AABA6'}} onClick={resetForm}>
-                    Nieuwe berekening maken
-                  </button>
-                </div>
-              )}
 
               <p className="disclaimer">
                 <strong>Zorgtoeslag 2026:</strong> max {formatCurrency(PARAMS.zorgtoeslagMaxAlleen)} (alleenstaand) / {formatCurrency(PARAMS.zorgtoeslagMaxPartner)} (partners). Grensinkomen: {formatCurrency(PARAMS.zorgtoeslagGrensAlleen)} / {formatCurrency(PARAMS.zorgtoeslagGrensPartner)}. Vermogensgrens: {formatCurrency(PARAMS.vermogensgrensAlleen)} / {formatCurrency(PARAMS.vermogensgrensPartner)}.<br/>

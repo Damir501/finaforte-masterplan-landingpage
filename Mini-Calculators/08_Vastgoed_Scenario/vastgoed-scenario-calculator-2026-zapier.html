@@ -8,6 +8,11 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="/shared/jspdf.umd.min.js"></script>
+  <script src="/shared/jspdf.plugin.autotable.min.js"></script>
+  <script src="/shared/pdf-generator.js"></script>
+  <script src="/shared/token-guard.js"></script>
+  <link rel="stylesheet" href="/shared/access-gate.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
@@ -82,23 +87,6 @@
     .detail-value { font-weight: 500; }
     .detail-value.negative { color: #c53030; }
     .detail-value.positive { color: #1AABA6; }
-    .cta-card { text-align: center; border: 2px solid #1AABA6; }
-    .cta-icon { font-size: 32px; margin-bottom: 8px; }
-    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
-    .cta-text { color: #666; margin-bottom: 20px; }
-    .form-input {
-      width: 100%;
-      padding: 14px;
-      border: 2px solid #e5e5e5;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-bottom: 12px;
-    }
-    .form-input:focus { outline: none; border-color: #1AABA6; }
-    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
-    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
-    .success-icon { font-size: 48px; margin-bottom: 16px; }
-    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
     .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
     .params-info strong { color: #1AABA6; }
@@ -106,8 +94,9 @@
     .assumptions-title { font-size: 14px; font-weight: 600; color: #b45309; margin-bottom: 8px; }
     .assumptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
     .assumption-item { font-size: 12px; color: #92400e; }
-    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-pdf { width: 100%; padding: 14px; background: #F28E18; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+    .btn-pdf:hover { background: #d97a0e; }
+    .btn-pdf:disabled { background: #ccc; cursor: not-allowed; }
     @media (max-width: 800px) {
       .scenario-grid { grid-template-columns: 1fr; }
       .input-grid { grid-template-columns: 1fr; }
@@ -120,16 +109,6 @@
   <div id="root"></div>
   <script type="text/babel">
             
-    // ============================================
-    // FINAFORTE LEAD CAPTURE CONFIGURATIE
-    // ============================================
-    const LEAD_CONFIG = {
-      emailTo: 'd.tvrtkovic@finaforte.nl',
-      calculatorName: 'Vastgoed Scenario'
-    };
-    // ============================================
-// ============================================================
-
     // FISCALE PARAMETERS 2026 - Alle waarden geverifieerd
     const PARAMS = {
       box2: { schijf1: 0.245, schijf2: 0.31, grens: 68843 },
@@ -173,12 +152,7 @@
       const [brutoHuur, setBrutoHuur] = React.useState(6);
       const [horizon, setHorizon] = React.useState(15);
       const [showResults, setShowResults] = React.useState(false);
-      const [showLeadForm, setShowLeadForm] = React.useState(false);
-      const [naam, setNaam] = React.useState('');
-      const [email, setEmail] = React.useState('');
-      const [telefoon, setTelefoon] = React.useState('');
-      const [submitted, setSubmitted] = React.useState(false);
-      const [isSubmitting, setIsSubmitting] = React.useState(false);
+      const [pdfLoading, setPdfLoading] = React.useState(false);
 
       const scenarios = React.useMemo(() => {
         const ltv = (aankoopprijs - eigenInbreng) / aankoopprijs;
@@ -253,51 +227,46 @@
 
       const bestScenario = scenarios.reduce((best, s) => s.nettoEind > best.nettoEind ? s : best);
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        const formData = new FormData();
-        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
-        formData.append('_template', 'table');
-        formData.append('_captcha', 'false');
-        formData.append('Calculator', LEAD_CONFIG.calculatorName);
-        formData.append('Naam', naam);
-        formData.append('Email', email);
-        formData.append('Telefoon', telefoon);
-        formData.append('Datum', new Date().toLocaleString('nl-NL'));
-
-        // Calculator inputs
-        formData.append('Aankoopprijs', formatCurrency(aankoopprijs));
-        formData.append('Eigen inbreng', formatCurrency(eigenInbreng));
-        formData.append('LTV', ((aankoopprijs - eigenInbreng) / aankoopprijs * 100).toFixed(1) + '%');
-        formData.append('Bruto huurrendement', brutoHuur + '%');
-        formData.append('Planningshorizon', horizon + ' jaar');
-
-        // Resultaten per scenario
-        formData.append('Dividend → Privé (netto)', formatCurrency(scenarios[0].nettoEind));
-        formData.append('Lenen van BV (netto)', formatCurrency(scenarios[1].nettoEind));
-        formData.append('In de BV (netto)', formatCurrency(scenarios[2].nettoEind));
-        formData.append('Beste scenario', bestScenario.naam);
-
-        // Metadata
-        formData.append('Bron', 'Vastgoed Scenario Calculator 2026');
-        formData.append('Pagina URL', window.location.href);
-
+      const handleDownloadPDF = async () => {
+        setPdfLoading(true);
         try {
-          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
+          await window.FinafortePDF.generate({
+            calculatorName: 'Vastgoed Scenario Rapport',
+            subtitle: `Vergelijking van 3 investeringsscenario's over ${horizon} jaar`,
+            inputSummary: `Aankoopprijs: ${formatCurrency(aankoopprijs)} | Eigen inbreng: ${formatCurrency(eigenInbreng)} | Huurrendement: ${brutoHuur}% | Horizon: ${horizon} jaar`,
+            keyMetrics: [
+              { label: 'Beste scenario', value: bestScenario.naam, sub: `Netto eindvermogen: ${formatCurrency(bestScenario.nettoEind)}` },
+              { label: 'Dividend naar Prive', value: formatCurrency(scenarios[0].nettoEind), sub: `Cashflow: ${formatCurrency(scenarios[0].nettoJaar)}/jaar` },
+              { label: 'Lenen van BV', value: formatCurrency(scenarios[1].nettoEind), sub: `Cashflow: ${formatCurrency(scenarios[1].nettoJaar)}/jaar` },
+              { label: 'In de BV', value: formatCurrency(scenarios[2].nettoEind), sub: `Cashflow: ${formatCurrency(scenarios[2].nettoJaar)}/jaar` },
+            ],
+            table: {
+              headers: ['Kenmerk', 'Dividend → Prive', 'Lenen van BV', 'In de BV'],
+              rows: [
+                ['Netto eindvermogen', formatCurrency(scenarios[0].nettoEind), formatCurrency(scenarios[1].nettoEind), formatCurrency(scenarios[2].nettoEind)],
+                ['Netto cashflow/jaar', formatCurrency(scenarios[0].nettoJaar), formatCurrency(scenarios[1].nettoJaar), formatCurrency(scenarios[2].nettoJaar)],
+                ['Belasting vooraf', scenarios[0].belastingVooraf > 0 ? formatCurrency(scenarios[0].belastingVooraf) : '—', scenarios[1].belastingVooraf > 0 ? formatCurrency(scenarios[1].belastingVooraf) : '—', scenarios[2].belastingVooraf > 0 ? formatCurrency(scenarios[2].belastingVooraf) : '—'],
+                ['Belasting/jaar', formatCurrency(scenarios[0].belastingJaar), formatCurrency(scenarios[1].belastingJaar), formatCurrency(scenarios[2].belastingJaar)],
+                ['Latente belasting', scenarios[0].latent > 0 ? formatCurrency(scenarios[0].latent) : '—', scenarios[1].latent > 0 ? formatCurrency(scenarios[1].latent) : '—', scenarios[2].latent > 0 ? formatCurrency(scenarios[2].latent) : '—'],
+              ],
+              negativeRows: [2, 3, 4],
+              highlightRows: [0],
+            },
+            highlights: [
+              { title: 'Beste optie', text: `${bestScenario.naam} levert het hoogste netto eindvermogen op: ${formatCurrency(bestScenario.nettoEind)} na ${horizon} jaar.` },
+              { title: 'Excessief lenen', text: `Let op de grens van ${formatCurrency(PARAMS.grensExcessief)} voor lenen van de BV. Daarboven geldt fictief dividend.` },
+              { title: 'Box 3 vs VPB', text: 'Prive aanhouden betekent Box 3 belasting (forfait 6% x 36%). In de BV betaal je VPB over werkelijke winst.' },
+              { title: 'Persoonlijk advies', text: 'De optimale keuze hangt af van uw totale financiele situatie, BV-structuur en toekomstplannen.' },
+            ],
           });
-          setSubmitted(true);
-        } catch (error) {
-          console.error('Form submission error:', error);
-          setSubmitted(true);
-        } finally {
-          setIsSubmitting(false);
-        }
+        } catch (err) { console.error('PDF error:', err); }
+        setPdfLoading(false);
       };
+
+      // Token toegangscontrole
+      if (!window.FinaforteAccess || !window.FinaforteAccess.isValid) {
+        return React.createElement(window.FinaforteLockedState);
+      }
 
       return (
         <div className="container">
@@ -389,61 +358,15 @@
                 ))}
               </div>
 
-              {!showLeadForm && !submitted && (
-                <div className="card cta-card">
-                  <div className="cta-icon">🏢</div>
-                  <h3 className="cta-title">Wil je een uitgebreid scenariorapport?</h3>
-                  <p className="cta-text">Ontvang een persoonlijk PDF-rapport met {horizon}-jaar doorrekening, risico-analyse en concrete aanbevelingen</p>
-                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
-                </div>
-              )}
+              <div className="card" style={{textAlign: 'center', border: '2px solid #F28E18'}}>
+                <div style={{fontSize: '32px', marginBottom: '8px'}}>📥</div>
+                <h3 style={{fontSize: '20px', color: '#333', marginBottom: '8px'}}>Download je persoonlijke rapport</h3>
+                <p style={{color: '#666', marginBottom: '16px'}}>Ontvang direct een PDF met jouw berekeningen en optimalisatieadvies</p>
+                <button className="btn-pdf" style={{width: 'auto', padding: '14px 32px', display: 'inline-block'}} onClick={handleDownloadPDF} disabled={pdfLoading}>
+                  {pdfLoading ? 'PDF genereren...' : 'Download PDF Rapport →'}
+                </button>
+              </div>
 
-              {showLeadForm && !submitted && (
-                <div className="card cta-card" style={{textAlign: 'left'}}>
-                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
-                  <form onSubmit={handleSubmit}>
-                    <input 
-                      type="text" 
-                      className="form-input" 
-                      placeholder="Je naam" 
-                      value={naam} 
-                      onChange={(e) => setNaam(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="email" 
-                      className="form-input" 
-                      placeholder="je@email.nl" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="tel" 
-                      className="form-input" 
-                      placeholder="Telefoonnummer (optioneel)" 
-                      value={telefoon} 
-                      onChange={(e) => setTelefoon(e.target.value)} 
-                    />
-                    <button type="submit" className="btn" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <><span className="spinner"></span>Verzenden...</>
-                      ) : (
-                        'Verstuur mijn rapport →'
-                      )}
-                    </button>
-                  </form>
-                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
-                </div>
-              )}
-
-              {submitted && (
-                <div className="card success-card">
-                  <div className="success-icon">✅</div>
-                  <h3 className="success-title">Je rapport is onderweg!</h3>
-                  <p style={{color: '#666'}}>Check je inbox voor het volledige scenariorapport met concrete aanbevelingen.</p>
-                </div>
-              )}
 
               <p className="disclaimer">
                 Deze berekening is indicatief en gebaseerd op fiscale parameters 2026. 

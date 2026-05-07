@@ -8,6 +8,11 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="/shared/jspdf.umd.min.js"></script>
+  <script src="/shared/jspdf.plugin.autotable.min.js"></script>
+  <script src="/shared/pdf-generator.js"></script>
+  <script src="/shared/token-guard.js"></script>
+  <link rel="stylesheet" href="/shared/access-gate.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
@@ -89,19 +94,10 @@
     .assumptions-title { font-size: 14px; font-weight: 600; color: #b45309; margin-bottom: 8px; }
     .assumptions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
     .assumption-item { font-size: 12px; color: #92400e; }
-    .cta-card { text-align: center; border: 2px solid #1AABA6; }
-    .cta-icon { font-size: 32px; margin-bottom: 8px; }
-    .cta-title { font-size: 20px; color: #333; margin-bottom: 8px; }
-    .cta-text { color: #666; margin-bottom: 20px; }
-    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
-    .form-input:focus { outline: none; border-color: #1AABA6; }
-    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
-    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; }
-    .success-icon { font-size: 48px; margin-bottom: 16px; }
-    .success-title { font-size: 20px; color: #1AABA6; margin-bottom: 8px; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
-    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-pdf { width: 100%; padding: 14px; background: #F28E18; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+    .btn-pdf:hover { background: #d97a0e; }
+    .btn-pdf:disabled { background: #ccc; cursor: not-allowed; }
     @media (max-width: 700px) {
       .comparison-grid { grid-template-columns: 1fr; }
       .input-row { flex-direction: column; align-items: stretch; }
@@ -113,16 +109,6 @@
   <div id="root"></div>
   <script type="text/babel">
             
-    // ============================================
-    // FINAFORTE LEAD CAPTURE CONFIGURATIE
-    // ============================================
-    const LEAD_CONFIG = {
-      emailTo: 'd.tvrtkovic@finaforte.nl',
-      calculatorName: 'PEB ODV Lijfrente'
-    };
-    // ============================================
-// ============================================================
-
     // FISCALE PARAMETERS 2026 - Alle waarden geverifieerd
     const PARAMS = {
       uRendement: 0.02593,        // U-rendement 2026: 2,593% (gemiddelde 2025)
@@ -149,12 +135,7 @@
       const [rendementLijfrente, setRendementLijfrente] = React.useState(3);
       const [uitkeringsduur, setUitkeringsduur] = React.useState(20);
       const [showResults, setShowResults] = React.useState(false);
-      const [showLeadForm, setShowLeadForm] = React.useState(false);
-      const [naam, setNaam] = React.useState('');
-      const [email, setEmail] = React.useState('');
-      const [telefoon, setTelefoon] = React.useState('');
-      const [submitted, setSubmitted] = React.useState(false);
-      const [isSubmitting, setIsSubmitting] = React.useState(false);
+      const [pdfLoading, setPdfLoading] = React.useState(false);
 
       const jarenTotPensioen = Math.max(0, PARAMS.aowLeeftijd - leeftijd);
 
@@ -201,56 +182,48 @@
 
       const bestOption = scenarios.bv.totaalNetto > scenarios.lijfrente.totaalNetto ? 'bv' : 'lijfrente';
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-
-        const formData = new FormData();
-        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
-        formData.append('_template', 'table');
-        formData.append('_captcha', 'false');
-
-        // Contactgegevens
-        formData.append('Calculator', LEAD_CONFIG.calculatorName);
-        formData.append('Naam', naam);
-        formData.append('Email', email);
-        formData.append('Telefoon', telefoon);
-        formData.append('Datum', new Date().toLocaleString('nl-NL'));
-
-        // Calculator inputs
-        formData.append('ODV Waarde', formatCurrency(odvWaarde));
-        formData.append('Leeftijd', leeftijd);
-        formData.append('Jaren tot Pensioen', jarenTotPensioen);
-        formData.append('Rendement BV', rendementBV + '%');
-        formData.append('Rendement Lijfrente', rendementLijfrente + '%');
-        formData.append('Uitkeringsduur', uitkeringsduur + ' jaar');
-
-        // Resultaten
-        formData.append('BV Eindwaarde', formatCurrency(scenarios.bv.eindwaarde));
-        formData.append('BV Netto Uitkering/Jaar', formatCurrency(scenarios.bv.nettoUitkering));
-        formData.append('BV Totaal Netto', formatCurrency(scenarios.bv.totaalNetto));
-        formData.append('Lijfrente Eindwaarde', formatCurrency(scenarios.lijfrente.eindwaarde));
-        formData.append('Lijfrente Netto Uitkering/Jaar', formatCurrency(scenarios.lijfrente.nettoUitkering));
-        formData.append('Lijfrente Totaal Netto', formatCurrency(scenarios.lijfrente.totaalNetto));
-        formData.append('Beste Optie', bestOption === 'bv' ? 'ODV in BV' : 'Lijfrente');
-        formData.append('Verschil', formatCurrency(scenarios.verschil));
-
-        // Metadata
-        formData.append('Bron', 'PEB/ODV Lijfrente Calculator 2026');
-        formData.append('Pagina URL', window.location.href);
-
+      const handleDownloadPDF = async () => {
+        setPdfLoading(true);
         try {
-          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
+          await window.FinafortePDF.generate({
+            calculatorName: 'PEB/ODV naar Lijfrente Rapport',
+            subtitle: 'Vergelijking ODV in BV houden vs. omzetten naar lijfrente',
+            inputSummary: `ODV waarde: ${formatCurrency(odvWaarde)} | Leeftijd: ${leeftijd} jaar | ${jarenTotPensioen} jaar tot pensioen`,
+            keyMetrics: [
+              { label: 'Beste optie', value: bestOption === 'bv' ? 'ODV in BV' : 'Lijfrente' },
+              { label: 'Netto uitkering BV/jaar', value: formatCurrency(scenarios.bv.nettoUitkering) },
+              { label: 'Netto uitkering lijfrente/jaar', value: formatCurrency(scenarios.lijfrente.nettoUitkering) },
+              { label: 'Verschil totaal netto', value: formatCurrency(scenarios.verschil) },
+            ],
+            table: {
+              headers: ['', 'ODV in BV', 'Lijfrente'],
+              rows: [
+                ['Waarde bij pensioen', formatCurrency(scenarios.bv.eindwaarde), formatCurrency(scenarios.lijfrente.eindwaarde)],
+                ['Bruto uitkering/jaar', formatCurrency(scenarios.bv.brutoUitkering), formatCurrency(scenarios.lijfrente.brutoUitkering)],
+                ['Inkomstenbelasting (37,56%)', formatCurrency(scenarios.bv.brutoUitkering * PARAMS.box1Tarief), formatCurrency(scenarios.lijfrente.brutoUitkering * PARAMS.box1Tarief)],
+                ['Netto uitkering/jaar', formatCurrency(scenarios.bv.nettoUitkering), formatCurrency(scenarios.lijfrente.nettoUitkering)],
+                ['Totaal netto (' + uitkeringsduur + ' jaar)', formatCurrency(scenarios.bv.totaalNetto), formatCurrency(scenarios.lijfrente.totaalNetto)],
+              ],
+              negativeRows: [2],
+              highlightRows: [3, 4],
+            },
+            highlights: [
+              { icon: '🏢', title: 'ODV in BV', text: 'Mogelijk hoger rendement, maar BV moet 20+ jaar in stand blijven met jaarlijkse administratie.' },
+              { icon: '🏦', title: 'Lijfrente', text: 'Zekerheid en geen administratie, maar conversiekosten (~5%) en lager verwacht rendement.' },
+              { icon: '📋', title: 'Wettelijke regels', text: 'ODV-uitkeringen moeten uiterlijk 2 maanden na AOW-leeftijd ingaan en duren minimaal 20 jaar.' },
+              { icon: '💡', title: 'Persoonlijk advies', text: 'De beste keuze hangt af van je risicobereidheid, BV-activiteiten en nabestaandenwensen.' },
+            ],
           });
-          setSubmitted(true);
         } catch (err) {
-          setSubmitted(true);
+          console.error('PDF generation error:', err);
         }
-        setIsSubmitting(false);
+        setPdfLoading(false);
       };
+
+      // Token toegangscontrole
+      if (!window.FinaforteAccess || !window.FinaforteAccess.isValid) {
+        return React.createElement(window.FinaforteLockedState);
+      }
 
       return (
         <div className="container">
@@ -397,61 +370,14 @@
                 </div>
               </div>
 
-              {!showLeadForm && !submitted && (
-                <div className="card cta-card">
-                  <div className="cta-icon">📊</div>
-                  <h3 className="cta-title">Wil je een persoonlijk adviesrapport?</h3>
-                  <p className="cta-text">Ontvang een uitgebreid rapport met scenario-analyse, nabestaandendekking en concrete aanbevelingen voor jouw situatie</p>
-                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis rapport →</button>
-                </div>
-              )}
-
-              {showLeadForm && !submitted && (
-                <div className="card cta-card" style={{textAlign: 'left'}}>
-                  <h3 className="cta-title" style={{textAlign: 'left'}}>Waar mogen we je rapport naartoe sturen?</h3>
-                  <form onSubmit={handleSubmit}>
-                    <input 
-                      type="text" 
-                      className="form-input" 
-                      placeholder="Je naam" 
-                      value={naam} 
-                      onChange={(e) => setNaam(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="email" 
-                      className="form-input" 
-                      placeholder="je@email.nl" 
-                      value={email} 
-                      onChange={(e) => setEmail(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="tel" 
-                      className="form-input" 
-                      placeholder="Telefoonnummer (optioneel)" 
-                      value={telefoon} 
-                      onChange={(e) => setTelefoon(e.target.value)} 
-                    />
-                    <button type="submit" className="btn" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <><span className="spinner"></span>Verzenden...</>
-                      ) : (
-                        'Verstuur mijn rapport →'
-                      )}
-                    </button>
-                  </form>
-                  <p className="form-hint">We respecteren je privacy. Geen spam, alleen waardevolle inzichten.</p>
-                </div>
-              )}
-
-              {submitted && (
-                <div className="card success-card">
-                  <div className="success-icon">✅</div>
-                  <h3 className="success-title">Je rapport is onderweg!</h3>
-                  <p style={{color: '#666'}}>Check je inbox voor het volledige adviesrapport met ODV vs. lijfrente analyse.</p>
-                </div>
-              )}
+              <div className="card" style={{textAlign: 'center', border: '2px solid #F28E18'}}>
+                <div style={{fontSize: '32px', marginBottom: '8px'}}>📥</div>
+                <h3 style={{fontSize: '20px', color: '#333', marginBottom: '8px'}}>Download je persoonlijke rapport</h3>
+                <p style={{color: '#666', marginBottom: '16px'}}>Ontvang direct een PDF met jouw berekeningen en optimalisatieadvies</p>
+                <button className="btn-pdf" style={{width: 'auto', padding: '14px 32px', display: 'inline-block'}} onClick={handleDownloadPDF} disabled={pdfLoading}>
+                  {pdfLoading ? 'PDF genereren...' : 'Download PDF Rapport →'}
+                </button>
+              </div>
 
               <p className="disclaimer">
                 Deze berekening is indicatief en gebaseerd op fiscale parameters 2026. 

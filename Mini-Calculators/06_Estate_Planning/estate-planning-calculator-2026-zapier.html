@@ -8,6 +8,11 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="/shared/jspdf.umd.min.js"></script>
+  <script src="/shared/jspdf.plugin.autotable.min.js"></script>
+  <script src="/shared/pdf-generator.js"></script>
+  <script src="/shared/token-guard.js"></script>
+  <link rel="stylesheet" href="/shared/access-gate.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
@@ -49,21 +54,16 @@
     .timeline-year { width: 60px; font-weight: 600; color: #1AABA6; }
     .timeline-content { flex: 1; }
     .timeline-amount { font-weight: 600; }
-    .cta-card { text-align: center; border: 2px solid #1AABA6; padding: 32px; }
-    .form-input { width: 100%; padding: 14px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; margin-bottom: 12px; }
-    .form-input:focus { outline: none; border-color: #1AABA6; }
-    .form-hint { font-size: 12px; color: #999; margin-top: 12px; text-align: center; }
-    .success-card { background: #f0faf9; text-align: center; border: 2px solid #1AABA6; padding: 32px; }
-    .error-message { color: #dc2626; font-size: 14px; margin-top: 8px; text-align: center; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
     .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
     .params-info strong { color: #1AABA6; }
-    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s ease-in-out infinite; margin-right: 8px; vertical-align: middle; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @media (max-width: 600px) { 
-      .input-row { grid-template-columns: 1fr; } 
-      .result-grid { grid-template-columns: 1fr; } 
-      .compare-section { grid-template-columns: 1fr; } 
+    .btn-pdf { width: 100%; padding: 14px; background: #F28E18; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+    .btn-pdf:hover { background: #d97a0e; }
+    .btn-pdf:disabled { background: #ccc; cursor: not-allowed; }
+    @media (max-width: 600px) {
+      .input-row { grid-template-columns: 1fr; }
+      .result-grid { grid-template-columns: 1fr; }
+      .compare-section { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -71,16 +71,6 @@
   <div id="root"></div>
   <script type="text/babel">
             
-    // ============================================
-    // FINAFORTE LEAD CAPTURE CONFIGURATIE
-    // ============================================
-    const LEAD_CONFIG = {
-      emailTo: 'd.tvrtkovic@finaforte.nl',
-      calculatorName: 'Estate Planning'
-    };
-    // ============================================
-// ============================================================
-
     // FISCALE PARAMETERS 2026 - Actuele waarden
     const PARAMS = {
       vrijstellingPartner: 828035,
@@ -111,13 +101,7 @@
       const [aantalKinderen, setAantalKinderen] = React.useState(2);
       const [jarenSchenken, setJarenSchenken] = React.useState(10);
       const [showResults, setShowResults] = React.useState(false);
-      const [showLeadForm, setShowLeadForm] = React.useState(false);
-      const [email, setEmail] = React.useState('');
-      const [naam, setNaam] = React.useState('');
-      const [telefoon, setTelefoon] = React.useState('');
-      const [submitted, setSubmitted] = React.useState(false);
-      const [isSubmitting, setIsSubmitting] = React.useState(false);
-      const [submitError, setSubmitError] = React.useState('');
+      const [pdfLoading, setPdfLoading] = React.useState(false);
 
       // Input validatie
       const validVermogen = Math.max(0, vermogen || 0);
@@ -182,49 +166,47 @@
         };
       }, [validVermogen, validHypotheek, heeftPartner, validKinderen, jarenSchenken]);
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-        setSubmitError('');
-
-        const formData = new FormData();
-        formData.append('_subject', `📊 Nieuwe Lead: ${LEAD_CONFIG.calculatorName}`);
-        formData.append('_template', 'table');
-        formData.append('_captcha', 'false');
-
-        // Contact details
-        formData.append('Calculator', LEAD_CONFIG.calculatorName);
-        formData.append('Naam', naam);
-        formData.append('Email', email);
-        formData.append('Telefoon', telefoon);
-
-        // Calculator inputs
-        formData.append('Vermogen', `€${validVermogen.toLocaleString('nl-NL')}`);
-        formData.append('Hypotheek', `€${validHypotheek.toLocaleString('nl-NL')}`);
-        formData.append('Netto vermogen', `€${result.nettoVermogen.toLocaleString('nl-NL')}`);
-        formData.append('Partner', heeftPartner ? 'Ja' : 'Nee');
-        formData.append('Aantal kinderen', validKinderen);
-        formData.append('Jahren schenken', jarenSchenken);
-
-        // Results
-        formData.append('Erfbelasting zonder planning', `€${result.erfbelastingTotaal.toLocaleString('nl-NL')}`);
-        formData.append('Erfbelasting met schenken', `€${result.erfbelastingNaSchenken.toLocaleString('nl-NL')}`);
-        formData.append('Besparing', `€${result.besparing.toLocaleString('nl-NL')}`);
-        formData.append('Totaal geschonken', `€${result.totaalGeschonken.toLocaleString('nl-NL')}`);
-        formData.append('Jaarlijkse schenking', `€${result.jaarlijkseSchenking.toLocaleString('nl-NL')}`);
-
+      const handleDownloadPDF = async () => {
+        setPdfLoading(true);
         try {
-          await fetch(`https://formsubmit.co/ajax/${LEAD_CONFIG.emailTo}`, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
+          await window.FinafortePDF.generate({
+            calculatorName: 'Estate Planning Rapport',
+            subtitle: 'Erfbelasting en schenkingsstrategie 2026',
+            inputSummary: `Netto vermogen: ${formatCurrency(result.nettoVermogen)} | ${heeftPartner ? 'Met partner' : 'Zonder partner'} | ${validKinderen} kinderen`,
+            keyMetrics: [
+              { label: 'Erfbelasting zonder planning', value: formatCurrency(result.erfbelastingTotaal), sub: 'Alles nalaten bij overlijden' },
+              { label: 'Erfbelasting met schenken', value: formatCurrency(result.erfbelastingNaSchenken), sub: `Na ${jarenSchenken} jaar schenken` },
+              { label: 'Besparing', value: formatCurrency(result.besparing), sub: 'Door schenkingsstrategie' },
+              { label: 'Totaal geschonken', value: formatCurrency(result.totaalGeschonken), sub: `${jarenSchenken} jaar belastingvrij` },
+            ],
+            table: {
+              headers: ['Onderdeel', 'Zonder planning', 'Met schenken'],
+              rows: [
+                ['Netto vermogen', formatCurrency(result.nettoVermogen), formatCurrency(result.nettoVermogen)],
+                ['Totaal geschonken', '—', formatCurrency(result.totaalGeschonken)],
+                ['Resterend vermogen', formatCurrency(result.nettoVermogen), formatCurrency(result.resterendVermogen)],
+                ['Erfbelasting', formatCurrency(result.erfbelastingTotaal), formatCurrency(result.erfbelastingNaSchenken)],
+                ['Jaarlijkse schenking', '—', formatCurrency(result.jaarlijkseSchenking)],
+                ['Besparing', '—', formatCurrency(result.besparing)],
+              ],
+              negativeRows: [3],
+              highlightRows: [5],
+            },
+            highlights: [
+              { title: 'Jaarlijks schenken', text: `Schenk jaarlijks ${formatCurrency(PARAMS.schenkingVrijKind)} per kind belastingvrij. Over ${jarenSchenken} jaar is dat ${formatCurrency(result.totaalGeschonken)}.` },
+              { title: 'Vrijstellingen benutten', text: `Partnervrijstelling: ${formatCurrency(PARAMS.vrijstellingPartner)} | Kindvrijstelling: ${formatCurrency(PARAMS.vrijstellingKind)} per kind.` },
+              { title: 'Testament optimaliseren', text: 'Een goed testament kan de belastingdruk verder verlagen via wettelijke verdeling en ventielbeding.' },
+              { title: 'BOR overwegen', text: 'Bij bedrijfsvermogen kan de Bedrijfsopvolgingsregeling (BOR) aanzienlijke vrijstellingen bieden.' },
+            ],
           });
-          setSubmitted(true);
-        } catch (err) {
-          setSubmitted(true);
-        }
-        setIsSubmitting(false);
+        } catch (err) { console.error('PDF error:', err); }
+        setPdfLoading(false);
       };
+
+      // Token toegangscontrole
+      if (!window.FinaforteAccess || !window.FinaforteAccess.isValid) {
+        return React.createElement(window.FinaforteLockedState);
+      }
 
       return (
         <div className="container">
@@ -239,22 +221,24 @@
             <div className="input-row">
               <div className="input-group">
                 <label className="input-label">Totaal vermogen</label>
-                <input 
-                  type="number" 
-                  className="input-field" 
-                  value={vermogen} 
-                  onChange={e => setVermogen(Math.max(0, +e.target.value))} 
+                <input
+                  type="text" inputMode="numeric"
+                  className="input-field"
+                  value={vermogen}
+                  onChange={e => setVermogen(Math.max(0, +e.target.value))}
+                  onFocus={(e) => e.target.select()}
                   min="0"
                 />
                 <p className="input-hint">Woning, spaargeld, beleggingen, BV-aandelen</p>
               </div>
               <div className="input-group">
                 <label className="input-label">Hypotheek/schulden</label>
-                <input 
-                  type="number" 
-                  className="input-field" 
-                  value={hypotheek} 
-                  onChange={e => setHypotheek(Math.max(0, +e.target.value))} 
+                <input
+                  type="text" inputMode="numeric"
+                  className="input-field"
+                  value={hypotheek}
+                  onChange={e => setHypotheek(Math.max(0, +e.target.value))}
+                  onFocus={(e) => e.target.select()}
                   min="0"
                 />
               </div>
@@ -273,13 +257,14 @@
               </div>
               <div className="input-group">
                 <label className="input-label">Aantal kinderen</label>
-                <input 
-                  type="number" 
-                  min="0" 
-                  max="10" 
-                  className="input-field" 
-                  value={aantalKinderen} 
-                  onChange={e => setAantalKinderen(Math.max(0, Math.min(10, +e.target.value)))} 
+                <input
+                  type="text" inputMode="numeric"
+                  min="0"
+                  max="10"
+                  className="input-field"
+                  value={aantalKinderen}
+                  onChange={e => setAantalKinderen(Math.max(0, Math.min(10, +e.target.value)))}
+                  onFocus={(e) => e.target.select()}
                 />
               </div>
             </div>
@@ -365,62 +350,15 @@
                 </div>
               </div>
 
-              {!showLeadForm && !submitted && (
-                <div className="card cta-card">
-                  <div style={{fontSize: 32, marginBottom: 8}}>📋</div>
-                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 8, border: 'none', paddingBottom: 0}}>Wil je een persoonlijk estate plan?</h3>
-                  <p style={{color: '#666', marginBottom: 20}}>Ontvang een rapport met optimale schenkingsstrategie, testamentadvies en BOR-mogelijkheden</p>
-                  <button className="btn" style={{width: 'auto', padding: '14px 32px'}} onClick={() => setShowLeadForm(true)}>Ontvang gratis plan →</button>
-                </div>
-              )}
+              <div className="card" style={{textAlign: 'center', border: '2px solid #F28E18'}}>
+                <div style={{fontSize: '32px', marginBottom: '8px'}}>📥</div>
+                <h3 style={{fontSize: '20px', color: '#333', marginBottom: '8px', border: 'none', paddingBottom: 0}}>Download je persoonlijke rapport</h3>
+                <p style={{color: '#666', marginBottom: '16px'}}>Ontvang direct een PDF met jouw berekeningen en optimalisatieadvies</p>
+                <button className="btn-pdf" style={{width: 'auto', padding: '14px 32px', display: 'inline-block'}} onClick={handleDownloadPDF} disabled={pdfLoading}>
+                  {pdfLoading ? 'PDF genereren...' : 'Download PDF Rapport →'}
+                </button>
+              </div>
 
-              {showLeadForm && !submitted && (
-                <div className="card cta-card" style={{textAlign: 'left'}}>
-                  <h3 style={{fontSize: 20, color: '#333', marginBottom: 16, border: 'none', paddingBottom: 0}}>Waar mogen we je plan naartoe sturen?</h3>
-                  <form onSubmit={handleSubmit}>
-                    <input 
-                      type="text" 
-                      className="form-input" 
-                      placeholder="Je naam" 
-                      value={naam} 
-                      onChange={e => setNaam(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="email" 
-                      className="form-input" 
-                      placeholder="je@email.nl" 
-                      value={email} 
-                      onChange={e => setEmail(e.target.value)} 
-                      required 
-                    />
-                    <input 
-                      type="tel" 
-                      className="form-input" 
-                      placeholder="Telefoonnummer (optioneel)" 
-                      value={telefoon} 
-                      onChange={e => setTelefoon(e.target.value)} 
-                    />
-                    <button type="submit" className="btn" disabled={isSubmitting}>
-                      {isSubmitting ? (
-                        <><span className="spinner"></span>Verzenden...</>
-                      ) : (
-                        'Verstuur mijn plan →'
-                      )}
-                    </button>
-                    {submitError && <p className="error-message">{submitError}</p>}
-                  </form>
-                  <p className="form-hint">We respecteren je privacy. Geen spam.</p>
-                </div>
-              )}
-
-              {submitted && (
-                <div className="card success-card">
-                  <div style={{fontSize: 48, marginBottom: 16}}>✅</div>
-                  <h3 style={{fontSize: 20, color: '#1AABA6', marginBottom: 8, border: 'none', paddingBottom: 0}}>Je plan is onderweg!</h3>
-                  <p style={{color: '#666'}}>Check je inbox voor je persoonlijke estate planning rapport.</p>
-                </div>
-              )}
 
               <p className="disclaimer">
                 Deze berekening is een vereenvoudigde indicatie op basis van de fiscale tarieven 2026. 
