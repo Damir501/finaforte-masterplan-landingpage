@@ -39,3 +39,5 @@ jobs:
             deploy.sh
             dev.sh
             README.md
+            **/docs/**
+            docs/**
