@@ -1,0 +1,19 @@
+:root {
+  --mint: #00A2AA;
+  --mint-dark: #00838B;
+  --mint-light: #E6F7F8;
+  --orange: #F28E18;
+  --copper: #b78652;
+  --copper-hover: #9a6f42;
+  --paper: #efe8d8;
+  --paper-dark: #e0d5bf;
+  --dark-green: #00292B;
+  --text: #1a2a2c;
+  --text-muted: #5b6b6d;
+  --white: #ffffff;
+  --max-w: 1100px;
+  --radius: 8px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+  --font-body: 'Public Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}

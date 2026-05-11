@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Finaforte — Scan (v2 preview)</title>
+  <link rel="stylesheet" href="/v2/styles/tokens.css">
+  <link rel="stylesheet" href="/v2/styles/base.css">
+  <link rel="stylesheet" href="scan.css">
+</head>
+<body class="scan-body">
+  <header class="scan-header">
+    <a href="/v2/" class="scan-exit" aria-label="Stop met scan">×</a>
+    <div class="scan-progress" id="scan-progress">Vraag 1 van 11</div>
+    <div class="scan-progress-bar"><div id="scan-progress-fill" class="scan-progress-fill"></div></div>
+  </header>
+
+  <main class="scan-main">
+    <div id="scan-stage" class="scan-stage"><!-- scan-logic.js rendert hier --></div>
+  </main>
+
+  <script src="/shared/architect-copy.js"></script>
+  <script src="/shared/scan-fingerprint.js"></script>
+  <script src="scan-logic.js"></script>
+</body>
+</html>

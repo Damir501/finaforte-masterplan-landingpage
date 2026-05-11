@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Finaforte — Blinde-Vlekken-Scan (v2 preview)</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+</head>
+<body>
+  <header class="lp-header">
+    <a class="lp-logo" href="/v2/">Finaforte</a>
+    <nav class="lp-nav">
+      <a href="#tools">Calculators</a>
+      <a href="#damir">Over Damir</a>
+      <a href="/v2/#footer">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="hero-tag">Finaforte · Financieel Architect</p>
+      <h1 id="hero-h1">[ARCHITECT.hero.h1]</h1>
+      <p id="hero-sub" class="hero-sub">[ARCHITECT.hero.sub]</p>
+      <a class="cta cta-primary" href="/v2/scan/">[ARCHITECT.hero.cta_primary]</a>
+      <a class="cta cta-secondary" href="#tools">[ARCHITECT.hero.cta_secondary]</a>
+    </section>
+
+    <section id="bewijs" class="bewijs"><!-- Task 3.2 --></section>
+    <section id="how" class="how"><!-- Task 3.3 --></section>
+    <section id="tools" class="tools"><!-- Task 3.4 --></section>
+    <section id="academie" class="academie"><!-- Task 3.5 --></section>
+    <section id="newsletter" class="newsletter"><!-- Task 3.6 --></section>
+  </main>
+
+  <footer id="footer" class="lp-footer"><!-- Task 3.7 --></footer>
+
+  <script src="/shared/architect-copy.js"></script>
+  <script>
+    (function() {
+      'use strict';
+      if (!window.ARCHITECT) return;
+      var h1 = document.getElementById('hero-h1');
+      var sub = document.getElementById('hero-sub');
+      if (h1) h1.textContent = ARCHITECT.hero.h1;
+      if (sub) sub.textContent = ARCHITECT.hero.sub;
+      var primary = document.querySelector('.cta-primary');
+      var secondary = document.querySelector('.cta-secondary');
+      if (primary) primary.textContent = ARCHITECT.hero.cta_primary;
+      if (secondary) secondary.textContent = ARCHITECT.hero.cta_secondary;
+    })();
+  </script>
+</body>
+</html>
