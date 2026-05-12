@@ -125,7 +125,40 @@
     <section id="newsletter" class="newsletter"><!-- Task 3.6 --></section>
   </main>
 
-  <footer id="footer" class="lp-footer"><!-- Task 3.7 --></footer>
+  <!-- Task 3.7 — vóór cutover invullen: AFM/KvK-nummers, [damir-handle] LinkedIn, /privacy.html aanmaken (zie OQ8 in resume) -->
+  <footer id="footer" class="lp-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <p class="footer-brand">Finaforte</p>
+        <p class="footer-tag">Financieel Architect — hypotheek &amp; vermogen</p>
+      </div>
+      <div class="footer-col">
+        <h4>Praktisch</h4>
+        <ul>
+          <li><a href="/v2/scan/">Doe de scan</a></li>
+          <li><a href="/v2/#tools">Calculators</a></li>
+          <li><a href="mailto:info@finaforte.nl">info@finaforte.nl</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Vertrouwen</h4>
+        <ul>
+          <li>AFM-vergunning [nummer]</li>
+          <li>KvK [nummer]</li>
+          <li><a href="/privacy.html">Privacy</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="https://www.linkedin.com/in/[damir-handle]" target="_blank" rel="noopener">Damir op LinkedIn</a></li>
+          <li><a href="https://finaforte.nl" target="_blank" rel="noopener">finaforte.nl</a></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer-copy">&copy; <span id="footer-year"></span> Finaforte — Alle rechten voorbehouden</p>
+    <script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
+  </footer>
 
   <script src="/shared/architect-copy.js"></script>
   <script>
