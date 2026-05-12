@@ -75,7 +75,9 @@
     var op = $(OPENER_ID);
     if (op) op.textContent = window.ARCHITECT.rapport.opener;
     var pr = $(CTA_PRIMARY_ID);
-    if (pr) pr.textContent = window.ARCHITECT.rapport.cta_primary;
+    if (pr && !document.body.classList.contains('has-calendly-embed')) {
+      pr.textContent = window.ARCHITECT.rapport.cta_primary;
+    }
     var form = $(SECONDARY_FORM_ID);
     if (form) {
       var btn = form.querySelector('button');

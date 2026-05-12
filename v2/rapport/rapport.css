@@ -119,8 +119,11 @@
   color: var(--text-muted);
 }
 
+.has-calendly-embed #cta-primary { display: none; }
+
 @media (max-width: 640px) {
   .rapport-vlek { padding: 36px 24px; }
   .rapport-vlek header { flex-direction: column; gap: 4px; }
   .rapport-vlek-nr { font-size: 40px; }
+  .calendly-inline-widget { height: 1000px !important; }
 }
