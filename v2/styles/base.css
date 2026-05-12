@@ -59,6 +59,7 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   margin: 0 auto 32px;
 }
 .hero .cta { margin: 8px 6px; }
+.hero-note { margin-top: 16px; font-size: 14px; color: var(--text-muted); }
 
 .lp-header {
   display: flex;
