@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>fingerprint tests</title></head>
+<body><pre id="out"></pre>
+<script src="/shared/scan-fingerprint.js"></script>
+<script>
+(function() {
+  var R = [];
+  function check(n, c) { R.push((c?'PASS':'FAIL') + ' — ' + n); if(!c) console.error('FAIL: '+n); }
+
+  var input = ['pensioengat', 'estate', 'box3_2028'];
+  var hash = ScanFingerprint.encode(input);
+  check('encode geeft niet-lege string', typeof hash === 'string' && hash.length > 0);
+  check('hash bevat geen +', hash.indexOf('+') === -1);
+  check('hash bevat geen /', hash.indexOf('/') === -1);
+  check('hash bevat geen =', hash.indexOf('=') === -1);
+
+  var roundtrip = ScanFingerprint.decode(hash);
+  check('decode geeft array terug', Array.isArray(roundtrip));
+  check('roundtrip identiek', JSON.stringify(roundtrip) === JSON.stringify(input));
+
+  check('decode lege string → null', ScanFingerprint.decode('') === null);
+  check('decode kapotte input → null', ScanFingerprint.decode('!!!!') === null);
+  check('decode niet-array JSON → null', ScanFingerprint.decode(btoa('{"x":1}')) === null);
+
+  var big = ['a','b','c','d','e','f','g','h','i','j','k','l','m'];
+  var hashBig = ScanFingerprint.encode(big);
+  check('encode 13 items roundtrip', JSON.stringify(ScanFingerprint.decode(hashBig)) === JSON.stringify(big));
+
+  document.getElementById('out').textContent = R.join('\n');
+})();
+</script></body></html>
