@@ -119,3 +119,51 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   .how-steps { grid-template-columns: 1fr; gap: 32px; }
   .how { padding: 64px 24px; }
 }
+
+.bewijs {
+  background: var(--paper);
+  padding: 80px 24px;
+}
+.bewijs-grid {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.bewijs-portret img {
+  border-radius: 50%;
+  width: 320px; height: 320px;
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+}
+.bewijs-tekst h2 {
+  font-size: clamp(24px, 3.5vw, 32px);
+  margin-bottom: 12px;
+  color: var(--dark-green);
+}
+.bewijs-bio {
+  font-size: 17px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+.bewijs-quote {
+  border-left: 4px solid var(--copper);
+  padding-left: 20px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text);
+}
+.bewijs-quote p { margin-bottom: 8px; font-style: italic; }
+.bewijs-quote cite {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+@media (max-width: 720px) {
+  .bewijs-grid { grid-template-columns: 1fr; text-align: center; gap: 32px; }
+  .bewijs-portret img { width: 200px; height: 200px; margin: 0 auto; }
+  .bewijs-quote { text-align: left; }
+}

@@ -28,7 +28,24 @@
       <p class="hero-note">2 minuten · geen mailadres tot u 'm wilt</p>
     </section>
 
-    <section id="bewijs" class="bewijs"><!-- Task 3.2 --></section>
+    <!-- Task 3.2 — sectie hidden tot OQ1 (foto + bio) + OQ4 (testimonial) binnen.
+         Swap-recept: 1) remove `hidden`-attribuut  2) plaats /v2/assets/damir.jpg  3) vervang [OQ1] bio + [OQ4] quote/cite. -->
+    <section id="bewijs" class="bewijs" hidden>
+      <div class="bewijs-grid">
+        <div class="bewijs-portret">
+          <img src="/v2/assets/damir.jpg" alt="Damir Pollack — Financieel Architect bij Finaforte"
+               width="320" height="320" loading="lazy">
+        </div>
+        <div class="bewijs-tekst">
+          <h2 id="damir">Damir Pollack — Financieel Architect</h2>
+          <p class="bewijs-bio">[OQ1: 1-zin bio. Placeholder tot Damir aanlevert.]</p>
+          <blockquote class="bewijs-quote">
+            <p>[OQ4: testimonial-quote, 1-3 zinnen]</p>
+            <cite>— [OQ4: attributie]</cite>
+          </blockquote>
+        </div>
+      </div>
+    </section>
     <section id="how" class="how">
       <header class="how-header">
         <h2>Hoe het werkt</h2>
