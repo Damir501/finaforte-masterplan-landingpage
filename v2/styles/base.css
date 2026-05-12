@@ -77,3 +77,45 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   .lp-nav { display: none; }
   .hero { padding: 64px 20px 56px; }
 }
+
+.how { background: var(--white); padding: 96px 24px; }
+.how-header { text-align: center; max-width: 640px; margin: 0 auto 56px; }
+.how-header h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  color: var(--dark-green);
+  margin-bottom: 12px;
+}
+.how-header p { color: var(--text-muted); font-size: 18px; }
+
+.how-steps {
+  list-style: none;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+.how-step { padding: 0 8px; }
+.how-nr {
+  display: inline-block;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--mint);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 48px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.how-step h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: var(--dark-green);
+}
+.how-step p { color: var(--text-muted); font-size: 16px; line-height: 1.5; }
+
+@media (max-width: 720px) {
+  .how-steps { grid-template-columns: 1fr; gap: 32px; }
+  .how { padding: 64px 24px; }
+}
