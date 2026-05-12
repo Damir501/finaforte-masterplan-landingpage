@@ -1,0 +1,97 @@
+.scan-body { background: var(--mint-light); min-height: 100vh; }
+
+.scan-header {
+  position: sticky; top: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--paper-dark);
+  padding: 12px 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.scan-exit {
+  font-size: 28px; line-height: 1;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 4px 12px;
+}
+.scan-exit:hover { color: var(--text); }
+.scan-progress {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.scan-progress-bar {
+  width: 100%;
+  position: absolute; left: 0; bottom: -1px;
+  height: 3px;
+  background: var(--paper);
+}
+.scan-progress-fill {
+  height: 100%;
+  background: var(--copper);
+  transition: width 0.3s ease;
+  width: 0%;
+}
+
+.scan-main {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+.scan-q-label {
+  font-size: clamp(22px, 3.5vw, 28px);
+  line-height: 1.25;
+  margin-bottom: 8px;
+  color: var(--dark-green);
+}
+.scan-q-sub {
+  font-size: 15px; color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.scan-q-options { list-style: none; }
+.scan-q-options li { margin-bottom: 12px; }
+.scan-q-option {
+  width: 100%;
+  text-align: left;
+  padding: 18px 20px;
+  background: var(--white);
+  border: 2px solid var(--paper-dark);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.05s;
+}
+.scan-q-option:hover {
+  border-color: var(--mint);
+  background: var(--mint-light);
+}
+.scan-q-option:active { transform: translateY(1px); }
+.scan-q-option.selected {
+  border-color: var(--copper);
+  background: var(--paper);
+}
+
+.scan-q-nav {
+  margin-top: 32px;
+  text-align: left;
+}
+.scan-q-back {
+  background: transparent; border: none;
+  color: var(--text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 0;
+}
+.scan-q-back:hover { color: var(--text); }
+
+.scan-analyzing {
+  text-align: center;
+  font-size: 18px;
+  color: var(--mint-dark);
+  padding: 96px 24px;
+}
+
+@media (max-width: 640px) {
+  .scan-main { padding: 32px 16px; }
+  .scan-q-option { padding: 16px; }
+}
