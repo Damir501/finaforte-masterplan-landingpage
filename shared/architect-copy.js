@@ -11,7 +11,7 @@
       h1: 'Het bouwplan voor je vermogen — start met de blindspot-scan',
       sub: 'Vermogensplanning voor wie wil weten wat hij niet weet.',
       cta_primary: 'Start de gratis scan',
-      cta_secondary: 'Bekijk de gereedschapskist',
+      cta_secondary: 'Plan gratis kennismaking',
       tag: 'Finaforte · Financieel Architect'
     },
     scan: {
@@ -21,7 +21,7 @@
       stop_label: 'Stop met scan'
     },
     rapport: {
-      opener: 'Op basis van uw antwoorden zien wij bij u 3 blinde vlekken die een architect direct zou opmerken.',
+      opener: 'Op basis van uw antwoorden zien wij 3 aandachtspunten die een financieel architect direct zou opmerken.',
       cta_primary: 'Plan uw intake op de bouwplaats — 30 min met Damir',
       cta_secondary: 'Stuur dit rapport naar mijn inbox + Architecten-Academie',
       video_placeholder: 'Welkom-video van Damir volgt binnen 2 weken.'

@@ -357,3 +357,227 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   color: var(--text-muted);
   margin-top: 24px;
 }
+
+/* Fase A — Garantie-blok (papier-sectie, gecentreerd) */
+.garantie {
+  background: var(--paper);
+  padding: 80px 24px;
+  text-align: center;
+}
+.garantie h2 {
+  font-size: clamp(24px, 3.5vw, 32px);
+  color: var(--dark-green);
+  margin-bottom: 20px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.garantie p {
+  color: var(--text-muted);
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 640px) {
+  .garantie { padding: 56px 20px; }
+}
+
+/* Fase A — Twee-diensten-sectie (Bouwplan + Onderhoudsronde) */
+.diensten {
+  background: var(--mint-light);
+  padding: 96px 24px;
+}
+.diensten > h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  color: var(--dark-green);
+  text-align: center;
+  margin-bottom: 12px;
+}
+.diensten-intro {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 18px;
+  margin-bottom: 48px;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.diensten-cards {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+.dienst-card {
+  background: var(--white);
+  padding: 36px 32px;
+  border-radius: 12px;
+  border-top: 4px solid var(--copper);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+.dienst-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--copper);
+  margin-bottom: 16px;
+}
+.dienst-card h3 {
+  font-size: 24px;
+  line-height: 1.25;
+  color: var(--dark-green);
+  margin-bottom: 16px;
+}
+.dienst-card > p {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+.dienst-card ul {
+  list-style: none;
+  margin-bottom: 28px;
+  padding: 0;
+}
+.dienst-card ul li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 8px;
+  font-size: 15px;
+  color: var(--text);
+}
+.dienst-card ul li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--mint-dark);
+  font-weight: 700;
+}
+.dienst-card .cta {
+  align-self: flex-start;
+  margin-top: auto;
+}
+.diensten-footer {
+  text-align: center;
+  margin-top: 40px;
+  color: var(--text-muted);
+  font-size: 15px;
+  font-style: italic;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 800px) {
+  .diensten-cards { grid-template-columns: 1fr; gap: 24px; }
+  .diensten { padding: 64px 20px; }
+  .dienst-card .cta { align-self: stretch; text-align: center; }
+}
+
+/* Fase A — FAQ-sectie (native <details> accordion) */
+.faq {
+  background: var(--white);
+  padding: 96px 24px;
+}
+.faq h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  color: var(--dark-green);
+  text-align: center;
+  margin-bottom: 40px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.faq details {
+  max-width: 720px;
+  margin: 0 auto 12px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  padding: 0;
+  border: 1px solid var(--paper-dark);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.faq details[open] {
+  border-color: var(--copper);
+  box-shadow: var(--shadow-sm);
+}
+.faq summary {
+  padding: 18px 22px;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--dark-green);
+  cursor: pointer;
+  list-style: none;
+  position: relative;
+  padding-right: 48px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "+";
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  line-height: 1;
+  color: var(--copper);
+  font-weight: 400;
+  transition: transform 0.2s;
+}
+.faq details[open] summary::after {
+  content: "−";
+}
+.faq summary:hover { color: var(--copper); }
+.faq details p {
+  padding: 0 22px 20px;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .faq { padding: 64px 20px; }
+  .faq summary { font-size: 16px; padding: 16px 18px; padding-right: 44px; }
+  .faq summary::after { right: 18px; }
+  .faq details p { padding: 0 18px 18px; }
+}
+
+/* Fase A — Kennismaking-anker (centered CTA-sectie) */
+.kennismaking {
+  background: linear-gradient(135deg, var(--mint-light) 0%, var(--paper) 100%);
+  padding: 96px 24px;
+  text-align: center;
+}
+.kennismaking-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.kennismaking h2 {
+  font-size: clamp(26px, 4vw, 38px);
+  color: var(--dark-green);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+.kennismaking p {
+  color: var(--text-muted);
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+.kennismaking .cta {
+  font-size: 18px;
+  padding: 16px 36px;
+}
+
+@media (max-width: 640px) {
+  .kennismaking { padding: 64px 20px; }
+  .kennismaking .cta { font-size: 16px; padding: 14px 24px; }
+}
