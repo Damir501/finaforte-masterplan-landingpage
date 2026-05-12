@@ -1,0 +1,126 @@
+.rapport-body { background: var(--white); }
+
+.rapport-header {
+  background: linear-gradient(135deg, var(--mint-light) 0%, var(--paper) 100%);
+  padding: 80px 24px 64px;
+  text-align: center;
+}
+.rapport-header h1 {
+  font-size: clamp(24px, 3.8vw, 32px);
+  line-height: 1.3;
+  max-width: 720px;
+  margin: 0 auto;
+  color: var(--dark-green);
+}
+
+.rapport-main {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.rapport-vlek {
+  padding: 56px 36px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  background: var(--white);
+  border: 1px solid var(--paper-dark);
+}
+.rapport-vlek-1 { background: var(--paper); border-color: var(--paper-dark); }
+.rapport-vlek-3 { background: var(--paper); border-color: var(--paper-dark); }
+
+.rapport-vlek header {
+  display: flex; align-items: baseline; gap: 16px;
+  margin-bottom: 16px;
+}
+.rapport-vlek-nr {
+  font-size: 56px; font-weight: 200; line-height: 1;
+  color: var(--copper);
+  font-feature-settings: "tnum";
+}
+.rapport-vlek-title {
+  font-size: clamp(22px, 3.2vw, 28px);
+  font-weight: 700; line-height: 1.25;
+  color: var(--dark-green);
+}
+.rapport-vlek-uitleg {
+  font-size: 17px; line-height: 1.6;
+  color: var(--text);
+  margin-bottom: 28px;
+}
+.rapport-vlek-video {
+  margin: 32px 0;
+  aspect-ratio: 16/9;
+  background: var(--dark-green);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+}
+.video-placeholder {
+  text-align: center;
+  color: rgba(255,255,255,0.75);
+  padding: 24px;
+}
+.video-placeholder svg { color: var(--copper); margin-bottom: 12px; }
+.rapport-vlek-link {
+  display: inline-block;
+  padding: 10px 0;
+  color: var(--mint-dark);
+  font-weight: 600;
+  border-bottom: 2px solid var(--mint-dark);
+}
+.rapport-vlek-link:hover { color: var(--copper); border-color: var(--copper); }
+
+.rapport-cta {
+  background: var(--paper);
+  padding: 80px 24px;
+  text-align: center;
+}
+.rapport-cta .cta-primary {
+  display: inline-block;
+  margin-bottom: 32px;
+  font-size: 18px;
+  padding: 18px 36px;
+}
+.cta-secondary-form {
+  max-width: 480px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.cta-secondary-form input[type="email"] {
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 2px solid var(--paper-dark);
+  font-size: 16px;
+  font-family: var(--font-body);
+}
+.cta-secondary-form input[type="email"]:focus {
+  outline: none; border-color: var(--mint-dark);
+}
+.cta-secondary-form button {
+  padding: 12px 24px;
+  background: transparent;
+  border: 2px solid var(--mint-dark);
+  color: var(--mint-dark);
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.cta-secondary-form button:hover { background: var(--mint-light); }
+.form-thanks { color: var(--mint-dark); font-weight: 600; }
+.cta-secondary-form.too-fast::before {
+  content: "Even wachten — controle anti-spam.";
+  color: var(--copper);
+  font-size: 14px;
+}
+
+.rapport-error {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 640px) {
+  .rapport-vlek { padding: 36px 24px; }
+  .rapport-vlek header { flex-direction: column; gap: 4px; }
+  .rapport-vlek-nr { font-size: 40px; }
+}
