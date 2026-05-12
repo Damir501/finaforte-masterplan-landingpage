@@ -77,6 +77,7 @@
     var pr = $(CTA_PRIMARY_ID);
     if (pr && !document.body.classList.contains('has-calendly-embed')) {
       pr.textContent = window.ARCHITECT.rapport.cta_primary;
+      pr.hidden = false;
     }
     var form = $(SECONDARY_FORM_ID);
     if (form) {
