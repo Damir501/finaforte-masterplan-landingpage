@@ -167,3 +167,71 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   .bewijs-portret img { width: 200px; height: 200px; margin: 0 auto; }
   .bewijs-quote { text-align: left; }
 }
+
+.tools {
+  background: var(--paper);
+  padding: 96px 24px;
+}
+.tools-header { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+.tools-header h2 {
+  font-size: clamp(26px, 4vw, 36px);
+  color: var(--dark-green);
+  margin-bottom: 12px;
+}
+.tools-header p { color: var(--text-muted); font-size: 17px; }
+
+.tools-grid {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.tool-card {
+  display: block;
+  background: var(--white);
+  padding: 32px 28px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+  color: inherit;
+}
+.tool-card:hover {
+  border-color: var(--copper);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.tool-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--copper);
+  margin-bottom: 12px;
+}
+.tool-card h3 {
+  font-size: 19px;
+  line-height: 1.3;
+  color: var(--dark-green);
+  margin-bottom: 12px;
+}
+.tool-card p { color: var(--text-muted); font-size: 15px; margin-bottom: 16px; }
+.tool-arrow {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mint-dark);
+}
+.tools-cta { text-align: center; margin-top: 40px; }
+.cta-link {
+  color: var(--mint-dark);
+  font-weight: 600;
+  border-bottom: 2px solid var(--mint-dark);
+  padding-bottom: 2px;
+}
+.cta-link:hover { color: var(--copper); border-color: var(--copper); }
+
+@media (max-width: 900px) {
+  .tools-grid { grid-template-columns: 1fr; }
+}
