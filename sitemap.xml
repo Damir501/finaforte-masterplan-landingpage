@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://masterplan.finaforte.nl/</loc><priority>1.0</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://masterplan.finaforte.nl/scan/</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://masterplan.finaforte.nl/implementatie/</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://masterplan.finaforte.nl/Mini-Calculators/01_Salaris_vs_Dividend/salaris-dividend-calculator-v2.html</loc><priority>0.7</priority></url>
   <url><loc>https://masterplan.finaforte.nl/Mini-Calculators/02_Eigen_Woning_Hefboom/eigen-woning-hefboom-calculator-v3.html</loc><priority>0.7</priority></url>
   <url><loc>https://masterplan.finaforte.nl/Mini-Calculators/03_Box3_Optimizer/box3-optimizer-calculator-v2.html</loc><priority>0.7</priority></url>
