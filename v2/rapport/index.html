@@ -8,8 +8,11 @@
   <link rel="stylesheet" href="/v2/styles/tokens.css">
   <link rel="stylesheet" href="/v2/styles/base.css">
   <link rel="stylesheet" href="rapport.css">
+  <style>
+    .has-calendly-embed #cta-primary { display: none; }
+  </style>
 </head>
-<body class="rapport-body">
+<body class="rapport-body has-calendly-embed">
   <header class="rapport-header">
     <h1 id="rapport-opener">[ARCHITECT.rapport.opener]</h1>
   </header>
@@ -30,5 +33,12 @@
   <script src="/shared/architect-copy.js"></script>
   <script src="/shared/scan-fingerprint.js"></script>
   <script src="rapport.js"></script>
+
+  <div class="calendly-inline-widget"
+       data-url="https://calendly.com/d/cxqh-9ht-kp7/finaforte-masterplan?embed_domain=masterplan.finaforte.nl&embed_type=Inline"
+       style="min-width:320px;height:700px;"></div>
+  <script type="text/javascript"
+          src="https://assets.calendly.com/assets/external/widget.js"
+          async></script>
 </body>
 </html>
