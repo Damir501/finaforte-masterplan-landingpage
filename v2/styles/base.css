@@ -28,3 +28,51 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   section { padding: 48px 20px; }
   .cta { padding: 12px 22px; font-size: 16px; width: 100%; text-align: center; }
 }
+
+.hero {
+  background: linear-gradient(135deg, var(--mint-light) 0%, #d2eef0 100%);
+  padding: 96px 24px 80px;
+  text-align: center;
+}
+.hero-tag {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mint-dark);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 44px);
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--dark-green);
+  margin-bottom: 16px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.hero-sub {
+  font-size: clamp(17px, 2.2vw, 20px);
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto 32px;
+}
+.hero .cta { margin: 8px 6px; }
+
+.lp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  max-width: var(--max-w);
+  margin: 0 auto;
+}
+.lp-logo { font-weight: 700; color: var(--mint-dark); font-size: 20px; }
+.lp-nav a { margin-left: 24px; color: var(--text); font-size: 15px; }
+.lp-nav a:hover { color: var(--mint-dark); }
+
+@media (max-width: 640px) {
+  .lp-nav { display: none; }
+  .hero { padding: 64px 20px 56px; }
+}
