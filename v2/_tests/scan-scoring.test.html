@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>scan-scoring tests</title></head>
+<body><pre id="out"></pre>
+<script src="/v2/scan/scan-data.js"></script>
+<script src="/v2/scan/scan-scoring.js"></script>
+<script>
+(function() {
+  var R = [];
+  function check(n, c) { R.push((c?'PASS':'FAIL') + ' — ' + n); if(!c) console.error('FAIL: '+n); }
+
+  // Test 1: DGA met holding+werkmij, vermogen in BV, verkoop op planning, nooit integraal, dividend dominant, grote lening
+  var dgaSell = {
+    q1: 'dga', q2: 'holding_werk', q3: 'bv', q4: 'verkoop', q5: 'nooit', q6: 'meer_3jr',
+    q7_dga: 'dividend_dominant', q8_dga: 'ja_groot', q9_dga: 'lopend', q10_dga: 'beide', q11_dga: 'nee'
+  };
+  var s1 = ScanScoring.calculateScores(dgaSell);
+  var t1 = ScanScoring.getTop3(s1);
+  check('DGA-sell: estate in top-3', t1.indexOf('estate') !== -1);
+  check('DGA-sell: top-3 heeft 3 items', t1.length === 3);
+  check('DGA-sell: alle scores >= 0', Object.keys(s1).every(function(k){return s1[k]>=0;}));
+
+  // Test 2: Particulier, 1M-2M box 3, plant overdracht maar geen plan, nooit integraal
+  var rich = {
+    q1: 'particulier', q2: 'nvt', q3: 'prive', q4: 'overdracht', q5: 'soms', q6: 'nooit',
+    q7_p: '1m_2m', q8_p: 'volledig_aftrek', q9_p: 'overweeg', q10_p: 'nee', q11_p: 'nee'
+  };
+  var s2 = ScanScoring.calculateScores(rich);
+  var t2 = ScanScoring.getTop3(s2);
+  check('Particulier-rich: box3_2028 in top-3', t2.indexOf('box3_2028') !== -1);
+  check('Particulier-rich: estate of schenken_erven in top-3',
+    t2.indexOf('estate') !== -1 || t2.indexOf('schenken_erven') !== -1);
+
+  // Test 3: ZZP zonder pensioen, krimpende omzet, nooit-pensioenplan
+  var zzpRisk = {
+    q1: 'zzp', q2: 'geen_bv', q3: 'prive', q4: 'pensioen', q5: 'nooit', q6: 'nooit',
+    q7_z: 'krimp', q8_z: 'geen', q9_z: 'nooit', q10_z: 'gemixed', q11_z: 'nooit'
+  };
+  var s3 = ScanScoring.calculateScores(zzpRisk);
+  var t3 = ScanScoring.getTop3(s3);
+  check('ZZP-risk: pensioengat in top-3', t3.indexOf('pensioengat') !== -1);
+  check('ZZP-risk: pensioengat score > 0', s3.pensioengat > 0);
+
+  // Test 4: β-bias toegepast (controleer 1.2× multiplier)
+  var simple = { q1: 'particulier' };
+  var s4 = ScanScoring.calculateScores(simple);
+  // q1=particulier → box3_optimizer +2 (geen bias), estate +1 (×1.2 = 1.2)
+  check('β-bias: estate krijgt 1.2× (1.0 → 1.2)', Math.abs(s4.estate - 1.2) < 0.001);
+  check('β-bias: box3_optimizer ongewijzigd (geen bias)', s4.box3_optimizer === 2);
+
+  // Test 5: estate + schenken_erven groepering
+  var both = {
+    q1: 'particulier', q4: 'overdracht', q9_p: 'overweeg', q10_p: 'nee', q11_dga: 'nee'
+  };
+  var s5 = ScanScoring.calculateScores(both);
+  var t5 = ScanScoring.getTop3(s5);
+  if (t5.indexOf('estate') !== -1 && t5.indexOf('schenken_erven') !== -1) {
+    check('Groepering: derde slot is geen estate/schenken_erven',
+      t5[2] !== 'estate' && t5[2] !== 'schenken_erven');
+  } else {
+    check('Groepering: niet getriggerd (OK voor deze input)', true);
+  }
+
+  // Test 6: lege input → alle nullen
+  var empty = ScanScoring.calculateScores({});
+  check('Lege input: alle scores = 0', Object.keys(empty).every(function(k){return empty[k]===0;}));
+
+  // Test 7: top-3 deterministisch bij tie
+  var t7a = ScanScoring.getTop3({pensioengat:0,estate:0,schenken_erven:0,box3_2028:0,
+    salaris_dividend:0,eigen_woning:0,box3_optimizer:0,lenen_bv:0,pensioen_toeslagen:0,
+    peildatum:0,vastgoed:0,peb_odv_lijfrente:0,aflossen_beleggen:0});
+  check('Tiebreak: bij alle nullen volgt DOMAIN_ORDER',
+    t7a[0] === 'pensioengat' && t7a[1] === 'estate' && t7a[2] === 'schenken_erven');
+
+  document.getElementById('out').textContent = R.join('\n');
+})();
+</script></body></html>
