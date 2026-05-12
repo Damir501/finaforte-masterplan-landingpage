@@ -1,6 +1,6 @@
 /**
  * Rapport: decodeert ?p=<hash>, rendert top-3 architect-titels uit ARCHITECT.domeinen.
- * Bij geen hash: redirect naar /v2/scan/ (gebruiker hoort daar te beginnen).
+ * Bij geen hash: redirect naar /scan/ (gebruiker hoort daar te beginnen).
  */
 (function() {
   'use strict';
@@ -101,10 +101,10 @@
       var p = getHash();
       var data = new FormData();
       data.append('email', email);
-      data.append('Pagina', 'v2/rapport');
+      data.append('Pagina', 'rapport');
       data.append('Hash', p);
       data.append('Datum', new Date().toISOString());
-      data.append('_subject', 'Rapport-aanvraag v2 (' + p.substring(0, 12) + ')');
+      data.append('_subject', 'Rapport-aanvraag (' + p.substring(0, 12) + ')');
       data.append('_template', 'table');
       fetch(form.action, { method: 'POST', body: data, mode: 'no-cors' })
         .then(function() {
@@ -125,7 +125,7 @@
     setStaticCopy();
     var hash = getHash();
     if (!hash) {
-      location.href = '/v2/scan/';
+      location.href = '/scan/';
       return;
     }
     var domains = window.ScanFingerprint.decode(hash);
@@ -133,7 +133,7 @@
       var main = $(MAIN_ID);
       if (main) {
         main.innerHTML = '<p class="rapport-error">Het rapport-link is niet (meer) leesbaar. ' +
-          '<a href="/v2/scan/">Doe de scan opnieuw.</a></p>';
+          '<a href="/scan/">Doe de scan opnieuw.</a></p>';
       }
       return;
     }

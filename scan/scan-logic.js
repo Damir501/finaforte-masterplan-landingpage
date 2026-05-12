@@ -110,7 +110,7 @@
     var top3 = window.ScanScoring.getTop3(scores);
     var hash = window.ScanFingerprint.encode(top3);
     setTimeout(function() {
-      location.href = '/v2/rapport/?p=' + hash;
+      location.href = '/rapport/?p=' + hash;
     }, 1400);
   }
 
