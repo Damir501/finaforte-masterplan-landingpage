@@ -360,6 +360,18 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   .newsletter-form { flex-direction: column; }
 }
 
+.newsletter-form.error input[type="email"] {
+  border-color: #c44;
+}
+.newsletter-form.error::after {
+  content: "Verzenden mislukt — probeer het over een minuut opnieuw.";
+  display: block;
+  color: #c44;
+  font-size: 14px;
+  margin-top: 12px;
+  flex-basis: 100%;
+}
+
 /* Task 3.2 — Pad C bewijs-testimonial-only */
 .bewijs { background: var(--paper); padding: 96px 24px; }
 .bewijs-testimonial-card {
