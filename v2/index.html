@@ -139,7 +139,23 @@
         </ul>
       </div>
     </section>
-    <section id="newsletter" class="newsletter"><!-- Task 3.6 --></section>
+    <section id="newsletter" class="newsletter">
+  <div class="newsletter-inner">
+    <h2>De Onderhoudsronde</h2>
+    <p>Vier keer per jaar een rustige update — wetswijzigingen, casussen,
+       check-vragen. Geen verkooppraat, geen spam.</p>
+    <form id="newsletter-form" class="newsletter-form"
+          action="https://formsubmit.co/ajax/info@finaforte.nl" method="POST">
+      <input type="email" name="email" placeholder="uw@email.nl" required>
+      <input type="hidden" name="_subject" value="Onderhoudsronde nieuwsbrief-aanmelding v2">
+      <input type="hidden" name="Pagina" value="v2/home/newsletter">
+      <input type="hidden" name="_template" value="table">
+      <input type="text" name="_honey" style="display:none">
+      <button type="submit">Aanmelden</button>
+    </form>
+    <p class="newsletter-fineprint">U kunt zich altijd weer afmelden onderaan elke editie.</p>
+  </div>
+</section>
   </main>
 
   <!-- Task 3.7 — OQ8 status 2026-05-12: AFM ✓ 12040432, KvK ✓ 34208876, Privacy ✓ extern naar finaforte.nl/privacy-statement/. Open: [damir-handle] LinkedIn — Damir invullen vóór cutover. -->
@@ -176,6 +192,26 @@
     <p class="footer-copy">&copy; <span id="footer-year"></span> Finaforte — Alle rechten voorbehouden</p>
     <script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
   </footer>
+
+<script>
+(function() {
+  'use strict';
+  var form = document.getElementById('newsletter-form');
+  if (!form) return;
+  var renderedAt = Date.now();
+  form.addEventListener('submit', function(ev) {
+    ev.preventDefault();
+    var honey = form.querySelector('input[name="_honey"]');
+    if (honey && honey.value) return;
+    if (Date.now() - renderedAt < 5000) return;
+    var data = new FormData(form);
+    fetch(form.action, { method: 'POST', body: data, mode: 'no-cors' })
+      .then(function() {
+        form.outerHTML = '<p class="newsletter-thanks">Bedankt — bevestigingsmail volgt zo.</p>';
+      });
+  });
+})();
+</script>
 
   <script src="/shared/architect-copy.js"></script>
   <script>

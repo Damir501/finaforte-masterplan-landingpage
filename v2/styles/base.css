@@ -304,3 +304,58 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
 @media (max-width: 480px) {
   .footer-inner { grid-template-columns: 1fr; }
 }
+
+/* Task 3.6 — Newsletter */
+.newsletter { background: var(--paper); padding: 96px 24px; }
+.newsletter-inner { max-width: 580px; margin: 0 auto; text-align: center; }
+.newsletter h2 {
+  font-size: clamp(24px, 3.5vw, 32px);
+  color: var(--dark-green);
+  margin-bottom: 12px;
+}
+.newsletter p { color: var(--text-muted); margin-bottom: 32px; font-size: 17px; }
+
+.newsletter-form {
+  display: flex; gap: 8px;
+  max-width: 480px; margin: 0 auto;
+}
+.newsletter-form input[type="email"] {
+  flex: 1;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 2px solid var(--paper-dark);
+  font-size: 16px;
+  font-family: var(--font-body);
+  background: var(--white);
+}
+.newsletter-form input[type="email"]:focus {
+  outline: none;
+  border-color: var(--copper);
+}
+.newsletter-form button {
+  padding: 14px 28px;
+  background: var(--copper);
+  color: var(--white);
+  border: 2px solid var(--copper);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.newsletter-form button:hover { background: var(--copper-hover); border-color: var(--copper-hover); }
+.newsletter-fineprint {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 16px;
+}
+
+.newsletter-thanks {
+  color: var(--mint-dark);
+  font-weight: 600;
+  font-size: 18px;
+  padding: 16px;
+}
+
+@media (max-width: 540px) {
+  .newsletter-form { flex-direction: column; }
+}
