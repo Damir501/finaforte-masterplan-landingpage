@@ -9,6 +9,7 @@
   var OPENER_ID = 'rapport-opener';
   var CTA_PRIMARY_ID = 'cta-primary';
   var SECONDARY_FORM_ID = 'cta-secondary';
+  var PDF_BTN_ID = 'download-pdf-btn';
 
   function $(id) { return document.getElementById(id); }
 
@@ -140,6 +141,33 @@
     }
     renderTop3(domains);
     attachSecondaryHandler();
+    attachPdfHandler(domains);
+  }
+
+  function attachPdfHandler(domains) {
+    var btn = $(PDF_BTN_ID);
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      if (!window.FinaforteRapportPDF || typeof window.FinaforteRapportPDF.generate !== 'function') {
+        console.error('FinaforteRapportPDF generator niet geladen');
+        alert('PDF-generator nog niet beschikbaar — probeer over een paar seconden opnieuw.');
+        return;
+      }
+      btn.disabled = true;
+      var orig = btn.innerHTML;
+      btn.textContent = 'PDF wordt gemaakt...';
+      try {
+        window.FinaforteRapportPDF.generate(domains);
+      } catch (e) {
+        console.error('PDF-genereren mislukt:', e);
+        alert('Het is niet gelukt om de PDF te maken. Neem contact op via info@finaforte.nl.');
+      } finally {
+        setTimeout(function() {
+          btn.disabled = false;
+          btn.innerHTML = orig;
+        }, 800);
+      }
+    });
   }
 
   if (document.readyState === 'loading') {

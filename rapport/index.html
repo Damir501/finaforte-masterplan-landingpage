@@ -31,7 +31,7 @@
   <link rel="canonical" href="https://masterplan.finaforte.nl/rapport/">
   <link rel="stylesheet" href="/styles/tokens.css">
   <link rel="stylesheet" href="/styles/base.css">
-  <link rel="stylesheet" href="rapport.css">
+  <link rel="stylesheet" href="rapport.css?v=20260513d">
 </head>
 <body class="rapport-body has-calendly-embed">
   <header class="rapport-header">
@@ -41,6 +41,18 @@
   <main id="rapport-main" class="rapport-main"><!-- rapport.js rendert top-3 --></main>
 
   <section class="rapport-cta">
+    <div class="rapport-pdf-download">
+      <button type="button" id="download-pdf-btn" class="cta cta-pdf">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download dit rapport als PDF
+      </button>
+      <p class="rapport-pdf-note">Volledig rapport (8 pagina&apos;s) — opslaan voor uw archief of delen met uw adviseur.</p>
+    </div>
+
     <a id="cta-primary" class="cta cta-primary" href="#calendly-section" hidden>Plan uw intake op de bouwplaats — 30 min met Damir</a>
     <form id="cta-secondary" class="cta-secondary-form" action="https://formsubmit.co/ajax/info@finaforte.nl" method="POST">
       <input type="email" name="email" placeholder="uw@email.nl" required>
@@ -54,7 +66,10 @@
 
   <script src="/shared/architect-copy.js"></script>
   <script src="/shared/scan-fingerprint.js"></script>
-  <script src="rapport.js"></script>
+  <script src="/shared/jspdf.umd.min.js"></script>
+  <script src="/shared/jspdf.plugin.autotable.min.js"></script>
+  <script src="rapport-pdf.js?v=20260513d"></script>
+  <script src="rapport.js?v=20260513d"></script>
 
   <div class="calendly-inline-widget"
        data-url="https://calendly.com/d/cxqh-9ht-kp7/finaforte-masterplan?embed_domain=masterplan.finaforte.nl&embed_type=Inline"

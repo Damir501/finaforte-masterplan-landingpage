@@ -81,6 +81,44 @@
   font-size: 18px;
   padding: 18px 36px;
 }
+
+.rapport-pdf-download {
+  max-width: 480px;
+  margin: 0 auto 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--paper-dark);
+}
+.cta-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  background: var(--mint-dark);
+  color: var(--white);
+  border: 2px solid var(--mint-dark);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.cta-pdf:hover {
+  background: var(--mint);
+  border-color: var(--mint);
+}
+.cta-pdf:active { transform: translateY(1px); }
+.cta-pdf:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.cta-pdf svg { flex-shrink: 0; }
+.rapport-pdf-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--text-muted, #666);
+  font-style: italic;
+}
 .cta-secondary-form {
   max-width: 480px; margin: 0 auto;
   display: flex; flex-direction: column; gap: 12px;
