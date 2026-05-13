@@ -1,8 +1,31 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-family: var(--font-body); color: var(--text); -webkit-font-smoothing: antialiased; }
-body { line-height: 1.55; font-size: 17px; }
+html { font-family: var(--font-body); color: var(--text); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { line-height: 1.65; font-size: 17px; }
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; height: auto; display: block; }
+
+/* Niveau A — globale typografische schaal (specifieke .section h2 selectors blijven dominant) */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--mint-deep);
+}
+h1 { font-size: clamp(40px, 7vw, 72px); font-weight: 500; }
+h2 { font-size: clamp(28px, 4vw, 44px); font-weight: 500; }
+h3 { font-size: clamp(20px, 2.4vw, 28px); font-weight: 600; letter-spacing: -0.015em; }
+
+/* Niveau A — eyebrow-text (kicker boven sectie-headings) */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 16px;
+}
 
 .cta {
   display: inline-block;
@@ -145,14 +168,15 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   padding: 32px 28px;
   border-radius: 12px;
   border: 2px solid transparent;
-  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  box-shadow: var(--shadow-medium);
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
   text-decoration: none;
   color: inherit;
 }
 .tool-card:hover {
   border-color: var(--copper);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
 }
 .tool-tag {
   display: inline-block;
@@ -387,7 +411,7 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
 
 /* Fase A — Twee-diensten-sectie (Bouwplan + Onderhoudsronde) */
 .diensten {
-  background: var(--mint-light);
+  background: linear-gradient(180deg, var(--cream) 0%, var(--mint-light) 100%);
   padding: 96px 24px;
 }
 .diensten > h2 {
@@ -417,9 +441,14 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   padding: 36px 32px;
   border-radius: 12px;
   border-top: 4px solid var(--copper);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-medium);
   display: flex;
   flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.dienst-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lift);
 }
 .dienst-label {
   display: inline-block;
@@ -580,4 +609,62 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
 @media (max-width: 640px) {
   .kennismaking { padding: 64px 20px; }
   .kennismaking .cta { font-size: 16px; padding: 14px 24px; }
+}
+
+/* ============================================================
+   Niveau A — Micro-interactions (scope-buiten scan + rapport)
+   ============================================================ */
+
+/* Animated link-underline — gescopet op text-contexts om CTA's
+   en cards onaangeroerd te laten. Scan/rapport bewust uitgesloten. */
+body:not(.scan-body):not(.rapport-body) .lp-nav a,
+body:not(.scan-body):not(.rapport-body) .footer-col a,
+body:not(.scan-body):not(.rapport-body) .academie-list a,
+body:not(.scan-body):not(.rapport-body) .academie p a,
+body:not(.scan-body):not(.rapport-body) .faq details p a,
+body:not(.scan-body):not(.rapport-body) .uitleg-partner a {
+  position: relative;
+  transition: color 0.2s ease;
+}
+body:not(.scan-body):not(.rapport-body) .lp-nav a::after,
+body:not(.scan-body):not(.rapport-body) .footer-col a::after,
+body:not(.scan-body):not(.rapport-body) .academie-list a::after,
+body:not(.scan-body):not(.rapport-body) .academie p a::after,
+body:not(.scan-body):not(.rapport-body) .faq details p a::after,
+body:not(.scan-body):not(.rapport-body) .uitleg-partner a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+body:not(.scan-body):not(.rapport-body) .lp-nav a:hover::after,
+body:not(.scan-body):not(.rapport-body) .footer-col a:hover::after,
+body:not(.scan-body):not(.rapport-body) .academie-list a:hover::after,
+body:not(.scan-body):not(.rapport-body) .academie p a:hover::after,
+body:not(.scan-body):not(.rapport-body) .faq details p a:hover::after,
+body:not(.scan-body):not(.rapport-body) .uitleg-partner a:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Scroll-fade-in voor homepage + implementatie sections.
+   Scan/rapport uitgesloten — die hebben eigen stage-transities. */
+@media (prefers-reduced-motion: no-preference) {
+  body:not(.scan-body):not(.rapport-body) main > section {
+    animation: fadeInUp 0.6s ease-out backwards;
+  }
+  body:not(.scan-body):not(.rapport-body) main > section:nth-of-type(2) { animation-delay: 0.08s; }
+  body:not(.scan-body):not(.rapport-body) main > section:nth-of-type(3) { animation-delay: 0.16s; }
+  body:not(.scan-body):not(.rapport-body) main > section:nth-of-type(4) { animation-delay: 0.24s; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
