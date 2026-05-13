@@ -2,14 +2,15 @@
  * Scan-submit: bouwt Brevo-payload uit scan-state en POST naar webhook-endpoint.
  * Vereist scan-state.js + scan-scoring.js + scan-fingerprint.js geladen vóór dit script.
  *
- * Fase A — webhook is placeholder (no-op in productie tot Fase C). Submit-failure
- * is fail-soft: rapport-redirect gaat altijd door, falen logt naar GoatCounter event.
+ * Fase C — endpoint is /api/brevo-scan-completion.php (PHP-proxy naar Brevo, server-side
+ * BREVO_API_KEY). Submit-failure blijft fail-soft: rapport-redirect gaat altijd door,
+ * falen logt naar GoatCounter event.
  */
 (function() {
   'use strict';
 
-  var WEBHOOK_URL = '/api/brevo-scan-completion';
-  var WEBHOOK_TIMEOUT_MS = 4000;
+  var WEBHOOK_URL = '/api/brevo-scan-completion.php';
+  var WEBHOOK_TIMEOUT_MS = 6000;
 
   /**
    * 13-domein scores → 3-domein scores (S/D, Box3, Pensioen) volgens spec v1.1 §4.

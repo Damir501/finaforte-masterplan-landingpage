@@ -1,0 +1,21 @@
+# api/.htaccess — bescherm credentials + log-files; PHP-execution standaard via LiteSpeed
+
+# Block alle dot-files (incl. .env, .htaccess zelf, .gitignore)
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Block log/markdown/example bestanden
+<FilesMatch "\.(log|md|example|ini|bak)$">
+    Require all denied
+</FilesMatch>
+
+# Geen directory-listing
+Options -Indexes
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
