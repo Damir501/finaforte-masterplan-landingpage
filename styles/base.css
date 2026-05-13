@@ -994,6 +994,232 @@ body.rapport-body .rapport-header { position: static; }
   .faq-rapport details { padding: 16px 18px; }
 }
 
+/* Niveau E Fase 2 — Trustbadge boven hero h1 (verifieerbare claim, sinds-2007) */
+.hero-trustbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 auto 14px auto;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--copper);
+  background: var(--paper-editorial);
+  border: 1px solid var(--paper-line);
+  padding: 8px 18px;
+  border-radius: 999px;
+  box-shadow: var(--shadow-soft);
+}
+.hero-trustbadge em {
+  font-style: italic;
+  font-weight: 500;
+  text-transform: none;
+  color: var(--mint-deep, var(--dark-green));
+  letter-spacing: 0.02em;
+}
+.hero-trustbadge span {
+  color: var(--copper);
+  opacity: 0.55;
+  font-style: italic;
+}
+
+/* Niveau E Fase 2 — Over Damir sectie (persoonlijke context na bewijs) */
+.over-damir {
+  background: var(--paper-editorial);
+  border-top: 1px solid var(--paper-line);
+  border-bottom: 1px solid var(--paper-line);
+  padding: 80px 24px;
+}
+.over-damir__inner {
+  max-width: 880px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 40px;
+  align-items: center;
+}
+.over-damir__avatar {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: var(--cream-warm, var(--paper-editorial));
+  border: 3px solid var(--copper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 56px;
+  font-style: italic;
+  font-weight: 500;
+  color: var(--mint-deep, var(--dark-green));
+  box-shadow: var(--shadow-medium);
+  flex-shrink: 0;
+}
+.over-damir__body .eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.over-damir__body h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(26px, 3.6vw, 34px);
+  color: var(--dark-green);
+  margin: 0 0 16px 0;
+}
+.over-damir__body h2 em {
+  font-style: italic;
+  color: var(--copper);
+}
+.over-damir__body p {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text);
+  margin: 0 0 18px 0;
+}
+.over-damir__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--copper);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  border-bottom: 1px solid var(--copper);
+  padding-bottom: 2px;
+}
+.over-damir__link:hover { opacity: 0.75; }
+@media (max-width: 700px) {
+  .over-damir { padding: 56px 20px; }
+  .over-damir__inner { grid-template-columns: 1fr; gap: 24px; text-align: center; }
+  .over-damir__avatar { margin: 0 auto; width: 100px; height: 100px; font-size: 42px; }
+  .over-damir__body { text-align: left; }
+}
+
+/* Niveau E Fase 2 — Reviewcarousel (CSS-only scroll-snap, anonieme persona-quotes) */
+.reviews {
+  background: linear-gradient(180deg, var(--paper-editorial) 0%, var(--cream-warm, var(--paper-editorial)) 100%);
+  padding: 88px 0 96px 0;
+  overflow: hidden;
+}
+.reviews__header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 0 24px;
+}
+.reviews__header .eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.reviews__header h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 38px);
+  color: var(--dark-green);
+  margin: 0 0 8px 0;
+}
+.reviews__header h2 em { font-style: italic; color: var(--copper); }
+.reviews__header p {
+  font-size: 15px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0;
+}
+.reviews__track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 24px;
+  padding: 8px 24px 32px 24px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--copper) transparent;
+}
+.reviews__track::-webkit-scrollbar { height: 6px; }
+.reviews__track::-webkit-scrollbar-thumb { background: var(--copper); border-radius: 3px; opacity: 0.6; }
+.review-card {
+  flex: 0 0 360px;
+  max-width: 360px;
+  scroll-snap-align: start;
+  background: var(--paper-editorial);
+  border-top: 4px solid var(--copper);
+  padding: 28px 26px;
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  flex-direction: column;
+}
+.review-card__stars {
+  color: var(--copper);
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+}
+.review-card__quote {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text);
+  margin: 0 0 20px 0;
+  flex: 1;
+}
+.review-card__quote::before {
+  content: "\201C";
+  font-style: italic;
+  color: var(--copper);
+  font-size: 38px;
+  line-height: 0;
+  vertical-align: -14px;
+  margin-right: 4px;
+}
+.review-card__persona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid var(--paper-line);
+}
+.review-card__initials {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--cream-warm, var(--paper-editorial));
+  border: 1.5px solid var(--copper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--mint-deep, var(--dark-green));
+  flex-shrink: 0;
+}
+.review-card__meta strong {
+  display: block;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--dark-green);
+}
+.review-card__meta span {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.reviews__hint {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 8px;
+}
+@media (max-width: 700px) {
+  .review-card { flex: 0 0 280px; max-width: 280px; padding: 24px 22px; }
+  .reviews { padding: 64px 0 72px 0; }
+}
+
 /* Fase A — FAQ-sectie (native <details> accordion) */
 .faq {
   background: var(--paper-editorial);
