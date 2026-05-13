@@ -792,18 +792,18 @@ body:not(.scan-body):not(.rapport-body) .uitleg-partner a:hover::after {
   border-top: 1px solid var(--paper-line);
 }
 
-/* Push main content rechts naast sidebar (alleen homepage/implementatie body) */
-body:not(.scan-body):not(.rapport-body) > main,
-body:not(.scan-body):not(.rapport-body) > header.lp-header,
-body:not(.scan-body):not(.rapport-body) > footer {
+/* Push main content rechts naast sidebar (alleen body.has-toc = homepage) */
+body.has-toc > main,
+body.has-toc > header.lp-header,
+body.has-toc > footer {
   margin-left: 220px;
 }
 
 @media (max-width: 900px) {
   .editorial-toc { display: none; }
-  body:not(.scan-body):not(.rapport-body) > main,
-  body:not(.scan-body):not(.rapport-body) > header.lp-header,
-  body:not(.scan-body):not(.rapport-body) > footer {
+  body.has-toc > main,
+  body.has-toc > header.lp-header,
+  body.has-toc > footer {
     margin-left: 0;
   }
 }
@@ -825,13 +825,17 @@ body:not(.scan-body):not(.rapport-body) > footer {
   border: 1px solid var(--mint-deep);
   opacity: 0.55;
 }
-.crop-tl { top: 16px; left: 236px; border-right: none; border-bottom: none; }
+.crop-tl { top: 16px; left: 16px; border-right: none; border-bottom: none; }
 .crop-tr { top: 16px; right: 16px; border-left: none; border-bottom: none; }
-.crop-bl { bottom: 16px; left: 236px; border-right: none; border-top: none; }
+.crop-bl { bottom: 16px; left: 16px; border-right: none; border-top: none; }
 .crop-br { bottom: 16px; right: 16px; border-left: none; border-top: none; }
 
+body.has-toc .crop-tl,
+body.has-toc .crop-bl { left: 236px; }
+
 @media (max-width: 900px) {
-  .crop-tl, .crop-bl { left: 16px; }
+  body.has-toc .crop-tl,
+  body.has-toc .crop-bl { left: 16px; }
 }
 
 .hero-compass {
@@ -847,3 +851,25 @@ body:not(.scan-body):not(.rapport-body) > footer {
 @media (max-width: 1100px) {
   .hero-compass { display: none; }
 }
+
+/* ============================================================
+   Niveau C — Document-status footer (boven .footer-copy)
+   ============================================================ */
+
+.doc-status {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: var(--max-w);
+  margin: 0 auto 16px;
+  padding: 16px 24px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.doc-status span { white-space: nowrap; }
