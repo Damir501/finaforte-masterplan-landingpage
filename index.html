@@ -69,6 +69,22 @@
   <link rel="stylesheet" href="styles/base.css?v=20260513f">
 </head>
 <body>
+  <aside class="editorial-toc" aria-label="Inhoudsopgave">
+    <div class="toc-brand">Finaforte</div>
+    <div class="toc-meta">Masterplan · 2026</div>
+    <ol class="toc-list">
+      <li><a href="#hero" data-toc-target="hero"><span class="toc-nr">00</span> Cover</a></li>
+      <li><a href="#bewijs" data-toc-target="bewijs"><span class="toc-nr">01</span> Klanten</a></li>
+      <li><a href="#how" data-toc-target="how"><span class="toc-nr">02</span> Traject</a></li>
+      <li><a href="#garantie" data-toc-target="garantie"><span class="toc-nr">03</span> Belofte</a></li>
+      <li><a href="#diensten" data-toc-target="diensten"><span class="toc-nr">04</span> Diensten</a></li>
+      <li><a href="#tools" data-toc-target="tools"><span class="toc-nr">05</span> Tools</a></li>
+      <li><a href="#academie" data-toc-target="academie"><span class="toc-nr">06</span> Academie</a></li>
+      <li><a href="#kennismaking" data-toc-target="kennismaking"><span class="toc-nr">07</span> Kennismaking</a></li>
+    </ol>
+    <div class="toc-status">Status · Live<br>v1.0 · 2026-05-13</div>
+  </aside>
+
   <header class="lp-header">
     <a class="lp-logo" href="/">Finaforte</a>
     <nav class="lp-nav">
@@ -79,7 +95,7 @@
   </header>
 
   <main>
-    <section class="hero">
+    <section id="hero" class="hero">
       <p class="hero-tag">Finaforte · Financieel Architect</p>
       <h1 id="hero-h1">Het <em>bouwplan</em> voor je vermogen — start met de blindspot-scan</h1>
       <p id="hero-sub" class="hero-sub">Vermogensplanning voor wie wil weten wat hij niet weet.</p>
@@ -122,7 +138,7 @@
         </li>
       </ol>
     </section>
-    <section class="garantie">
+    <section id="garantie" class="garantie">
       <h2>Onze belofte</h2>
       <p>We werken aan een plan dat helder, bruikbaar en passend is. Is er gaandeweg geen match, dan bespreken we dat eerlijk en zoeken we naar een passende oplossing.</p>
     </section>
@@ -314,6 +330,32 @@
       var secondary = document.querySelector('.cta-secondary');
       if (primary) primary.textContent = ARCHITECT.hero.cta_primary;
       if (secondary) secondary.textContent = ARCHITECT.hero.cta_secondary;
+    })();
+  </script>
+  <script>
+    (function() {
+      'use strict';
+      if (!('IntersectionObserver' in window)) return;
+      var links = document.querySelectorAll('.toc-list a[data-toc-target]');
+      if (!links.length) return;
+      var linkMap = {};
+      links.forEach(function(a) { linkMap[a.dataset.tocTarget] = a; });
+      var sections = Object.keys(linkMap)
+        .map(function(id) { return document.getElementById(id); })
+        .filter(Boolean);
+      if (!sections.length) return;
+      var setActive = function(id) {
+        links.forEach(function(a) { a.classList.remove('toc-active'); });
+        if (linkMap[id]) linkMap[id].classList.add('toc-active');
+      };
+      var observer = new IntersectionObserver(function(entries) {
+        var top = entries
+          .filter(function(e) { return e.isIntersecting; })
+          .sort(function(a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; })[0];
+        if (top && top.target.id) setActive(top.target.id);
+      }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+      sections.forEach(function(s) { observer.observe(s); });
+      setActive('hero');
     })();
   </script>
   <!-- GoatCounter analytics (privacy-friendly, no cookies, no banner) -->
