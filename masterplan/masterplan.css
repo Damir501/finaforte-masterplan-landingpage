@@ -1,0 +1,450 @@
+/* Masterplan — page-specific styling
+ * Symmetrisch met implementatie.css, maar met eigen identiteit:
+ * dit is het KERN-PRODUCT (niet de vervolgstap). Cream paper-bg met
+ * dot-grid, Fraunces 500 italic accents, copper borders, editorial Niveau C/D.
+ *
+ * Hergebruikt globale tokens uit /styles/tokens.css en base-componenten
+ * uit /styles/base.css (.cta, .hero, .faq, .kennismaking, .lp-header,
+ * .lp-footer, .eyebrow, .crop-marks, .doc-status).
+ */
+
+/* ----- Body — cream paper-bg met dot-grid (Niveau C/D editorial) ----- */
+body.masterplan-body {
+  background: var(--paper-editorial, var(--paper));
+  background-image: var(--paper-grid-dot, none);
+  color: var(--ink, var(--text));
+}
+
+/* ----- Hero — kern-product, warm cream gradient met paper-line accent ----- */
+.hero-masterplan {
+  background: linear-gradient(180deg, var(--cream-warm, var(--paper)) 0%, var(--paper-editorial, var(--paper)) 100%);
+  border-bottom: 1px solid var(--paper-line, var(--paper-dark));
+  position: relative;
+}
+.hero-masterplan .hero-tag {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 13px;
+  color: var(--copper);
+  font-weight: 600;
+}
+.hero-masterplan h1 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  color: var(--mint-deep, var(--dark-green));
+  letter-spacing: -0.01em;
+}
+.hero-masterplan h1 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--copper);
+}
+.hero-masterplan .hero-sub {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ink-muted, var(--text-muted));
+}
+
+/* ----- Probleem-herkenning — cream-warm, copper bullet-dots ----- */
+.probleem-herkenning {
+  background: var(--cream-warm, var(--paper));
+  padding: 96px 24px;
+  border-top: 1px solid var(--paper-line, var(--paper-dark));
+  border-bottom: 1px solid var(--paper-line, var(--paper-dark));
+}
+.probleem-herkenning h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(28px, 4.2vw, 40px);
+  color: var(--mint-deep, var(--dark-green));
+  text-align: center;
+  margin-bottom: 40px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+  letter-spacing: -0.01em;
+}
+.probleem-bullets {
+  list-style: none;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.probleem-bullets li {
+  position: relative;
+  padding: 20px 24px 20px 60px;
+  background: var(--paper-editorial, var(--paper));
+  border-radius: var(--radius);
+  border: 1px solid var(--paper-line, var(--paper-dark));
+  border-left: 3px solid var(--copper);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink, var(--text));
+  box-shadow: var(--shadow-soft, none);
+}
+.probleem-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--copper);
+  transform: translateY(-50%);
+}
+
+/* ----- Uitleg-quote — warm cream, italic Fraunces, copper accent ----- */
+.uitleg {
+  background: linear-gradient(135deg, var(--cream-warm, var(--paper)) 0%, var(--paper-editorial, var(--paper)) 100%);
+  padding: 96px 24px;
+  text-align: center;
+  position: relative;
+}
+.uitleg-quote {
+  max-width: 800px;
+  margin: 0 auto 28px;
+  padding: 0 24px;
+  position: relative;
+}
+.uitleg-quote::before {
+  content: "\201C";
+  display: block;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-size: 80px;
+  line-height: 0.5;
+  color: var(--copper);
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+.uitleg-quote p {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(22px, 3.2vw, 28px);
+  line-height: 1.45;
+  color: var(--mint-deep, var(--dark-green));
+}
+.uitleg-partner {
+  max-width: 640px;
+  margin: 0 auto;
+  color: var(--ink-muted, var(--text-muted));
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+/* ----- Werkwijze — editorial steps met copper border-top (kern-product accent) ----- */
+.werkwijze {
+  background: var(--paper-editorial, var(--paper));
+  padding: 96px 24px;
+}
+.werkwijze-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 64px;
+}
+.werkwijze-header h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(28px, 4.2vw, 40px);
+  color: var(--mint-deep, var(--dark-green));
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+.werkwijze-header h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--copper);
+}
+.werkwijze-header p {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  color: var(--ink-muted, var(--text-muted));
+  font-size: 18px;
+}
+.werkwijze-steps {
+  list-style: none;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px 28px;
+}
+.werkwijze-step {
+  background: var(--cream-warm, #fff);
+  border-top: 4px solid var(--copper);
+  padding: 32px 28px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-medium, var(--shadow-sm));
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.werkwijze-step:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift, var(--shadow-sm));
+}
+.werkwijze-nr {
+  display: inline-block;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: 38px;
+  line-height: 1;
+  color: var(--copper);
+  font-feature-settings: "tnum";
+  margin-bottom: 18px;
+}
+.werkwijze-step h3 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: 21px;
+  margin-bottom: 10px;
+  color: var(--mint-deep, var(--dark-green));
+  line-height: 1.3;
+  letter-spacing: -0.005em;
+}
+.werkwijze-step p {
+  color: var(--ink-muted, var(--text-muted));
+  font-size: 16px;
+  line-height: 1.55;
+}
+.werkwijze-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--copper);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--copper);
+}
+.werkwijze-link:hover {
+  color: var(--mint-deep, var(--dark-green));
+  border-bottom-style: solid;
+}
+
+/* ----- Pakket — wat krijgt u, genummerde blokken, mint accent (kern-product) ----- */
+.pakket {
+  background: linear-gradient(180deg, var(--paper-editorial, var(--paper)) 0%, var(--cream-warm, var(--paper)) 100%);
+  padding: 96px 24px;
+  border-top: 1px solid var(--paper-line, var(--paper-dark));
+}
+.pakket-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 56px;
+}
+.pakket-header h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(28px, 4.2vw, 40px);
+  color: var(--mint-deep, var(--dark-green));
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+}
+.pakket-header h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--copper);
+}
+.pakket-header p {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  color: var(--ink-muted, var(--text-muted));
+  font-size: 17px;
+}
+.pakket-items {
+  list-style: none;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+.pakket-item {
+  background: #fff;
+  padding: 36px 30px;
+  border-radius: 6px;
+  border-top: 4px solid var(--copper);
+  box-shadow: var(--shadow-medium, var(--shadow-sm));
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.pakket-item:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lift, var(--shadow-sm));
+}
+.pakket-nr {
+  display: inline-block;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 42px;
+  line-height: 1;
+  color: var(--copper);
+  font-feature-settings: "tnum";
+  margin-bottom: 16px;
+}
+.pakket-item h3 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--mint-deep, var(--dark-green));
+  margin-bottom: 10px;
+}
+.pakket-item p {
+  color: var(--ink-muted, var(--text-muted));
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* ----- Kwalificatie — Voor jou / niet voor jou (eigen aan kern-product) ----- */
+.kwalificatie {
+  background: var(--paper-editorial, var(--paper));
+  padding: 96px 24px;
+  border-top: 1px solid var(--paper-line, var(--paper-dark));
+}
+.kwalificatie-header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 56px;
+}
+.kwalificatie-header h2 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(26px, 4vw, 36px);
+  color: var(--mint-deep, var(--dark-green));
+  letter-spacing: -0.01em;
+}
+.kwalificatie-header h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--copper);
+}
+.kwalificatie-cols {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+}
+.kwalificatie-col {
+  background: var(--cream-warm, #fff);
+  padding: 40px 36px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-medium, var(--shadow-sm));
+}
+.kwalificatie-yes {
+  border-top: 4px solid var(--copper);
+}
+.kwalificatie-no {
+  border-top: 4px solid var(--paper-line, var(--paper-dark));
+  background: var(--paper-editorial, #fff);
+  opacity: 0.92;
+}
+.kwalificatie-col h3 {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-weight: 500;
+  font-size: 22px;
+  color: var(--mint-deep, var(--dark-green));
+  margin-bottom: 20px;
+  letter-spacing: -0.005em;
+}
+.kwalificatie-yes h3::after {
+  content: "  ✓";
+  color: var(--copper);
+  font-style: italic;
+  font-weight: 500;
+}
+.kwalificatie-no h3::after {
+  content: "  —";
+  color: var(--ink-muted, var(--text-muted));
+}
+.kwalificatie-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+.kwalificatie-col li {
+  position: relative;
+  padding-left: 24px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink, var(--text));
+}
+.kwalificatie-yes li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--copper);
+  font-weight: 600;
+}
+.kwalificatie-no li::before {
+  content: "×";
+  position: absolute;
+  left: 2px;
+  top: 0;
+  color: var(--ink-muted, var(--text-muted));
+  font-weight: 600;
+}
+
+/* ----- FAQ-masterplan: erft .faq uit base.css, alleen heading-accent ----- */
+.faq-masterplan h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--copper);
+}
+
+/* ----- Kennismaking-mp: dual CTA layout (Calendly + crosslink) ----- */
+.kennismaking-mp .kennismaking-inner h2 em {
+  font-style: italic;
+  font-weight: 500;
+  color: var(--copper);
+}
+.kennismaking-ctas {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 28px;
+}
+
+/* ----- Footer back-link accent (symmetrisch met implementatie) ----- */
+.footer-back {
+  font-weight: 600;
+  color: var(--copper) !important;
+}
+.footer-back:hover {
+  color: var(--white) !important;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 980px) {
+  .werkwijze-steps { grid-template-columns: repeat(2, 1fr); gap: 28px 24px; }
+  .pakket-items { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 760px) {
+  .werkwijze-steps { grid-template-columns: 1fr; gap: 24px; }
+  .pakket-items { grid-template-columns: 1fr; }
+  .kwalificatie-cols { grid-template-columns: 1fr; gap: 20px; }
+  .werkwijze, .pakket, .probleem-herkenning, .uitleg, .kwalificatie { padding: 64px 20px; }
+  .kennismaking-ctas { flex-direction: column; gap: 14px; }
+  .kennismaking-ctas .cta { width: 100%; max-width: 360px; }
+}
+
+@media (max-width: 640px) {
+  .probleem-bullets li { padding: 18px 20px 18px 52px; font-size: 16px; }
+  .probleem-bullets li::before { left: 20px; }
+  .uitleg-quote p { font-size: 20px; }
+  .uitleg-quote::before { font-size: 64px; }
+  .kwalificatie-col { padding: 32px 24px; }
+}
