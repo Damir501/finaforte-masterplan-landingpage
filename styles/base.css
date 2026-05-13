@@ -102,6 +102,7 @@ section > * { max-width: var(--max-w); margin-left: auto; margin-right: auto; }
   background: linear-gradient(135deg, var(--mint-light) 0%, #d2eef0 100%);
   padding: 96px 24px 80px;
   text-align: center;
+  position: relative;
 }
 .hero-tag {
   font-size: 13px;
@@ -805,4 +806,44 @@ body:not(.scan-body):not(.rapport-body) > footer {
   body:not(.scan-body):not(.rapport-body) > footer {
     margin-left: 0;
   }
+}
+
+/* ============================================================
+   Niveau C — Crop-marks + Compass-rose
+   ============================================================ */
+
+.crop-marks {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+.crop {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--mint-deep);
+  opacity: 0.55;
+}
+.crop-tl { top: 16px; left: 236px; border-right: none; border-bottom: none; }
+.crop-tr { top: 16px; right: 16px; border-left: none; border-bottom: none; }
+.crop-bl { bottom: 16px; left: 236px; border-right: none; border-top: none; }
+.crop-br { bottom: 16px; right: 16px; border-left: none; border-top: none; }
+
+@media (max-width: 900px) {
+  .crop-tl, .crop-bl { left: 16px; }
+}
+
+.hero-compass {
+  position: absolute;
+  top: 50%;
+  right: 6%;
+  transform: translateY(-50%);
+  width: 140px;
+  height: 140px;
+  pointer-events: none;
+  opacity: 0.75;
+}
+@media (max-width: 1100px) {
+  .hero-compass { display: none; }
 }

@@ -69,6 +69,13 @@
   <link rel="stylesheet" href="styles/base.css?v=20260513f">
 </head>
 <body>
+  <div class="crop-marks" aria-hidden="true">
+    <span class="crop crop-tl"></span>
+    <span class="crop crop-tr"></span>
+    <span class="crop crop-bl"></span>
+    <span class="crop crop-br"></span>
+  </div>
+
   <aside class="editorial-toc" aria-label="Inhoudsopgave">
     <div class="toc-brand">Finaforte</div>
     <div class="toc-meta">Masterplan · 2026</div>
@@ -96,6 +103,17 @@
 
   <main>
     <section id="hero" class="hero">
+      <svg class="hero-compass" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="58" fill="none" stroke="var(--mint-deep)" stroke-width="0.5" opacity="0.35"/>
+        <circle cx="60" cy="60" r="40" fill="none" stroke="var(--mint-deep)" stroke-width="0.5" opacity="0.25"/>
+        <circle cx="60" cy="60" r="22" fill="none" stroke="var(--mint-deep)" stroke-width="0.5" opacity="0.18"/>
+        <path d="M60 8 L66 60 L60 112 L54 60 Z" fill="var(--mint-deep)" opacity="0.45"/>
+        <path d="M8 60 L60 66 L112 60 L60 54 Z" fill="var(--copper)" opacity="0.35"/>
+        <text x="60" y="22" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="11" font-style="italic" fill="var(--mint-deep)" opacity="0.6">N</text>
+        <text x="60" y="106" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="11" font-style="italic" fill="var(--mint-deep)" opacity="0.6">Z</text>
+        <text x="18" y="64" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="11" font-style="italic" fill="var(--mint-deep)" opacity="0.45">W</text>
+        <text x="102" y="64" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-size="11" font-style="italic" fill="var(--mint-deep)" opacity="0.45">O</text>
+      </svg>
       <p class="hero-tag">Finaforte · Financieel Architect</p>
       <h1 id="hero-h1">Het <em>bouwplan</em> voor je vermogen — start met de blindspot-scan</h1>
       <p id="hero-sub" class="hero-sub">Vermogensplanning voor wie wil weten wat hij niet weet.</p>
