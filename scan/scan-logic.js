@@ -94,29 +94,181 @@
     var state = window.ScanState.load();
     var qs = getQuestions(state);
     if (state.currentIdx >= qs.length) {
-      finish(state);
+      renderEmailForm(state, qs.length);
       return;
     }
     renderProgress(state.currentIdx + 1, qs.length);
     renderQuestion(qs[state.currentIdx], state);
   }
 
-  function finish(state) {
+  function renderEmailForm(state, totalQuestions) {
+    var stage = $(STAGE_ID);
+    if (!stage) return;
+    var p = $(PROGRESS_ID);
+    var f = $(PROGRESS_FILL_ID);
+    if (p) p.textContent = 'Laatste stap — uw gegevens';
+    if (f) f.style.width = '100%';
+
+    var copy = window.ARCHITECT.scan.email_form;
+    stage.innerHTML = '';
+
+    var h = document.createElement('h2');
+    h.className = 'scan-form-title';
+    h.textContent = copy.title;
+    stage.appendChild(h);
+
+    var body = document.createElement('p');
+    body.className = 'scan-form-body';
+    body.textContent = copy.body;
+    stage.appendChild(body);
+
+    var form = document.createElement('form');
+    form.className = 'scan-form-fields';
+    form.setAttribute('novalidate', '');
+    form.setAttribute('autocomplete', 'on');
+
+    var row = document.createElement('div');
+    row.className = 'scan-form-row';
+    row.appendChild(buildField('firstName', copy.first_name_label, 'text', 'given-name', state));
+    row.appendChild(buildField('lastName',  copy.last_name_label,  'text', 'family-name', state));
+    form.appendChild(row);
+    form.appendChild(buildField('email', copy.email_label, 'email', 'email', state));
+
+    var consentWrap = document.createElement('label');
+    consentWrap.className = 'scan-form-consent';
+    var consentBox = document.createElement('input');
+    consentBox.type = 'checkbox';
+    consentBox.name = 'consent';
+    consentBox.id = 'scan-consent';
+    if (state.consent) consentBox.checked = true;
+    var consentText = document.createElement('span');
+    consentText.textContent = copy.consent_label;
+    consentWrap.appendChild(consentBox);
+    consentWrap.appendChild(consentText);
+    form.appendChild(consentWrap);
+
+    var submit = document.createElement('button');
+    submit.type = 'submit';
+    submit.className = 'scan-form-submit';
+    submit.textContent = copy.submit_label;
+    form.appendChild(submit);
+
+    var errorBox = document.createElement('div');
+    errorBox.className = 'scan-form-error';
+    errorBox.setAttribute('role', 'alert');
+    errorBox.id = 'scan-form-error';
+    form.appendChild(errorBox);
+
+    var privacy = document.createElement('p');
+    privacy.className = 'scan-form-privacy';
+    privacy.textContent = copy.privacy_note;
+    form.appendChild(privacy);
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      onFormSubmit(form, submit, errorBox, copy);
+    });
+    stage.appendChild(form);
+
+    if (state.currentIdx > 0) {
+      var nav = document.createElement('div');
+      nav.className = 'scan-q-nav';
+      var back = document.createElement('button');
+      back.type = 'button';
+      back.className = 'scan-q-back';
+      back.textContent = '← Vorige vraag';
+      back.addEventListener('click', goBack);
+      nav.appendChild(back);
+      stage.appendChild(nav);
+    }
+
+    var firstInput = form.querySelector('input[name="firstName"]');
+    if (firstInput && !firstInput.value) firstInput.focus();
+  }
+
+  function buildField(name, label, type, autocomplete, state) {
+    var wrap = document.createElement('div');
+    wrap.className = 'scan-form-field';
+    var lab = document.createElement('label');
+    lab.setAttribute('for', 'scan-' + name);
+    lab.textContent = label;
+    var input = document.createElement('input');
+    input.type = type;
+    input.name = name;
+    input.id = 'scan-' + name;
+    input.className = 'scan-form-input';
+    input.setAttribute('autocomplete', autocomplete);
+    if (state.contact && state.contact[name]) input.value = state.contact[name];
+    wrap.appendChild(lab);
+    wrap.appendChild(input);
+    return wrap;
+  }
+
+  function isValidEmail(s) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s || '');
+  }
+
+  function onFormSubmit(form, submitBtn, errorBox, copy) {
+    var data = {
+      firstName: (form.elements.firstName.value || '').trim(),
+      lastName:  (form.elements.lastName.value  || '').trim(),
+      email:     (form.elements.email.value     || '').trim(),
+      consent:   form.elements.consent.checked
+    };
+
+    var problems = [];
+    if (!data.firstName) problems.push('voornaam');
+    if (!data.lastName)  problems.push('achternaam');
+    if (!isValidEmail(data.email)) problems.push('e-mailadres');
+    if (!data.consent)   problems.push('akkoord');
+
+    [['firstName', form.elements.firstName],
+     ['lastName',  form.elements.lastName],
+     ['email',     form.elements.email]].forEach(function(pair) {
+      var key = pair[0], el = pair[1];
+      var bad = (key === 'email') ? !isValidEmail(data.email) : !data[key];
+      el.setAttribute('aria-invalid', bad ? 'true' : 'false');
+    });
+
+    if (problems.length) {
+      errorBox.textContent = 'Vul nog in: ' + problems.join(', ') + '.';
+      return;
+    }
+    errorBox.textContent = '';
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = copy.submitting_label;
+
+    var state = window.ScanState.load();
+    state.contact = { firstName: data.firstName, lastName: data.lastName, email: data.email };
+    state.consent = true;
+    window.ScanState.save(state);
+
+    window.ScanSubmit.submit(data, state).then(function(result) {
+      showAnalyzingAndRedirect(result.hash);
+    }).catch(function() {
+      var hash = '';
+      try {
+        var scores = window.ScanScoring.calculateScores(state.answers);
+        hash = window.ScanFingerprint.encode(window.ScanScoring.getTop3(scores));
+      } catch (e) {}
+      showAnalyzingAndRedirect(hash);
+    });
+  }
+
+  function showAnalyzingAndRedirect(hash) {
     var stage = $(STAGE_ID);
     if (stage) {
       stage.innerHTML = '<div class="scan-analyzing">' + window.ARCHITECT.scan.analyzing + '</div>';
     }
-    var scores = window.ScanScoring.calculateScores(state.answers);
-    var top3 = window.ScanScoring.getTop3(scores);
-    var hash = window.ScanFingerprint.encode(top3);
     setTimeout(function() {
-      location.href = '/rapport/?p=' + hash;
-    }, 1400);
+      location.href = '/rapport/?p=' + (hash || '');
+    }, 1200);
   }
 
   function init() {
     if (!window.SCAN_DATA || !window.ScanState || !window.ScanScoring ||
-        !window.ScanFingerprint || !window.ARCHITECT) {
+        !window.ScanFingerprint || !window.ARCHITECT || !window.ScanSubmit) {
       console.error('scan-logic: missing dependencies');
       return;
     }

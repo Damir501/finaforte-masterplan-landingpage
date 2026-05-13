@@ -18,7 +18,19 @@
       intro: 'Een architect tekent niet zonder eerst rond te lopen.',
       progress: function(n, total) { return 'Vraag ' + n + ' van ' + total; },
       analyzing: 'Bezig met analyseren...',
-      stop_label: 'Stop met scan'
+      stop_label: 'Stop met scan',
+      email_form: {
+        title: 'Uw rapport ligt klaar',
+        body: 'Vul uw gegevens in. Het rapport komt binnen 60 seconden in uw inbox, en u ziet de samenvatting direct hierna.',
+        first_name_label: 'Voornaam',
+        last_name_label: 'Achternaam',
+        email_label: 'E-mailadres',
+        consent_label: 'Ik ga akkoord dat Finaforte mijn gegevens gebruikt voor het rapport en eventuele opvolgmail.',
+        submit_label: 'Stuur mijn rapport',
+        submitting_label: 'Verzenden...',
+        privacy_note: 'Geen nieuwsbrief-spam. Uitschrijven kan altijd met één klik.',
+        error: 'Er ging iets mis. Probeer het zo nog eens — of mail info@finaforte.nl.'
+      }
     },
     rapport: {
       opener: 'Op basis van uw antwoorden zien wij 3 aandachtspunten die een financieel architect direct zou opmerken.',

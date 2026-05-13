@@ -91,7 +91,101 @@
   padding: 96px 24px;
 }
 
+.scan-form-title {
+  font-size: clamp(22px, 3.5vw, 28px);
+  line-height: 1.25;
+  margin-bottom: 8px;
+  color: var(--dark-green);
+}
+.scan-form-body {
+  font-size: 15px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.scan-form-fields {
+  display: grid;
+  gap: 16px;
+}
+.scan-form-row {
+  display: flex;
+  gap: 12px;
+}
+.scan-form-row > .scan-form-field { flex: 1; }
+.scan-form-field { display: flex; flex-direction: column; gap: 6px; }
+.scan-form-field label {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.scan-form-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--white);
+  border: 2px solid var(--paper-dark);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-family: var(--font-body);
+  color: var(--text);
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.scan-form-input:focus {
+  outline: none;
+  border-color: var(--mint);
+}
+.scan-form-input[aria-invalid="true"] {
+  border-color: #c44d3a;
+}
+.scan-form-consent {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.45;
+  margin-top: 4px;
+}
+.scan-form-consent input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--mint-dark);
+}
+.scan-form-submit {
+  margin-top: 8px;
+  width: 100%;
+  padding: 16px 20px;
+  background: var(--copper);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.05s;
+}
+.scan-form-submit:hover:not(:disabled) { background: var(--copper-dark, #b6582f); }
+.scan-form-submit:active:not(:disabled) { transform: translateY(1px); }
+.scan-form-submit:disabled {
+  background: var(--paper-dark);
+  cursor: not-allowed;
+}
+.scan-form-error {
+  font-size: 14px;
+  color: #c44d3a;
+  margin-top: 8px;
+  min-height: 1.4em;
+}
+.scan-form-privacy {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 16px;
+  text-align: center;
+}
+
 @media (max-width: 640px) {
   .scan-main { padding: 32px 16px; }
   .scan-q-option { padding: 16px; }
+  .scan-form-row { flex-direction: column; }
 }

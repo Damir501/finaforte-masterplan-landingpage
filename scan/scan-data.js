@@ -71,6 +71,30 @@
     }
   ];
 
+  var FINAL_QUESTIONS = [
+    {
+      id: 'q12_zorg',
+      label: 'Welk thema houdt u op dit moment het meest bezig?',
+      sub: 'Bepaalt waarmee uw rapport opent. Geen score-impact.',
+      options: [
+        { id: 'fiscaal',    label: 'Belastingen en fiscale optimalisatie hier-en-nu.' },
+        { id: 'overdracht', label: 'Vermogen overdragen aan kinderen / volgende generatie.' },
+        { id: 'pensioen',   label: 'Pensioen — hoe en wanneer ik wil of kan stoppen met werken.' },
+        { id: 'groei',      label: 'Groei van het bedrijf en privé-financiën beter combineren.' }
+      ]
+    },
+    {
+      id: 'q13_intent',
+      label: 'Stel: uit deze scan blijkt dat er iets te verbeteren is. Wat zou uw eerstvolgende stap zijn?',
+      options: [
+        { id: 'self',           label: 'Zelf verder uitzoeken.' },
+        { id: 'accountant',     label: 'Mijn huidige accountant of adviseur vragen.' },
+        { id: 'second_opinion', label: 'Een onafhankelijke second opinion organiseren.' },
+        { id: 'routekaart',     label: 'Een routekaart laten maken die ik daarna kan uitvoeren.' }
+      ]
+    }
+  ];
+
   var DGA_QUESTIONS = [
     {
       id: 'q7_dga', label: 'Hoe verhoudt zich uw salaris tot het dividend dat u opneemt?',
@@ -362,7 +386,7 @@
     else if (profile === 'particulier') deep = PARTICULIER_QUESTIONS;
     else if (profile === 'zzp') deep = ZZP_QUESTIONS;
     else deep = DGA_QUESTIONS;
-    return CORE_QUESTIONS.concat(deep);
+    return CORE_QUESTIONS.concat(deep).concat(FINAL_QUESTIONS);
   }
 
   window.SCAN_DATA = {
@@ -370,6 +394,7 @@
     DGA_QUESTIONS: DGA_QUESTIONS,
     PARTICULIER_QUESTIONS: PARTICULIER_QUESTIONS,
     ZZP_QUESTIONS: ZZP_QUESTIONS,
+    FINAL_QUESTIONS: FINAL_QUESTIONS,
     SCORING: SCORING,
     BETA_BIAS: BETA_BIAS,
     getQuestionSet: getQuestionSet
