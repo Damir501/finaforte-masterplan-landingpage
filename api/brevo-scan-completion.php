@@ -113,7 +113,7 @@ $subject = ($firstName !== '')
 $htmlContent = render_email_html($firstName, $rapportUrl);
 
 $emailPayload = [
-    'sender'      => ['name' => 'Damir Babacic | Finaforte', 'email' => 'info@finaforte.nl'],
+    'sender'      => ['name' => 'Damir Tvrtkovic | Finaforte', 'email' => 'info@finaforte.nl'],
     'replyTo'     => ['name' => 'Finaforte',                 'email' => 'info@finaforte.nl'],
     'to'          => [['email' => $email, 'name' => $displayName]],
     'subject'     => $subject,
@@ -195,7 +195,7 @@ function render_email_html(string $firstName, string $rapportUrl): string {
       </p>
       <p style="margin:0 0 4px;font-size:15px;line-height:1.55;">Tot zo,</p>
       <p style="margin:0;font-size:15px;line-height:1.55;">
-        Damir Babacic<br>Finaforte<br><a href="mailto:info@finaforte.nl" style="color:#00A2AA;">info@finaforte.nl</a>
+        Damir Tvrtkovic<br>Finaforte<br><a href="mailto:info@finaforte.nl" style="color:#00A2AA;">info@finaforte.nl</a>
       </p>
     </td></tr>
     <tr><td style="background:#f5f6f8;padding:16px 32px;font-size:12px;line-height:1.5;color:#6a778a;">
