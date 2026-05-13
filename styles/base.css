@@ -47,17 +47,31 @@ body:not(.scan-body):not(.rapport-body) .pakket-header p {
   color: var(--ink-muted);
 }
 
-/* Niveau A — eyebrow-text (kicker boven sectie-headings) */
+/* Niveau C — eyebrow met flanking dashes (— TITEL —) */
 .eyebrow {
   display: inline-block;
   font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--copper);
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  position: relative;
+  padding: 0 28px;
 }
+.eyebrow::before,
+.eyebrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 1px;
+  background: var(--copper);
+  transform: translateY(-50%);
+}
+.eyebrow::before { left: 0; }
+.eyebrow::after { right: 0; }
 
 .cta {
   display: inline-block;
