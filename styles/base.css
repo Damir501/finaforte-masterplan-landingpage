@@ -699,23 +699,29 @@ body.rapport-body .rapport-header { position: static; }
   .garantie { padding: 56px 20px; }
 }
 
-/* Fase A — Twee-diensten-sectie (Bouwplan + Onderhoudsronde) */
+/* Niveau E — Diensten als TRAJECT (Masterplan → Implementatie 2-stap flow) */
 .diensten {
   background: var(--paper-editorial);
   padding: 96px 24px;
 }
 .diensten > h2 {
-  font-size: clamp(26px, 4vw, 36px);
+  font-size: clamp(28px, 4.2vw, 40px);
   color: var(--dark-green);
   text-align: center;
   margin-bottom: 12px;
+}
+.diensten > h2 em {
+  font-style: italic;
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  color: var(--copper);
+  font-weight: 500;
 }
 .diensten-intro {
   text-align: center;
   color: var(--text-muted);
   font-size: 18px;
-  margin-bottom: 48px;
-  max-width: 640px;
+  margin-bottom: 56px;
+  max-width: 680px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -725,6 +731,37 @@ body.rapport-body .rapport-header { position: static; }
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 32px;
+}
+.traject-flow {
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 28px;
+}
+.traject-connector {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  color: var(--copper);
+  padding: 0 4px;
+  align-self: center;
+}
+.traject-connector__arrow {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-size: 56px;
+  line-height: 1;
+  font-weight: 300;
+}
+.traject-connector__label {
+  font-family: var(--font-display, 'Fraunces', Georgia, serif);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+.traject-step--2 .dienst-label {
+  color: var(--mint-dark, var(--copper));
 }
 .dienst-card {
   background: var(--white);
@@ -797,6 +834,9 @@ body.rapport-body .rapport-header { position: static; }
 
 @media (max-width: 800px) {
   .diensten-cards { grid-template-columns: 1fr; gap: 24px; }
+  .traject-flow { grid-template-columns: 1fr; gap: 16px; }
+  .traject-connector { flex-direction: row; padding: 4px 0; }
+  .traject-connector__arrow { font-size: 36px; transform: rotate(90deg); }
   .diensten { padding: 64px 20px; }
   .dienst-card .cta { align-self: stretch; text-align: center; }
 }
