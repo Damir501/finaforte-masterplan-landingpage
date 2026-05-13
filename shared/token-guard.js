@@ -260,52 +260,128 @@
       });
     }
 
+    // Niveau D \u2014 editorial card: cream paper + dot-grid + Fraunces heading + copper CTA.
+    // CSS-var fallbacks zorgen dat dit ook werkt op calculator-paginas waar tokens.css
+    // (nog) niet geladen is. Focus/hover via injected <style> (React inline-styles
+    // ondersteunen geen pseudo-classes).
     var containerStyle = {
+      position: 'relative',
       textAlign: 'center',
-      padding: '60px 24px',
-      maxWidth: '460px',
-      margin: '0 auto',
+      padding: '64px 36px',
+      maxWidth: '480px',
+      margin: '48px auto',
+      background: 'var(--paper-editorial, #F5F1E8)',
+      backgroundImage: 'radial-gradient(circle at 1px 1px, var(--paper-grid-dot, rgba(0,61,64,0.06)) 1px, transparent 0)',
+      backgroundSize: '24px 24px',
+      border: '1px solid var(--paper-line, rgba(0,61,64,0.08))',
+      borderRadius: '4px',
+      boxShadow: '0 4px 8px rgba(0,41,43,0.08), 0 24px 48px rgba(0,41,43,0.12)',
+      fontFamily: 'var(--font-body, "Manrope", -apple-system, system-ui, sans-serif)',
+    };
+
+    var eyebrowStyle = {
+      display: 'inline-block',
+      position: 'relative',
+      padding: '0 28px',
+      fontSize: '11px',
+      fontWeight: 700,
+      letterSpacing: '0.18em',
+      textTransform: 'uppercase',
+      color: 'var(--copper, #b78652)',
+      marginBottom: '20px',
+    };
+
+    var headingStyle = {
+      fontFamily: 'var(--font-display, "Fraunces", Georgia, "Times New Roman", serif)',
+      fontWeight: 500,
+      fontSize: 'clamp(24px, 3vw, 32px)',
+      letterSpacing: '-0.02em',
+      lineHeight: 1.2,
+      color: 'var(--mint-deep, #003D40)',
+      marginBottom: '16px',
+    };
+
+    var bodyTextStyle = {
+      color: 'var(--ink-muted, #5a6478)',
+      fontSize: '16px',
+      marginBottom: '28px',
+      lineHeight: 1.6,
     };
 
     var inputStyle = {
       width: '100%',
-      padding: '14px',
-      border: '2px solid #e5e5e5',
+      padding: '14px 16px',
+      background: 'var(--white, #ffffff)',
+      border: '2px solid var(--paper-dark, #e0d5bf)',
       borderRadius: '8px',
       fontSize: '16px',
+      fontFamily: 'var(--font-body, "Manrope", -apple-system, system-ui, sans-serif)',
+      color: 'var(--text, #1a2a2c)',
       marginBottom: '12px',
       boxSizing: 'border-box',
       outline: 'none',
+      transition: 'border-color 0.15s',
     };
 
     var btnStyle = {
       width: '100%',
-      padding: '16px',
-      background: '#F28E18',
-      color: 'white',
+      padding: '16px 20px',
+      background: 'var(--copper, #b78652)',
+      color: '#ffffff',
       border: 'none',
       borderRadius: '8px',
       fontSize: '16px',
-      fontWeight: '600',
+      fontWeight: 600,
+      fontFamily: 'var(--font-body, "Manrope", -apple-system, system-ui, sans-serif)',
       cursor: 'pointer',
+      transition: 'background 0.15s',
     };
+
+    var notePrivacyStyle = {
+      color: 'var(--ink-muted, #5a6478)',
+      fontSize: '12px',
+      marginTop: '16px',
+      fontStyle: 'italic',
+    };
+
+    var dividerStyle = {
+      marginTop: '24px',
+      paddingTop: '24px',
+      borderTop: '1px solid var(--paper-line, rgba(0,61,64,0.08))',
+    };
+
+    var noteSecondaryStyle = {
+      color: 'var(--ink-muted, #5a6478)',
+      fontSize: '13px',
+    };
+
+    // Pseudo-class styles via injected <style> \u2014 eenmalig per render is goedkoop.
+    var injectedStyles =
+      '.ff-modal-input:focus{border-color:var(--copper,#b78652)!important;}' +
+      '.ff-modal-eyebrow::before,.ff-modal-eyebrow::after{content:"";position:absolute;top:50%;width:18px;height:1px;background:var(--copper,#b78652);transform:translateY(-50%);}' +
+      '.ff-modal-eyebrow::before{left:0;}.ff-modal-eyebrow::after{right:0;}' +
+      '.ff-modal-cta:hover:not(:disabled){background:var(--copper-hover,#9a6f42)!important;}';
 
     if (isExpired) {
       return React.createElement('div', { style: containerStyle },
-        React.createElement('div', { style: { fontSize: '64px', marginBottom: '16px', opacity: 0.6 } }, '\u23F0'),
-        React.createElement('h2', { style: { fontSize: '22px', color: '#2D2D2D', marginBottom: '12px' } }, 'Je sessie is verlopen'),
-        React.createElement('p', { style: { color: '#666', fontSize: '16px', marginBottom: '24px', lineHeight: '1.6' } },
+        React.createElement('style', null, injectedStyles),
+        React.createElement('div', { style: { fontSize: '56px', marginBottom: '16px', opacity: 0.55 } }, '\u23F0'),
+        React.createElement('div', { style: eyebrowStyle, className: 'ff-modal-eyebrow' }, 'Toegang verlopen'),
+        React.createElement('h2', { style: headingStyle }, 'Je sessie is verlopen'),
+        React.createElement('p', { style: bodyTextStyle },
           'Je toegangslink is niet meer geldig. Neem contact op met je adviseur voor een nieuwe link.'),
-        React.createElement('p', { style: { color: '#999', fontSize: '14px' } }, 'Bel: 085-0074080 | info@finaforte.nl')
+        React.createElement('p', { style: noteSecondaryStyle }, 'Bel: 085-0074080 | info@finaforte.nl')
       );
     }
 
     return React.createElement('div', { style: containerStyle },
-      React.createElement('div', { style: { fontSize: '64px', marginBottom: '16px', opacity: 0.6 } }, '\uD83D\uDD13'),
+      React.createElement('style', null, injectedStyles),
+      React.createElement('div', { style: { fontSize: '56px', marginBottom: '16px', opacity: 0.55 } }, '\uD83D\uDD13'),
+      React.createElement('div', { style: eyebrowStyle, className: 'ff-modal-eyebrow' }, 'Toegang'),
 
-      React.createElement('h2', { style: { fontSize: '22px', color: '#2D2D2D', marginBottom: '8px' } }, 'Ontgrendel deze calculator'),
+      React.createElement('h2', { style: headingStyle }, 'Ontgrendel deze calculator'),
 
-      React.createElement('p', { style: { color: '#666', fontSize: '16px', marginBottom: '24px', lineHeight: '1.6' } },
+      React.createElement('p', { style: bodyTextStyle },
         'Vul je gegevens in om gratis toegang te krijgen tot deze professionele calculator met PDF-rapport.'),
 
       React.createElement('form', { onSubmit: handleSubmit },
@@ -315,6 +391,7 @@
           value: naam,
           onChange: function(e) { setNaam(e.target.value); },
           style: inputStyle,
+          className: 'ff-modal-input',
           required: true,
         }),
         React.createElement('input', {
@@ -323,23 +400,25 @@
           value: email,
           onChange: function(e) { setEmail(e.target.value); },
           style: inputStyle,
+          className: 'ff-modal-input',
           required: true,
         }),
-        error ? React.createElement('p', { style: { color: '#c53030', fontSize: '14px', marginBottom: '12px' } }, error) : null,
+        error ? React.createElement('p', { style: { color: '#c44d3a', fontSize: '14px', marginBottom: '12px' } }, error) : null,
         React.createElement('button', {
           type: 'submit',
           disabled: loading,
-          style: Object.assign({}, btnStyle, loading ? { background: '#ccc', cursor: 'not-allowed' } : {})
+          className: 'ff-modal-cta',
+          style: Object.assign({}, btnStyle, loading ? { background: 'var(--paper-dark, #e0d5bf)', cursor: 'not-allowed' } : {})
         }, loading ? 'Even geduld...' : 'Ontgrendel calculator \u2192')
       ),
 
-      React.createElement('p', { style: { color: '#999', fontSize: '12px', marginTop: '16px' } },
+      React.createElement('p', { style: notePrivacyStyle },
         'We respecteren je privacy. Geen spam, alleen waardevolle inzichten.'),
 
-      React.createElement('div', { style: { marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e5e5e5' } },
-        React.createElement('p', { style: { color: '#999', fontSize: '13px' } },
-          'Al een toegangslink ontvangen? '),
-        React.createElement('p', { style: { color: '#999', fontSize: '13px', marginTop: '4px' } },
+      React.createElement('div', { style: dividerStyle },
+        React.createElement('p', { style: noteSecondaryStyle },
+          'Al een toegangslink ontvangen?'),
+        React.createElement('p', { style: Object.assign({}, noteSecondaryStyle, { marginTop: '4px' }) },
           'Plak de link in je adresbalk om direct toegang te krijgen.')
       )
     );
