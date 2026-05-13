@@ -90,7 +90,7 @@
 
   <section class="rapport-cta">
     <div class="rapport-pdf-download">
-      <button type="button" id="download-pdf-btn" class="cta cta-pdf">
+      <button type="button" id="download-pdf-btn" class="cta cta-pdf" data-event="rapport-pdf-download">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
           <polyline points="7 10 12 15 17 10"/>
@@ -107,9 +107,9 @@
       <input type="hidden" name="_subject" value="Rapport-aanvraag">
       <input type="hidden" name="_template" value="table">
       <input type="text" name="_honey" style="display:none">
-      <button type="submit">Stuur dit rapport naar mijn inbox + Architecten-Academie</button>
+      <button type="submit" data-event="rapport-email-submit">Stuur dit rapport naar mijn inbox + Architecten-Academie</button>
     </form>
-    <p class="rapport-impl-link">Wilt u ook verkennen hoe we het plan helpen uitvoeren? <a href="/implementatie/">Bekijk onze implementatie-aanpak &rarr;</a></p>
+    <p class="rapport-impl-link">Wilt u ook verkennen hoe we het plan helpen uitvoeren? <a href="/implementatie/" data-event="rapport-implementatie-link">Bekijk onze implementatie-aanpak &rarr;</a></p>
   </section>
 
   <section class="faq faq-rapport" aria-label="Veelgestelde vragen over follow-up">
@@ -159,6 +159,7 @@
   <script src="rapport-pdf.js?v=20260513d"></script>
   <script src="rapport.js?v=20260513d"></script>
   <script src="/shared/header-nav.js?v=20260513i" defer></script>
+  <script src="/shared/analytics-cta.js?v=20260513i" defer></script>
 
   <div class="calendly-inline-widget"
        data-url="https://calendly.com/d/cxqh-9ht-kp7/finaforte-masterplan?embed_domain=masterplan.finaforte.nl&embed_type=Inline"
