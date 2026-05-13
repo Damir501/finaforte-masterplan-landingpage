@@ -37,6 +37,50 @@
   <link rel="stylesheet" href="scan.css?v=20260513h">
 </head>
 <body class="scan-body">
+  <header class="lp-header" role="banner">
+    <div class="lp-header__inner">
+      <a href="/" class="lp-header__logo">Finaforte</a>
+      <nav class="lp-header__nav" aria-label="Hoofdmenu">
+        <div class="lp-header__group">
+          <button type="button" class="lp-header__trigger" aria-haspopup="true" aria-expanded="false">Diensten<span aria-hidden="true">&#9662;</span></button>
+          <ul class="lp-header__dropdown">
+            <li><a href="/masterplan/">Masterplan</a></li>
+            <li><a href="/implementatie/">Implementatie</a></li>
+          </ul>
+        </div>
+        <div class="lp-header__group">
+          <button type="button" class="lp-header__trigger" aria-haspopup="true" aria-expanded="false">Kennis<span aria-hidden="true">&#9662;</span></button>
+          <ul class="lp-header__dropdown">
+            <li><a href="/scan/">Doe de Scan</a></li>
+            <li><a href="/#tools">Calculators</a></li>
+            <li><a href="/#faq">FAQ</a></li>
+          </ul>
+        </div>
+      </nav>
+      <a href="/#kennismaking" class="lp-header__cta">Plan kennismaking</a>
+      <button type="button" class="lp-header__hamburger" aria-label="Menu openen" aria-expanded="false" aria-controls="lp-header-panel">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div id="lp-header-panel" class="lp-header__panel" role="dialog" aria-modal="true" aria-label="Mobiel menu">
+      <div class="lp-header__panel-inner">
+        <h3 class="lp-header__group-label"><em>Diensten</em></h3>
+        <ul>
+          <li><a href="/masterplan/">Masterplan</a></li>
+          <li><a href="/implementatie/">Implementatie</a></li>
+        </ul>
+        <h3 class="lp-header__group-label"><em>Kennis</em></h3>
+        <ul>
+          <li><a href="/scan/">Doe de Scan</a></li>
+          <li><a href="/#tools">Calculators</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+        </ul>
+        <h3 class="lp-header__group-label"><em>Contact</em></h3>
+        <a href="/#kennismaking" class="lp-header__panel-cta">Plan kennismaking</a>
+      </div>
+    </div>
+  </header>
+
   <header class="scan-header">
     <a href="/" class="scan-exit" aria-label="Stop met scan">×</a>
     <div class="scan-progress" id="scan-progress">Vraag 1 van 6</div>
@@ -54,6 +98,7 @@
   <script src="/scan/scan-scoring.js"></script>
   <script src="/scan/scan-submit.js?v=20260513d"></script>
   <script src="/scan/scan-logic.js?v=20260513d"></script>
+  <script src="/shared/header-nav.js?v=20260513i" defer></script>
   <!-- GoatCounter analytics (privacy-friendly, no cookies, no banner) -->
   <script data-goatcounter="https://masterplan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
