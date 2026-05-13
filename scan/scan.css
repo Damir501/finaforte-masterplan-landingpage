@@ -1,29 +1,35 @@
-.scan-body { background: var(--mint-light); min-height: 100vh; }
+/* Niveau D — scan inherit cream-paper + dot-grid van base.css body.
+   Geen eigen background meer; dot-grid komt globaal door. */
+.scan-body { min-height: 100vh; }
 
 .scan-header {
   position: sticky; top: 0;
-  background: var(--white);
-  border-bottom: 1px solid var(--paper-dark);
+  background: var(--paper-editorial);
+  border-bottom: 1px solid var(--paper-line);
   padding: 12px 24px;
   display: flex; align-items: center; gap: 16px;
+  z-index: 10;
 }
 .scan-exit {
   font-size: 28px; line-height: 1;
-  color: var(--text-muted);
+  color: var(--ink-muted);
   text-decoration: none;
   padding: 4px 12px;
 }
-.scan-exit:hover { color: var(--text); }
+.scan-exit:hover { color: var(--mint-deep); }
 .scan-progress {
   flex: 1;
-  font-size: 14px;
-  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
 }
 .scan-progress-bar {
   width: 100%;
   position: absolute; left: 0; bottom: -1px;
   height: 3px;
-  background: var(--paper);
+  background: var(--paper-line);
 }
 .scan-progress-fill {
   height: 100%;
@@ -33,19 +39,31 @@
 }
 
 .scan-main {
-  max-width: 640px;
+  max-width: 680px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 64px 24px;
 }
 .scan-q-label {
-  font-size: clamp(22px, 3.5vw, 28px);
-  line-height: 1.25;
-  margin-bottom: 8px;
-  color: var(--dark-green);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(28px, 4.2vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  color: var(--mint-deep);
+}
+/* Niveau D — italic <em> accent in scan-vragen (mocht het voorkomen) */
+.scan-q-label em,
+.scan-form-title em {
+  font-style: italic;
+  font-weight: 400;
+  color: inherit;
 }
 .scan-q-sub {
-  font-size: 15px; color: var(--text-muted);
-  margin-bottom: 24px;
+  font-size: 16px;
+  color: var(--ink-muted);
+  margin-bottom: 32px;
+  line-height: 1.55;
 }
 .scan-q-options { list-style: none; }
 .scan-q-options li { margin-bottom: 12px; }
@@ -58,49 +76,64 @@
   border-radius: var(--radius);
   font-size: 16px;
   font-family: var(--font-body);
+  color: var(--text);
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s, transform 0.05s;
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.2s, transform 0.05s;
 }
 .scan-q-option:hover {
-  border-color: var(--mint);
-  background: var(--mint-light);
+  border-color: var(--copper);
+  background: var(--cream-warm);
+  box-shadow: var(--shadow-medium);
 }
 .scan-q-option:active { transform: translateY(1px); }
 .scan-q-option.selected {
   border-color: var(--copper);
-  background: var(--paper);
+  background: var(--cream-warm);
+  box-shadow: var(--shadow-medium);
 }
 
 .scan-q-nav {
-  margin-top: 32px;
+  margin-top: 36px;
   text-align: left;
 }
 .scan-q-back {
   background: transparent; border: none;
-  color: var(--text-muted);
-  font-size: 14px;
+  color: var(--ink-muted);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
   cursor: pointer;
   padding: 8px 0;
+  transition: color 0.15s;
 }
-.scan-q-back:hover { color: var(--text); }
+.scan-q-back:hover { color: var(--mint-deep); }
 
 .scan-analyzing {
   text-align: center;
-  font-size: 18px;
-  color: var(--mint-dark);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(20px, 2.5vw, 24px);
+  color: var(--mint-deep);
   padding: 96px 24px;
 }
 
 .scan-form-title {
-  font-size: clamp(22px, 3.5vw, 28px);
-  line-height: 1.25;
-  margin-bottom: 8px;
-  color: var(--dark-green);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(28px, 4.2vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 12px;
+  color: var(--mint-deep);
 }
 .scan-form-body {
-  font-size: 15px;
-  color: var(--text-muted);
-  margin-bottom: 24px;
+  font-size: 16px;
+  color: var(--ink-muted);
+  margin-bottom: 32px;
+  line-height: 1.55;
 }
 .scan-form-fields {
   display: grid;
@@ -126,12 +159,14 @@
   font-size: 16px;
   font-family: var(--font-body);
   color: var(--text);
-  transition: border-color 0.15s;
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.15s, box-shadow 0.2s;
   box-sizing: border-box;
 }
 .scan-form-input:focus {
   outline: none;
-  border-color: var(--mint);
+  border-color: var(--copper);
+  box-shadow: var(--shadow-medium);
 }
 .scan-form-input[aria-invalid="true"] {
   border-color: #c44d3a;
@@ -165,7 +200,7 @@
   cursor: pointer;
   transition: background 0.15s, transform 0.05s;
 }
-.scan-form-submit:hover:not(:disabled) { background: var(--copper-dark, #b6582f); }
+.scan-form-submit:hover:not(:disabled) { background: var(--copper-hover); }
 .scan-form-submit:active:not(:disabled) { transform: translateY(1px); }
 .scan-form-submit:disabled {
   background: var(--paper-dark);
@@ -179,7 +214,8 @@
 }
 .scan-form-privacy {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--ink-muted);
+  font-style: italic;
   margin-top: 16px;
   text-align: center;
 }
