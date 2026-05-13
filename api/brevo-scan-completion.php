@@ -61,14 +61,24 @@ if (!$email) {
     echo json_encode(['error' => 'invalid-email']);
     exit;
 }
-$firstName  = trim((string)($payload['firstName']  ?? ''));
-$lastName   = trim((string)($payload['lastName']   ?? ''));
+$email = substr($email, 0, 254); // RFC 5321
+
+// Sanitize firstName/lastName: strip control chars (header-injection guard) + length cap
+$firstName  = mb_substr(preg_replace('/[\r\n\t\x00-\x1F]/u', '', trim((string)($payload['firstName'] ?? ''))) ?? '', 0, 80);
+$lastName   = mb_substr(preg_replace('/[\r\n\t\x00-\x1F]/u', '', trim((string)($payload['lastName']  ?? ''))) ?? '', 0, 80);
 $tags       = is_array($payload['tags']       ?? null) ? $payload['tags']       : [];
 $attributes = is_array($payload['attributes'] ?? null) ? $payload['attributes'] : [];
 
-$rapportUrl = (string)($attributes['RAPPORT_URL'] ?? 'https://masterplan.finaforte.nl/');
-if (!filter_var($rapportUrl, FILTER_VALIDATE_URL)) {
-    $rapportUrl = 'https://masterplan.finaforte.nl/';
+// Hardened RAPPORT_URL: alleen https://masterplan.finaforte.nl/* (anti-phishing-injectie)
+$rapportUrlRaw = (string)($attributes['RAPPORT_URL'] ?? '');
+$parsed = parse_url($rapportUrlRaw);
+$allowedHost = 'masterplan.finaforte.nl';
+$rapportUrl = 'https://masterplan.finaforte.nl/';
+if (is_array($parsed)
+    && ($parsed['scheme'] ?? '') === 'https'
+    && strtolower($parsed['host'] ?? '') === $allowedHost
+) {
+    $rapportUrl = $rapportUrlRaw;
 }
 
 // 4. Bouw Brevo contact-attrs (alleen scalaire waarden)
