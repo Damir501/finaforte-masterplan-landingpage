@@ -113,11 +113,24 @@ Format: `type(scope/subscope): wat-en-waarom`
 
 ---
 
-## 🌳 Branch-strategie
+## 🌳 Branch-strategie — UNIFIED WORKFLOW (sinds 14 mei 2026)
 
-- `main` — productie (elke push deployt live)
-- `claude/repo-exploration-tMNMG` — actieve werk-branch (laptop + mobiel delen deze)
-- Merge naar `main` pas wanneer een blok werk af + getest is
+**Eén branch: `main`.** Zowel mobiel als desktop-PC committen direct naar `main`.
+
+```
+PC (./deploy.sh) ─┐
+                  ├──→ main ──→ GitHub Actions FTP ──→ cPanel live
+Mobiel (Claude) ──┘
+```
+
+- ✅ **Geen feature-branches** (tenzij voor risicovol multi-step werk)
+- ✅ **Bij elke sessie eerst**: `git pull origin main` om wijzigingen van het andere apparaat op te halen
+- ✅ **Bij elke commit-cyclus**: commit → push naar `main` → auto-deploy naar live binnen ±1 min
+- ⚠️ **Pas op**: `main` deployt direct live. Test eerst lokaal via `./dev.sh`
+
+**Voor risicovol werk** (grote refactors, experimenten): maak ad-hoc een feature-branch, merge later. Default = direct op `main`.
+
+Oude feature-branch `claude/repo-exploration-tMNMG` is gearchiveerd (niet meer actief gebruikt).
 
 ---
 
@@ -156,6 +169,8 @@ Landing (/) → Scan (/scan/) → Email-capture → Rapport (/rapport/) → PDF-
 ## 📋 Volgende stappen voor een nieuwe sessie
 
 1. Lees dit bestand (gebeurt automatisch)
-2. Lees `WORKLOG.md` voor laatste sessie-status
-3. Check `git log -10 --oneline` voor recente commits
-4. Vraag de gebruiker waar ze mee verder willen, of pak openstaande items op
+2. **`git pull origin main`** — haal eventuele wijzigingen van het andere apparaat op
+3. Lees `WORKLOG.md` voor laatste sessie-status
+4. Check `git log -10 --oneline` voor recente commits
+5. Vraag de gebruiker waar ze mee verder willen, of pak openstaande items op
+6. Aan eind van sessie: **update `WORKLOG.md`** met "wat gedaan + open" + push naar `main`

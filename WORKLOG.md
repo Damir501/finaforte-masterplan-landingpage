@@ -6,24 +6,42 @@
 
 ---
 
-## 📅 2026-05-14 — Sessie ochtend (mobiel-setup)
+## 📅 2026-05-14 — Volle werkdag (PC + mobiel)
 
-**Gedaan**
-- Repo-onboarding: `CLAUDE.md` + `WORKLOG.md` aangemaakt voor sessie-continuïteit tussen laptop ↔ mobiel
-- Workflow bevestigd: laptop + mobiel werken beide op branch `claude/repo-exploration-tMNMG`
+### 🌅 Ochtend (mobiel) — Mobiel-setup
+- Repo-onboarding: `CLAUDE.md` + `WORKLOG.md` aangemaakt voor sessie-continuïteit
 - Toegang verifieerd: Claude Code op web (claude.ai/code) werkt vanaf telefoon
+- Account-discrepantie ontdekt: `Damir501` (eigenaar repo) vs `damir-svg` (mobiel ingelogd)
+- Test-issue `#1` aangemaakt: "Idee: Damir op de homepage versterken" — als demo van mobiele idee-capture
 
-**Status van de site**
-- Working tree clean, alles gesynct met `origin`
-- 4 hoofdpaginas (`/`, `/masterplan/`, `/implementatie/`, `/rapport/`) hebben sticky header + mobile hamburger
-- Editorial paper-look in alle paginas (Niveau A → D afgerond gisteren)
-- Homepage upgrade Fase-2 live: trustbadge, "Over Damir", review-carousel
+### ☀️ Middag (PC) — Niveau-E Fase-3 (UX/conversie/performance)
+- `feat(niveau-E/3B)` — **Floating help-button + contact-modal** op 5 hoofdpaginas
+  - Nieuwe file: `shared/help-button.js` (97 regels)
+  - 197 regels CSS toegevoegd aan `styles/base.css`
+- `feat(niveau-E/3C)` — **Sticky mobile bottom-bar** 'Plan kennismaking' onder 900px breedte
+  - Nieuwe file: `shared/mobile-cta-bar.js` (83 regels)
+  - 74 regels CSS in `styles/base.css`
+- `perf(niveau-E/3D)` — **DNS-prefetch + preconnect** hints voor third-party domeinen (5 paginas)
+- `chore(niveau-E/Fase-3)` — cache-buster bump `?v=j → ?v=k` op 18 files
+- **Brevo automations** — uitgebreid gewerkt in Brevo-dashboard (workflows/triggers/email-templates) — _details te documenteren in Issue #2_
+
+### 🌆 Avond (mobiel) — Workflow unification
+- **Unified workflow** doorgevoerd: één branch `main` voor mobiel + PC
+- `CLAUDE.md` branch-strategie sectie geherschreven (single-branch flow)
+- `.github/workflows/deploy.yml`: CLAUDE.md + WORKLOG.md uitgesloten van live-deploy (privé docs)
+- `claude/repo-exploration-tMNMG` gearchiveerd (niet meer actief)
+
+**Status van de site nu**
+- Working tree clean, alles op `main` en gesynct met `origin`
+- 5 hoofdpaginas hebben: sticky header + mobile hamburger + floating help-button + sticky mobile CTA-bar
+- Performance: DNS-prefetch + preconnect actief
+- Editorial paper-look in alle paginas
 
 **Open / volgende kandidaten**
-- [ ] QA-ronde: alle 4 hoofdpaginas + 13 calculators doorlopen op mobiel + desktop
-- [ ] Verifiëren werk van gisteren is correct gerenderd (review-carousel, "Over Damir", trustbadge)
-- [ ] Niveau-F plannen (SEO-content? Blog? Case studies? Video-intro?)
-- [ ] Wanneer tevreden: `claude/repo-exploration-tMNMG` mergen naar `main` → live deploy
+- [ ] **Issue #2**: Brevo-automations documenteren (welke workflows, triggers, email-templates) — kan niet in code, dus in Issue/Notion
+- [ ] **Issue #1**: Damir op homepage versterken — richting kiezen (video/foto/verhaal/credibility/quote/CV)
+- [ ] QA-ronde mobiel: verifieer help-button + sticky bottom-bar werken op echte iPhone/Android
+- [ ] Niveau-F plannen (SEO-content? Blog? Case studies?)
 
 ---
 
