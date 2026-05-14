@@ -1732,3 +1732,77 @@ body.has-toc .crop-bl { left: 236px; }
 
 body.help-modal-open { overflow: hidden; }
 
+/* ============================================================
+   Niveau E / Fase 3 — Sticky mobile bottom-bar (<900px)
+   ============================================================ */
+.mobile-cta-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 210;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--paper-editorial);
+  border-top: 3px solid var(--copper);
+  box-shadow: 0 -6px 16px rgba(0,41,43,0.10);
+  transform: translateY(100%);
+  transition: transform 0.28s ease-out;
+}
+.mobile-cta-bar--visible { transform: translateY(0); }
+
+.mobile-cta-bar__cta {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 16px;
+  background: var(--mint-deep);
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  transition: background-color 0.18s ease;
+}
+.mobile-cta-bar__cta:hover, .mobile-cta-bar__cta:focus-visible {
+  background: #002326;
+  outline: none;
+}
+.mobile-cta-bar__label {
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.mobile-cta-bar__sub {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.78;
+  letter-spacing: 0.04em;
+}
+.mobile-cta-bar__close {
+  flex: 0 0 auto;
+  width: 48px;
+  background: var(--paper-editorial);
+  color: var(--ink-muted);
+  border: none;
+  border-left: 1px solid rgba(0,61,64,0.10);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.mobile-cta-bar__close:hover, .mobile-cta-bar__close:focus-visible {
+  background: var(--cream-warm);
+  color: var(--mint-deep);
+  outline: none;
+}
+
+/* Reserveer body-ruimte zodat sticky bar geen content overlapt */
+@media (max-width: 899px) {
+  body.has-mobile-cta-bar { padding-bottom: 68px; }
+}
+@media (min-width: 900px) {
+  .mobile-cta-bar { display: none; }
+}
+
