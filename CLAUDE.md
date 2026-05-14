@@ -115,22 +115,31 @@ Format: `type(scope/subscope): wat-en-waarom`
 
 ## 🌳 Branch-strategie — UNIFIED WORKFLOW (sinds 14 mei 2026)
 
-**Eén branch: `main`.** Zowel mobiel als desktop-PC committen direct naar `main`.
+**Doel**: laptop + mobiel werken op één gedeelde flow.
 
 ```
-PC (./deploy.sh) ─┐
-                  ├──→ main ──→ GitHub Actions FTP ──→ cPanel live
-Mobiel (Claude) ──┘
+PC  (./deploy.sh) ────────────────────────────────→ main ──→ FTP ──→ live
+                                                     ▲
+Mobiel (Claude) → claude/<topic> branch → PR → merge ┘
 ```
 
-- ✅ **Geen feature-branches** (tenzij voor risicovol multi-step werk)
-- ✅ **Bij elke sessie eerst**: `git pull origin main` om wijzigingen van het andere apparaat op te halen
-- ✅ **Bij elke commit-cyclus**: commit → push naar `main` → auto-deploy naar live binnen ±1 min
-- ⚠️ **Pas op**: `main` deployt direct live. Test eerst lokaal via `./dev.sh`
+### Vanaf PC
+- `./deploy.sh "msg"` pusht direct naar `main` → auto-deploy live (±1 min)
+- Test eerst lokaal met `./dev.sh`
 
-**Voor risicovol werk** (grote refactors, experimenten): maak ad-hoc een feature-branch, merge later. Default = direct op `main`.
+### Vanaf Mobiel (Claude Code op web)
+- Claude **kan niet direct naar `main` pushen** (sandbox-restrictie, HTTP 403)
+- Claude pusht naar een **feature-branch** (bijv. `claude/<topic>-<datum>`)
+- Claude maakt een **Pull Request** naar `main`
+- Jij kunt de PR vanaf je telefoon mergen via de GitHub-app of mobile.github.com
+- Na merge: PC bij volgende sessie `git pull origin main` om te syncen
 
-Oude feature-branch `claude/repo-exploration-tMNMG` is gearchiveerd (niet meer actief gebruikt).
+### Algemene regels
+- ✅ Begin elke sessie met `git pull origin main` (PC) — Claude doet dit automatisch
+- ✅ Aan eind van Claude-sessie: WORKLOG.md updaten + push naar branch + PR maken
+- ⚠️ `main` deployt direct live → kleine PR's, snel mergen
+
+Oude feature-branch `claude/repo-exploration-tMNMG` is gearchiveerd.
 
 ---
 
