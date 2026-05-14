@@ -39,5 +39,9 @@ jobs:
             deploy.sh
             dev.sh
             README.md
+            CLAUDE.md
+            WORKLOG.md
             **/docs/**
             docs/**
+            **/.claude/**
+            .claude/**
