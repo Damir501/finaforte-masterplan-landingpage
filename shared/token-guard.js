@@ -238,6 +238,30 @@
       formData.append('Pagina', window.location.href);
       formData.append('Calculator', document.title || 'Onbekend');
 
+      // Fire-and-forget: registreer calc-lead in Brevo list 32 zodat F4-drip
+      // wordt getriggerd. Source='calc' zorgt dat de PHP de rapport-mail
+      // overslaat (calc-leads hebben geen scan-data). FormSubmit-mailping naar
+      // Damir blijft via de hoofd-fetch hieronder.
+      try {
+        var calcPayload = {
+          email: email,
+          firstName: naam,
+          source: 'calc',
+          tags: ['calc-lead'],
+          attributes: {
+            CALC_PAGE_URL: window.location.href,
+            CALC_PAGE_TITLE: document.title || ''
+          }
+        };
+        fetch('/api/brevo-scan-completion.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(calcPayload),
+          credentials: 'omit',
+          keepalive: true
+        }).catch(function() {});
+      } catch (e) {}
+
       fetch('https://formsubmit.co/ajax/' + LEAD_EMAIL, {
         method: 'POST',
         body: formData,

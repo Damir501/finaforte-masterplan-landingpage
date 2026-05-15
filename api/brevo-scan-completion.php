@@ -69,6 +69,15 @@ $lastName   = mb_substr(preg_replace('/[\r\n\t\x00-\x1F]/u', '', trim((string)($
 $tags       = is_array($payload['tags']       ?? null) ? $payload['tags']       : [];
 $attributes = is_array($payload['attributes'] ?? null) ? $payload['attributes'] : [];
 
+// Source-discriminator: 'scan' (default) sends rapport-email; 'calc' enters list
+// stilletjes (F4-drip pakt 'm op via list-add). Calc-leads hebben geen TOP3_HASH
+// dus rapport-email zou onzin zijn.
+$source = (string)($payload['source'] ?? 'scan');
+$isCalcLead = ($source === 'calc');
+if ($isCalcLead && !in_array('calc-lead', $tags, true)) {
+    $tags[] = 'calc-lead';
+}
+
 // Hardened RAPPORT_URL: alleen https://masterplan.finaforte.nl/* (anti-phishing-injectie)
 $rapportUrlRaw = (string)($attributes['RAPPORT_URL'] ?? '');
 $parsed = parse_url($rapportUrlRaw);
@@ -102,25 +111,29 @@ $contactPayload = [
 ];
 $contactResp = brevo_call('https://api.brevo.com/v3/contacts', 'POST', $contactPayload, $apiKey);
 
-// 6. POST /v3/smtp/email (transactional rapport-bezorging)
-$displayName = trim($firstName . ' ' . $lastName);
-if ($displayName === '') $displayName = 'Bezoeker';
+// 6. POST /v3/smtp/email (transactional rapport-bezorging) — ALLEEN voor scan-leads.
+// Calc-leads slaan dit over: zij krijgen F4-drip via list-add (Automation #13).
+$emailResp = ['ok' => true, 'status' => 'skipped-calc-lead'];
+if (!$isCalcLead) {
+    $displayName = trim($firstName . ' ' . $lastName);
+    if ($displayName === '') $displayName = 'Bezoeker';
 
-$subject = ($firstName !== '')
-    ? sprintf('%s, je blinde-vlekken-rapport staat klaar', $firstName)
-    : 'Je blinde-vlekken-rapport staat klaar';
+    $subject = ($firstName !== '')
+        ? sprintf('%s, je blinde-vlekken-rapport staat klaar', $firstName)
+        : 'Je blinde-vlekken-rapport staat klaar';
 
-$htmlContent = render_email_html($firstName, $rapportUrl);
+    $htmlContent = render_email_html($firstName, $rapportUrl);
 
-$emailPayload = [
-    'sender'      => ['name' => 'Damir Tvrtkovic | Finaforte', 'email' => 'info@finaforte.nl'],
-    'replyTo'     => ['name' => 'Finaforte',                 'email' => 'info@finaforte.nl'],
-    'to'          => [['email' => $email, 'name' => $displayName]],
-    'subject'     => $subject,
-    'htmlContent' => $htmlContent,
-    'tags'        => array_values(array_filter($tags, 'is_string')),
-];
-$emailResp = brevo_call('https://api.brevo.com/v3/smtp/email', 'POST', $emailPayload, $apiKey);
+    $emailPayload = [
+        'sender'      => ['name' => 'Damir Tvrtkovic | Finaforte', 'email' => 'info@finaforte.nl'],
+        'replyTo'     => ['name' => 'Finaforte',                 'email' => 'info@finaforte.nl'],
+        'to'          => [['email' => $email, 'name' => $displayName]],
+        'subject'     => $subject,
+        'htmlContent' => $htmlContent,
+        'tags'        => array_values(array_filter($tags, 'is_string')),
+    ];
+    $emailResp = brevo_call('https://api.brevo.com/v3/smtp/email', 'POST', $emailPayload, $apiKey);
+}
 
 // 7. Resultaat-respons (fail-soft — frontend doet redirect ongeacht)
 $ok = ($contactResp['ok'] ?? false) && ($emailResp['ok'] ?? false);
@@ -129,6 +142,7 @@ echo json_encode([
     'ok'      => $ok,
     'contact' => $contactResp['status'] ?? null,
     'email'   => $emailResp['status']   ?? null,
+    'source'  => $source,
 ]);
 
 // ----------------------------------------------------------------------------
