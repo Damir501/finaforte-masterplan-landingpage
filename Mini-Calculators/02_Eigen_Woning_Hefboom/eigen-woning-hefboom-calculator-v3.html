@@ -13,27 +13,27 @@
   <script src="/shared/pdf-generator.js"></script>
   <script src="/shared/token-guard.js?v=20260513k"></script>
   <link rel="stylesheet" href="/shared/access-gate.css">
-  <link rel="stylesheet" href="/styles/tokens.css?v=20260515b">
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260515c">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--paper-editorial); min-height: 100vh; }
     .container { max-width: 900px; margin: 0 auto; padding: 24px; }
-    .header { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
+    .header { background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
     .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
     .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
     .header p { font-size: 16px; opacity: 0.9; }
     .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #1AABA6; padding-bottom: 8px; }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #00A2AA; padding-bottom: 8px; }
     .input-group { margin-bottom: 16px; }
     .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
     .input-hint { font-size: 12px; color: #666; margin-top: 4px; }
     .input-field { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; }
-    .input-field:focus { outline: none; border-color: #1AABA6; }
+    .input-field:focus { outline: none; border-color: #00A2AA; }
     .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .btn { width: 100%; padding: 16px; background: #1AABA6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .btn:hover { background: #158783; }
+    .btn { width: 100%; padding: 16px; background: #00A2AA; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #00838B; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
-    .result-card { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
+    .result-card { background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
     .result-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
     .result-title { font-size: 22px; font-weight: 700; margin: 8px 0; }
     .result-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; margin-top: 16px; }
@@ -43,15 +43,15 @@
     table { width: 100%; border-collapse: collapse; font-size: 14px; }
     th { text-align: left; padding: 12px 8px; color: #666; border-bottom: 2px solid #e5e5e5; }
     th.right { text-align: right; }
-    th.optimal { background: #f0faf9; color: #1AABA6; }
+    th.optimal { background: #f0faf9; color: #00A2AA; }
     td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
     td.right { text-align: right; }
     td.optimal { background: #f0faf9; }
     td.negative { color: #c53030; }
-    td.positive { color: #1AABA6; }
+    td.positive { color: #00A2AA; }
     td.bold { font-weight: 600; }
-    .info-box { background: #f0faf9; border-left: 4px solid #1AABA6; padding: 16px; margin: 16px 0; border-radius: 0 8px 8px 0; }
-    .info-box h4 { color: #1AABA6; margin-bottom: 8px; font-size: 14px; }
+    .info-box { background: #f0faf9; border-left: 4px solid #00A2AA; padding: 16px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+    .info-box h4 { color: #00A2AA; margin-bottom: 8px; font-size: 14px; }
     .info-box p { font-size: 13px; color: #555; line-height: 1.5; }
     .params-table { font-size: 12px; margin-top: 16px; }
     .params-table td { padding: 6px 8px; border-bottom: 1px solid #e5e5e5; }
@@ -60,7 +60,7 @@
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
     .toggle-group { display: flex; gap: 8px; }
     .toggle-btn { flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; transition: all 0.2s; }
-    .toggle-btn.active { border-color: #1AABA6; background: #f0faf9; color: #1AABA6; font-weight: 600; }
+    .toggle-btn.active { border-color: #00A2AA; background: #f0faf9; color: #00A2AA; font-weight: 600; }
     .calculation-detail { background: #f9f9f9; border-radius: 8px; padding: 16px; margin-top: 16px; font-size: 13px; }
     .calculation-detail h4 { font-size: 14px; color: #333; margin-bottom: 12px; }
     .calc-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #e5e5e5; }
@@ -72,7 +72,7 @@
 
     @media (max-width: 600px) { .input-row { grid-template-columns: 1fr; } .result-stats { grid-template-columns: 1fr 1fr; } }
   </style>
-  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515b">
+  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515c">
 </head>
 <body>
   <div id="root"></div>

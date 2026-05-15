@@ -13,13 +13,13 @@
   <script src="/shared/pdf-generator.js"></script>
   <script src="/shared/token-guard.js?v=20260513k"></script>
   <link rel="stylesheet" href="/shared/access-gate.css">
-  <link rel="stylesheet" href="/styles/tokens.css?v=20260515b">
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260515c">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--paper-editorial); min-height: 100vh; }
     .container { max-width: 900px; margin: 0 auto; padding: 24px; }
     .header {
-      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%);
       border-radius: 16px;
       padding: 32px;
       margin-bottom: 24px;
@@ -41,15 +41,15 @@
     .input-group { margin-bottom: 16px; }
     .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
     .input-row { display: flex; align-items: center; gap: 16px; }
-    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .slider { flex: 1; accent-color: #00A2AA; height: 8px; }
     .value-display {
       background: #f0faf9;
-      border: 2px solid #1AABA6;
+      border: 2px solid #00A2AA;
       border-radius: 8px;
       padding: 10px 16px;
       font-weight: 700;
       font-size: 16px;
-      color: #1AABA6;
+      color: #00A2AA;
       min-width: 120px;
       text-align: center;
     }
@@ -57,7 +57,7 @@
     .btn {
       width: 100%;
       padding: 16px;
-      background: #1AABA6;
+      background: #00A2AA;
       color: white;
       border: none;
       border-radius: 8px;
@@ -66,12 +66,12 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn:hover { background: #158783; }
+    .btn:hover { background: #00838B; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
-    .params-info strong { color: #1AABA6; }
+    .params-info strong { color: #00A2AA; }
     .result-header {
-      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%);
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -89,24 +89,24 @@
       padding: 24px;
       border: 2px solid #e5e5e5;
     }
-    .comparison-card.best { border-color: #1AABA6; background: #f0faf9; }
+    .comparison-card.best { border-color: #00A2AA; background: #f0faf9; }
     .comparison-card.best .card-badge { display: block; }
-    .card-badge { display: none; background: #1AABA6; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
+    .card-badge { display: none; background: #00A2AA; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
     .card-name { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 16px; }
     .result-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
     .result-row:last-child { border: none; }
     .result-label { color: #666; font-size: 14px; }
     .result-value { font-weight: 600; font-size: 14px; }
-    .result-value.highlight { color: #1AABA6; font-size: 18px; }
+    .result-value.highlight { color: #00A2AA; font-size: 18px; }
     .result-value.negative { color: #c53030; }
     .insight-box {
       background: #f0faf9;
-      border-left: 4px solid #1AABA6;
+      border-left: 4px solid #00A2AA;
       padding: 16px;
       margin: 16px 0;
       border-radius: 0 8px 8px 0;
     }
-    .insight-title { font-weight: 600; color: #1AABA6; margin-bottom: 4px; }
+    .insight-title { font-weight: 600; color: #00A2AA; margin-bottom: 4px; }
     .insight-text { font-size: 14px; color: #333; }
     .assumptions-card { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
     .assumptions-title { font-size: 14px; font-weight: 600; color: #b45309; margin-bottom: 8px; }
@@ -123,7 +123,7 @@
       .break-even { font-size: 36px; }
     }
   </style>
-  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515b">
+  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515c">
 </head>
 <body>
   <div id="root"></div>
@@ -303,9 +303,9 @@
                     onClick={() => { setHeeftPartner(true); setShowResults(false); }}
                     style={{
                       flex: 1, padding: '12px', border: '2px solid', borderRadius: '8px', cursor: 'pointer',
-                      borderColor: heeftPartner ? '#1AABA6' : '#e5e5e5',
+                      borderColor: heeftPartner ? '#00A2AA' : '#e5e5e5',
                       background: heeftPartner ? '#f0faf9' : 'white',
-                      color: heeftPartner ? '#1AABA6' : '#666',
+                      color: heeftPartner ? '#00A2AA' : '#666',
                       fontWeight: heeftPartner ? '600' : '400'
                     }}
                   >Ja</button>
@@ -313,9 +313,9 @@
                     onClick={() => { setHeeftPartner(false); setShowResults(false); }}
                     style={{
                       flex: 1, padding: '12px', border: '2px solid', borderRadius: '8px', cursor: 'pointer',
-                      borderColor: !heeftPartner ? '#1AABA6' : '#e5e5e5',
+                      borderColor: !heeftPartner ? '#00A2AA' : '#e5e5e5',
                       background: !heeftPartner ? '#f0faf9' : 'white',
-                      color: !heeftPartner ? '#1AABA6' : '#666',
+                      color: !heeftPartner ? '#00A2AA' : '#666',
                       fontWeight: !heeftPartner ? '600' : '400'
                     }}
                   >Nee</button>

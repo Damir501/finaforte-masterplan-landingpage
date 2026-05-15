@@ -13,13 +13,13 @@
   <script src="/shared/pdf-generator.js"></script>
   <script src="/shared/token-guard.js?v=20260513k"></script>
   <link rel="stylesheet" href="/shared/access-gate.css">
-  <link rel="stylesheet" href="/styles/tokens.css?v=20260515b">
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260515c">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--paper-editorial); min-height: 100vh; }
     .container { max-width: 900px; margin: 0 auto; padding: 24px; }
     .header {
-      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%);
       border-radius: 16px;
       padding: 32px;
       margin-bottom: 24px;
@@ -40,27 +40,27 @@
     .input-group { margin-bottom: 16px; }
     .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
     .input-row { display: flex; align-items: center; gap: 16px; }
-    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .slider { flex: 1; accent-color: #00A2AA; height: 8px; }
     .value-display {
       background: #f0faf9;
-      border: 2px solid #1AABA6;
+      border: 2px solid #00A2AA;
       border-radius: 8px;
       padding: 10px 16px;
       font-weight: 700;
       font-size: 16px;
-      color: #1AABA6;
+      color: #00A2AA;
       min-width: 120px;
       text-align: center;
     }
     .input-hint { font-size: 12px; color: #666; margin-top: 6px; }
     .checkbox-group { display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 12px; background: #f9f9f9; border-radius: 8px; }
-    .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: #1AABA6; cursor: pointer; }
+    .checkbox-group input[type="checkbox"] { width: 20px; height: 20px; accent-color: #00A2AA; cursor: pointer; }
     .checkbox-label { font-size: 14px; color: #333; cursor: pointer; }
     .checkbox-hint { font-size: 12px; color: #666; margin-left: 32px; margin-top: 4px; }
     .btn {
       width: 100%;
       padding: 16px;
-      background: #1AABA6;
+      background: #00A2AA;
       color: white;
       border: none;
       border-radius: 8px;
@@ -69,10 +69,10 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn:hover { background: #158783; }
+    .btn:hover { background: #00838B; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     .result-header {
-      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%);
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -90,30 +90,30 @@
       padding: 24px;
       border: 2px solid #e5e5e5;
     }
-    .comparison-card.best { border-color: #1AABA6; background: #f0faf9; }
+    .comparison-card.best { border-color: #00A2AA; background: #f0faf9; }
     .comparison-card.best .card-badge { display: block; }
-    .card-badge { display: none; background: #1AABA6; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
+    .card-badge { display: none; background: #00A2AA; color: white; font-size: 11px; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; width: fit-content; }
     .card-name { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 16px; }
     .result-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
     .result-row:last-child { border: none; }
     .result-label { color: #666; font-size: 14px; }
     .result-value { font-weight: 600; font-size: 14px; }
-    .result-value.highlight { color: #1AABA6; font-size: 18px; }
+    .result-value.highlight { color: #00A2AA; font-size: 18px; }
     .result-value.negative { color: #c53030; }
     .timeline-card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
     .timeline-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
     .timeline-item:last-child { border: none; }
-    .timeline-year { font-weight: 600; color: #1AABA6; min-width: 80px; }
+    .timeline-year { font-weight: 600; color: #00A2AA; min-width: 80px; }
     .timeline-desc { flex: 1; color: #666; }
     .timeline-amount { font-weight: 600; color: #333; }
     .tips-box {
       background: #f0faf9;
-      border-left: 4px solid #1AABA6;
+      border-left: 4px solid #00A2AA;
       padding: 16px;
       margin: 16px 0;
       border-radius: 0 8px 8px 0;
     }
-    .tips-title { font-weight: 600; color: #1AABA6; margin-bottom: 8px; }
+    .tips-title { font-weight: 600; color: #00A2AA; margin-bottom: 8px; }
     .tips-list { font-size: 14px; color: #333; padding-left: 16px; }
     .tips-list li { margin-bottom: 6px; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
@@ -128,7 +128,7 @@
       .besparing { font-size: 36px; }
     }
   </style>
-  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515b">
+  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515c">
 </head>
 <body>
   <div id="root"></div>
@@ -242,8 +242,8 @@
             subtitle: 'Vergelijking schenken en erven met belastingbesparing',
             inputSummary: `Vermogen ${formatCurrency(vermogen)} • ${aantalKinderen} kinderen • ${jarenSchenken} jaar schenken`,
             keyMetrics: [
-              { label: 'Besparing door schenken', value: formatCurrency(results.besparing), color: '#1AABA6' },
-              { label: 'Netto naar kinderen (schenken)', value: formatCurrency(results.nettoKinderenSchenken), color: '#1AABA6' },
+              { label: 'Besparing door schenken', value: formatCurrency(results.besparing), color: '#00A2AA' },
+              { label: 'Netto naar kinderen (schenken)', value: formatCurrency(results.nettoKinderenSchenken), color: '#00A2AA' },
               { label: 'Netto naar kinderen (erven)', value: formatCurrency(results.nettoKinderenErven), color: '#666' },
               { label: 'Totaal geschonken', value: formatCurrency(results.totaalGeschonken), color: '#333' }
             ],
@@ -438,7 +438,7 @@
                 <div className="timeline-item" style={{background: '#f0faf9', margin: '8px -24px -24px', padding: '12px 24px', borderRadius: '0 0 12px 12px'}}>
                   <span className="timeline-year" style={{fontWeight: '700'}}>Totaal</span>
                   <span className="timeline-desc" style={{fontWeight: '600'}}>Geschonken over {jarenSchenken} jaar</span>
-                  <span className="timeline-amount" style={{color: '#1AABA6', fontSize: '16px'}}>{formatCurrency(results.totaalGeschonken)}</span>
+                  <span className="timeline-amount" style={{color: '#00A2AA', fontSize: '16px'}}>{formatCurrency(results.totaalGeschonken)}</span>
                 </div>
               </div>
 

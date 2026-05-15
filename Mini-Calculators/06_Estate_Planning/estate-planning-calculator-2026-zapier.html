@@ -13,51 +13,51 @@
   <script src="/shared/pdf-generator.js"></script>
   <script src="/shared/token-guard.js?v=20260513k"></script>
   <link rel="stylesheet" href="/shared/access-gate.css">
-  <link rel="stylesheet" href="/styles/tokens.css?v=20260515b">
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260515c">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--paper-editorial); min-height: 100vh; }
     .container { max-width: 900px; margin: 0 auto; padding: 24px; }
-    .header { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
+    .header { background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%); border-radius: 16px; padding: 32px; margin-bottom: 24px; color: white; }
     .header-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; margin-bottom: 8px; }
     .header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
     .header p { font-size: 16px; opacity: 0.9; }
     .year-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-left: 8px; vertical-align: middle; }
     .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #1AABA6; padding-bottom: 8px; }
+    .card h3 { font-size: 16px; color: #333; margin-bottom: 16px; border-bottom: 2px solid #00A2AA; padding-bottom: 8px; }
     .input-group { margin-bottom: 16px; }
     .input-label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; font-size: 14px; }
     .input-hint { font-size: 12px; color: #666; margin-top: 4px; }
     .input-field { width: 100%; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; font-size: 16px; }
-    .input-field:focus { outline: none; border-color: #1AABA6; }
+    .input-field:focus { outline: none; border-color: #00A2AA; }
     .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .btn { width: 100%; padding: 16px; background: #1AABA6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .btn:hover { background: #158783; }
+    .btn { width: 100%; padding: 16px; background: #00A2AA; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .btn:hover { background: #00838B; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     .toggle-group { display: flex; gap: 8px; }
     .toggle-btn { flex: 1; padding: 12px; border: 2px solid #e5e5e5; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; transition: all 0.2s; }
-    .toggle-btn:hover { border-color: #1AABA6; }
-    .toggle-btn.active { border-color: #1AABA6; background: #f0faf9; color: #1AABA6; font-weight: 600; }
-    .result-card { background: linear-gradient(135deg, #1AABA6 0%, #158783 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
+    .toggle-btn:hover { border-color: #00A2AA; }
+    .toggle-btn.active { border-color: #00A2AA; background: #f0faf9; color: #00A2AA; font-weight: 600; }
+    .result-card { background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; }
     .result-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 16px; }
     .result-box { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; text-align: center; }
     .result-box-label { font-size: 11px; opacity: 0.8; margin-bottom: 4px; text-transform: uppercase; }
     .result-box-value { font-size: 24px; font-weight: 700; }
     .compare-section { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
     .compare-card { border: 2px solid #e5e5e5; border-radius: 12px; padding: 20px; }
-    .compare-card.highlight { border-color: #1AABA6; background: #f0faf9; }
+    .compare-card.highlight { border-color: #00A2AA; background: #f0faf9; }
     .compare-title { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 12px; }
     .compare-value { font-size: 28px; font-weight: 700; color: #333; }
     .compare-label { font-size: 12px; color: #666; }
-    .badge { display: inline-block; background: #1AABA6; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+    .badge { display: inline-block; background: #00A2AA; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 8px; }
     .timeline { margin-top: 16px; }
     .timeline-item { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
-    .timeline-year { width: 60px; font-weight: 600; color: #1AABA6; }
+    .timeline-year { width: 60px; font-weight: 600; color: #00A2AA; }
     .timeline-content { flex: 1; }
     .timeline-amount { font-weight: 600; }
     .disclaimer { font-size: 11px; color: #999; text-align: center; margin-top: 24px; line-height: 1.5; }
     .params-info { background: #f8f9fa; border-radius: 8px; padding: 12px 16px; margin-top: 16px; font-size: 12px; color: #666; }
-    .params-info strong { color: #1AABA6; }
+    .params-info strong { color: #00A2AA; }
     .btn-pdf { width: 100%; padding: 14px; background: #F28E18; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
     .btn-pdf:hover { background: #d97a0e; }
     .btn-pdf:disabled { background: #ccc; cursor: not-allowed; }
@@ -67,7 +67,7 @@
       .compare-section { grid-template-columns: 1fr; }
     }
   </style>
-  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515b">
+  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515c">
 </head>
 <body>
   <div id="root"></div>
@@ -278,7 +278,7 @@
                 max="20" 
                 value={jarenSchenken} 
                 onChange={e => setJarenSchenken(+e.target.value)} 
-                style={{width: '100%', accentColor: '#1AABA6'}} 
+                style={{width: '100%', accentColor: '#00A2AA'}} 
               />
               <p className="input-hint">
                 {jarenSchenken} jaar × €{PARAMS.schenkingVrijKind.toLocaleString('nl-NL')} per kind = {formatCurrency(result.jaarlijkseSchenking)}/jaar belastingvrij
@@ -320,7 +320,7 @@
                 </div>
                 <div className="compare-card highlight">
                   <div className="compare-title">✓ {jarenSchenken} jaar schenken <span className="badge">Aanbevolen</span></div>
-                  <div className="compare-value" style={{color: '#1AABA6'}}>{formatCurrency(result.erfbelastingNaSchenken)}</div>
+                  <div className="compare-value" style={{color: '#00A2AA'}}>{formatCurrency(result.erfbelastingNaSchenken)}</div>
                   <div className="compare-label">totale erfbelasting na schenkplan</div>
                 </div>
               </div>
@@ -345,7 +345,7 @@
                   <div className="timeline-item" style={{background: '#f0faf9', margin: '0 -24px', padding: '12px 24px', borderRadius: 8}}>
                     <div className="timeline-year" style={{fontWeight: 700}}>Totaal</div>
                     <div className="timeline-content">
-                      <span className="timeline-amount" style={{color: '#1AABA6', fontSize: 18}}>{formatCurrency(result.totaalGeschonken)}</span>
+                      <span className="timeline-amount" style={{color: '#00A2AA', fontSize: 18}}>{formatCurrency(result.totaalGeschonken)}</span>
                       <span style={{color: '#666', marginLeft: 8}}>belastingvrij overgedragen</span>
                     </div>
                   </div>

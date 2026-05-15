@@ -13,13 +13,13 @@
   <script src="/shared/pdf-generator.js"></script>
   <script src="/shared/token-guard.js?v=20260513k"></script>
   <link rel="stylesheet" href="/shared/access-gate.css">
-  <link rel="stylesheet" href="/styles/tokens.css?v=20260515b">
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260515c">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #fafafa; min-height: 100vh; }
+    body { font-family: var(--font-body); background: var(--paper-editorial); min-height: 100vh; }
     .container { max-width: 900px; margin: 0 auto; padding: 24px; }
     .header {
-      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%);
       border-radius: 16px;
       padding: 32px;
       margin-bottom: 24px;
@@ -40,15 +40,15 @@
     .input-group { margin-bottom: 16px; }
     .input-label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 14px; }
     .input-row { display: flex; align-items: center; gap: 16px; }
-    .slider { flex: 1; accent-color: #1AABA6; height: 8px; }
+    .slider { flex: 1; accent-color: #00A2AA; height: 8px; }
     .value-display {
       background: #f0faf9;
-      border: 2px solid #1AABA6;
+      border: 2px solid #00A2AA;
       border-radius: 8px;
       padding: 10px 16px;
       font-weight: 700;
       font-size: 16px;
-      color: #1AABA6;
+      color: #00A2AA;
       min-width: 120px;
       text-align: center;
     }
@@ -56,7 +56,7 @@
     .btn {
       width: 100%;
       padding: 16px;
-      background: #1AABA6;
+      background: #00A2AA;
       color: white;
       border: none;
       border-radius: 8px;
@@ -65,10 +65,10 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    .btn:hover { background: #158783; }
+    .btn:hover { background: #00838B; }
     .btn:disabled { background: #ccc; cursor: not-allowed; }
     .result-header {
-      background: linear-gradient(135deg, #1AABA6 0%, #158783 100%);
+      background: linear-gradient(135deg, var(--dark-green) 0%, var(--mint-deep) 100%);
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 24px;
@@ -96,7 +96,7 @@
       border-radius: 8px;
       transition: width 0.5s ease;
     }
-    .progress-bar.green { background: linear-gradient(90deg, #1AABA6, #158783); }
+    .progress-bar.green { background: linear-gradient(90deg, #00A2AA, #00838B); }
     .progress-bar.orange { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .progress-bar.red { background: linear-gradient(90deg, #ef4444, #dc2626); }
     .progress-labels { display: flex; justify-content: space-between; font-size: 13px; color: #666; }
@@ -105,7 +105,7 @@
     .breakdown-row:last-child { border: none; }
     .breakdown-label { color: #666; }
     .breakdown-value { font-weight: 600; }
-    .breakdown-value.positive { color: #1AABA6; }
+    .breakdown-value.positive { color: #00A2AA; }
     .breakdown-value.negative { color: #c53030; }
     .action-box {
       background: #fff3cd;
@@ -116,7 +116,7 @@
     }
     .action-box.success {
       background: #d4edda;
-      border-color: #1AABA6;
+      border-color: #00A2AA;
     }
     .action-title { font-weight: 600; color: #856404; margin-bottom: 4px; }
     .action-box.success .action-title { color: #155724; }
@@ -132,7 +132,7 @@
       .stat-value { font-size: 22px; }
     }
   </style>
-  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515b">
+  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515c">
 </head>
 <body>
   <div id="root"></div>
@@ -297,11 +297,11 @@
                 <div style={{display: 'flex', gap: '12px', marginTop: '8px'}}>
                   <button
                     onClick={() => { setSamenwonend(true); setShowResults(false); }}
-                    style={{flex: 1, padding: '12px', border: samenwonend ? '2px solid #1AABA6' : '2px solid #e5e5e5', borderRadius: '8px', background: samenwonend ? '#f0faf9' : 'white', cursor: 'pointer', fontWeight: samenwonend ? '600' : '400', color: samenwonend ? '#1AABA6' : '#666'}}
+                    style={{flex: 1, padding: '12px', border: samenwonend ? '2px solid #00A2AA' : '2px solid #e5e5e5', borderRadius: '8px', background: samenwonend ? '#f0faf9' : 'white', cursor: 'pointer', fontWeight: samenwonend ? '600' : '400', color: samenwonend ? '#00A2AA' : '#666'}}
                   >Samenwonend</button>
                   <button
                     onClick={() => { setSamenwonend(false); setShowResults(false); }}
-                    style={{flex: 1, padding: '12px', border: !samenwonend ? '2px solid #1AABA6' : '2px solid #e5e5e5', borderRadius: '8px', background: !samenwonend ? '#f0faf9' : 'white', cursor: 'pointer', fontWeight: !samenwonend ? '600' : '400', color: !samenwonend ? '#1AABA6' : '#666'}}
+                    style={{flex: 1, padding: '12px', border: !samenwonend ? '2px solid #00A2AA' : '2px solid #e5e5e5', borderRadius: '8px', background: !samenwonend ? '#f0faf9' : 'white', cursor: 'pointer', fontWeight: !samenwonend ? '600' : '400', color: !samenwonend ? '#00A2AA' : '#666'}}
                   >Alleenstaand</button>
                 </div>
               </div>
