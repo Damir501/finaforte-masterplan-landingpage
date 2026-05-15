@@ -13,7 +13,7 @@
   <script src="/shared/pdf-generator.js"></script>
   <script src="/shared/token-guard.js?v=20260513k"></script>
   <link rel="stylesheet" href="/shared/access-gate.css">
-  <link rel="stylesheet" href="/styles/tokens.css?v=20260515c">
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260515d">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: var(--font-body); background: var(--paper-editorial); min-height: 100vh; }
@@ -69,10 +69,18 @@
       .timeline-arrow { transform: rotate(90deg); }
     }
   </style>
-  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515c">
+  <link rel="stylesheet" href="/shared/calculator-skin.css?v=20260515d">
 </head>
 <body>
   <div id="root"></div>
+
+  <aside class="ff-gold-action" aria-label="Vervolgstap">
+    <div class="ff-gold-action__inner">
+      <h3 class="ff-gold-action__title">Wil je weten wat dit voor jouw plan betekent?</h3>
+      <p class="ff-gold-action__body">Wij brengen je hele financiële plaatje in kaart — Box 3, BV-structuur, pensioen en hypotheek — en laten zien waar de optimalisatiekansen liggen.</p>
+      <a href="/scan/" class="ff-gold-action__btn" data-event="calc-cta-to-scan" data-calc="07">Start de gratis scan (5 min) →</a>
+    </div>
+  </aside>
   <script type="text/babel">
             
     // FISCALE PARAMETERS 2026 - Actuele waarden (na Belastingplan 2026 wijzigingen)
@@ -356,6 +364,7 @@
     }
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
+  <script src="/shared/analytics-cta.js?v=20260515d" defer></script>
   <!-- GoatCounter analytics (privacy-friendly, no cookies, no banner) -->
   <script data-goatcounter="https://masterplan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>

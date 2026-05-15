@@ -418,3 +418,77 @@ select.input-field {
   .result-card { padding: 22px !important; }
   .result-card .stat-value { font-size: 22px !important; }
 }
+
+/* ============================================================
+   Gold Action — uniforme funnel-CTA voor alle 13 calculators
+   Doel: vanuit calc-uitkomst doorleiden naar /scan/ (funnel-voordeur).
+   Plaats: direct na <div id="root"></div> (calcs #01-#12) of als
+   vervanging van bestaande .ff-cta (calc #13).
+   ============================================================ */
+.ff-gold-action {
+  max-width: 900px;
+  margin: 8px auto 24px;
+  padding: 0 24px;
+  font-family: var(--font-body);
+}
+
+.ff-gold-action__inner {
+  background: linear-gradient(135deg, var(--mint) 0%, var(--mint-deep) 100%);
+  border-radius: 16px;
+  padding: 44px 32px;
+  text-align: center;
+  color: #fff;
+  box-shadow: var(--shadow-medium);
+}
+
+.ff-gold-action__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: #fff;
+}
+
+.ff-gold-action__body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 auto 28px;
+  max-width: 560px;
+  color: rgba(255,255,255,0.94);
+}
+
+.ff-gold-action__btn {
+  display: inline-block;
+  background: #fff;
+  color: var(--mint-dark);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.ff-gold-action__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+  background: var(--cream);
+}
+
+.ff-gold-action__btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .ff-gold-action { padding: 0 16px; margin: 4px auto 16px; }
+  .ff-gold-action__inner { padding: 32px 22px; border-radius: 14px; }
+  .ff-gold-action__title { font-size: 22px; }
+  .ff-gold-action__body { font-size: 15px; }
+  .ff-gold-action__btn { padding: 13px 24px; font-size: 14px; }
+}
