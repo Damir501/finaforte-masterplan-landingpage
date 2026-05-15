@@ -150,6 +150,11 @@
     var hash = window.ScanFingerprint.encode(top3);
     var payload = buildPayload(formData, state, scores, hash);
 
+    // Funnel auto-unlock: zelfde sessionStorage-sleutel die token-guard.js
+    // gebruikt, zodat een scan-voltooier geen tweede email-gate krijgt
+    // op een calc. Sluit het funnel-gat tussen /scan/ en /Mini-Calculators/.
+    try { sessionStorage.setItem('ff_email_access', formData.email); } catch (e) {}
+
     if (window.console && console.info) {
       console.info('[scan-submit] payload', payload);
     }
