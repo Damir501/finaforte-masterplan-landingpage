@@ -69,7 +69,8 @@ body {
   border: 1px solid var(--paper-line);
 }
 
-.card h3 {
+.card h3,
+.card-title {
   font-family: var(--font-display) !important;
   font-weight: 500 !important;
   font-size: 18px !important;
@@ -79,6 +80,31 @@ body {
   border-bottom: 2px solid var(--mint) !important;
   letter-spacing: -0.005em;
 }
+
+.card-name {
+  font-family: var(--font-display) !important;
+  font-weight: 500 !important;
+  font-size: 17px !important;
+  color: var(--dark-green) !important;
+  margin-bottom: 12px !important;
+  letter-spacing: -0.005em;
+}
+
+.card-badge {
+  background: var(--mint) !important;
+  color: #fff !important;
+  font-family: var(--font-body) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 4px 10px !important;
+  border-radius: 999px !important;
+  margin-bottom: 10px !important;
+  width: fit-content;
+}
+
+.btn-mt { margin-top: 20px; }
 
 /* --- Inputs --- */
 .input-group { margin-bottom: 18px; }
