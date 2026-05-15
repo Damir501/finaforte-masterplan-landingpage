@@ -167,12 +167,14 @@ foreach (['reschedule_url' => $rescheduleUrlRaw, 'cancel_url' => $cancelUrlRaw] 
     }
 }
 
-// 7. Format datum/tijd in NL (Europe/Amsterdam)
-$callDate = '';
-$callTime = '';
+// 7. Format datum/tijd in NL (Europe/Amsterdam) + ISO 8601 voor cron-windowing
+$callDate      = '';
+$callTime      = '';
+$callTimestamp = '';
 if ($startIso !== '') {
     try {
         $dt = new DateTimeImmutable($startIso);
+        $callTimestamp = $dt->format(DATE_ATOM); // UTC-aware ISO 8601 voor B1-cron
         $dt = $dt->setTimezone(new DateTimeZone('Europe/Amsterdam'));
         $dayNames = ['', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'];
         $monNames = ['', 'januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'];
@@ -195,12 +197,15 @@ $locationLabel = match ($locType) {
 
 // 8. Update Brevo contact — tag `call-booked` + attributes
 $brevoAttrs = [
-    'FIRSTNAME'     => $firstName,
-    'LASTNAME'      => $lastName,
-    'CALL_BOOKED'   => 'yes',
-    'CALL_DATE'     => $callDate,
-    'CALL_TIME'     => $callTime,
-    'CALL_LOCATION' => $locationLabel,
+    'FIRSTNAME'      => $firstName,
+    'LASTNAME'       => $lastName,
+    'CALL_BOOKED'    => 'yes',
+    'CALL_DATE'      => $callDate,
+    'CALL_TIME'      => $callTime,
+    'CALL_LOCATION'  => $locationLabel,
+    'CALL_TIMESTAMP' => $callTimestamp, // ISO 8601 — gebruikt door b1-reminder-cron.php
+    'CALL_JOIN_URL'  => $joinUrl,       // optioneel; alleen gevuld bij online-meetings
+    'B1_SENT'        => '',             // reset bij re-boeking (vermijdt missed reminder na reschedule)
 ];
 
 // Note: Brevo's "tag"-systeem werkt via list-membership OF via een TAGS contact attribute.
