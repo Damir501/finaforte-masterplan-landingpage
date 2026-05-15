@@ -17,8 +17,10 @@
     mint:       [0, 162, 170],    // #00A2AA
     mintDark:   [0, 41, 43],      // #00292B
     mintLight:  [240, 250, 249],  // #f0faf9
-    orange:     [242, 142, 24],   // #F28E18
-    orangeSoft: [246, 167, 91],   // #F6A75B
+    mintDeep:   [0, 61, 64],      // #003D40
+    copper:     [183, 134, 82],   // #b78652 (uniforme warm-accent met landingpage tokens)
+    orange:     [242, 142, 24],   // #F28E18 (legacy — niet meer gebruikt in CTA)
+    orangeSoft: [246, 167, 91],   // #F6A75B (legacy)
     black:      [0, 0, 0],
     white:      [255, 255, 255],
     darkGrey:   [45, 45, 45],     // #2D2D2D
@@ -325,18 +327,27 @@
       y = 20;
     }
 
-    // Oranje CTA blok
-    doc.setFillColor(...BRAND.orange);
-    doc.roundedRect(margin, y, contentWidth, 36, 4, 4, 'F');
+    // Funnel CTA blok — mint-deep gradient look, copper accent. Uniform met
+    // landingpage gold-action card. Klikbare URL naar /scan/ met UTM-attribution.
+    doc.setFillColor(...BRAND.mintDeep);
+    doc.roundedRect(margin, y, contentWidth, 42, 4, 4, 'F');
 
     doc.setFontSize(14);
     doc.setTextColor(...BRAND.white);
     doc.setFont('helvetica', 'bold');
-    doc.text('Wil je een compleet Masterplan?', margin + contentWidth / 2, y + 14, { align: 'center' });
+    doc.text('Wil je weten wat dit voor jouw plan betekent?', margin + contentWidth / 2, y + 13, { align: 'center' });
 
     doc.setFontSize(10);
+    doc.setTextColor(...BRAND.copper);
+    doc.setFont('helvetica', 'bold');
+    var scanUrl = 'https://masterplan.finaforte.nl/scan/?utm_source=calc-pdf&utm_medium=pdf-cta';
+    var scanLabel = 'Start de gratis scan (5 min) →';
+    doc.textWithLink(scanLabel, margin + contentWidth / 2, y + 24, { align: 'center', url: scanUrl });
+
+    doc.setFontSize(9);
+    doc.setTextColor(...BRAND.white);
     doc.setFont('helvetica', 'normal');
-    doc.text('Plan een gratis kennismakingsgesprek  |  085-0074080  |  finaforte.nl', margin + contentWidth / 2, y + 24, { align: 'center' });
+    doc.text('Of bel direct: 085-0074080  •  finaforte.nl', margin + contentWidth / 2, y + 34, { align: 'center' });
 
     // ── FOOTER ──────────────────────────────────
     doc.setFontSize(7);
