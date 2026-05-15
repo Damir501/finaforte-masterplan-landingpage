@@ -1047,15 +1047,37 @@ body.rapport-body .rapport-header { position: static; }
   background: var(--cream-warm, var(--paper-editorial));
   border: 3px solid var(--copper);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display, 'Fraunces', Georgia, serif);
-  font-size: 56px;
-  font-style: italic;
-  font-weight: 500;
+  gap: 4px;
   color: var(--mint-deep, var(--dark-green));
   box-shadow: var(--shadow-medium);
   flex-shrink: 0;
+  text-decoration: none;
+}
+.over-damir__avatar--link {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.over-damir__avatar--link:hover,
+.over-damir__avatar--link:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--mint-deep, var(--dark-green));
+  box-shadow: var(--shadow-strong, var(--shadow-medium));
+  outline: none;
+}
+.over-damir__avatar-icon {
+  width: 52px;
+  height: 52px;
+  color: var(--mint-deep, var(--dark-green));
+}
+.over-damir__avatar-label {
+  font-family: var(--font-body, 'Manrope', system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--copper);
 }
 .over-damir__body .eyebrow {
   display: inline-block;
@@ -1093,7 +1115,9 @@ body.rapport-body .rapport-header { position: static; }
 @media (max-width: 700px) {
   .over-damir { padding: 56px 20px; }
   .over-damir__inner { grid-template-columns: 1fr; gap: 24px; text-align: center; }
-  .over-damir__avatar { margin: 0 auto; width: 100px; height: 100px; font-size: 42px; }
+  .over-damir__avatar { margin: 0 auto; width: 100px; height: 100px; }
+  .over-damir__avatar-icon { width: 40px; height: 40px; }
+  .over-damir__avatar-label { font-size: 10px; }
   .over-damir__body { text-align: left; }
 }
 
