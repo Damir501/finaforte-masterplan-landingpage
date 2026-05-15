@@ -18,6 +18,15 @@
   var triggers = header.querySelectorAll('.lp-header__trigger');
   var body = document.body;
 
+  // BUGFIX 2026-05-15: .lp-header heeft backdrop-filter, wat een nieuwe
+  // containing block creëert voor position:fixed descendants. Daardoor
+  // werd .lp-header__panel beperkt tot de header-hoogte (~68px) i.p.v.
+  // viewport-full. Fix: detach panel uit header, plak aan body — dan
+  // werkt position:fixed normaal (relatief aan viewport).
+  if (panel && panel.parentElement !== body) {
+    body.appendChild(panel);
+  }
+
   // Sticky-shadow op scroll
   var ticking = false;
   function onScroll() {
