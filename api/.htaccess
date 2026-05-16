@@ -5,8 +5,8 @@
     Require all denied
 </FilesMatch>
 
-# Block log/markdown/example bestanden
-<FilesMatch "\.(log|md|example|ini|bak)$">
+# Block log/markdown/example/data bestanden
+<FilesMatch "\.(log|md|example|ini|bak|jsonl|sqlite|db)$">
     Require all denied
 </FilesMatch>
 

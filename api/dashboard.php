@@ -63,6 +63,7 @@ const LIST_ID_SCANS        = 32;          // scan-leads-2026
 const F4_TEMPLATE_IDS      = [101, 102, 103, 104, 105, 106, 107];
 const CACHE_TTL_SECONDS    = 600;          // 10 min
 const CACHE_FILE           = '/tmp/dashboard-cache.json';
+const FIRST_PARTY_EVENTS_FILE = '/tmp/ff-marketing-events.jsonl';
 const LOG_PREFIX           = '[dashboard] ';
 const CALENDLY_USER_HINT   = 'damir';      // wordt gebruikt om event-owner te matchen
 
@@ -338,6 +339,14 @@ try {
     $metrics['red_lamp'] = null;
 }
 
+// M7 — First-party marketing intelligence (eigen eventlog, AVG-arm)
+try {
+    $metrics['marketing_events'] = marketing_events_summary(FIRST_PARTY_EVENTS_FILE, $weekAgoTs, $month30Ts, $nowTs);
+} catch (Throwable $e) {
+    $errors[] = ['source' => 'first-party-events', 'message' => $e->getMessage()];
+    $metrics['marketing_events'] = null;
+}
+
 // ---------- 6. Assemble + write cache ----------
 $response = [
     'generated_at'      => date('c'),
@@ -577,6 +586,176 @@ function calendly_count_events_since(string $token, int $sinceTs, int $untilTs):
     );
     $data = http_json_get($url, ['Authorization: Bearer ' . $token, 'Accept: application/json']);
     return count(is_array($data['collection'] ?? null) ? $data['collection'] : []);
+}
+
+/**
+ * Eigen first-party eventlog: dashboard-aggregaten zonder PII.
+ */
+function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs, int $nowTs): array {
+    if (!is_readable($file)) {
+        return [
+            'status' => 'unknown',
+            'note' => 'Nog geen first-party marketing events ontvangen.',
+            'total_7d' => 0,
+            'total_30d' => 0,
+            'funnel_7d' => marketing_empty_funnel(),
+            'top_sources_30d' => [],
+            'top_ctas_30d' => [],
+            'top_blindspots_30d' => [],
+            'top_calcs_30d' => [],
+        ];
+    }
+
+    $lines = @file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if (!is_array($lines)) {
+        throw new RuntimeException('event-log-unreadable');
+    }
+    if (count($lines) > 8000) {
+        $lines = array_slice($lines, -8000);
+    }
+
+    $total7 = 0;
+    $total30 = 0;
+    $events7 = [];
+    $sources30 = [];
+    $ctas30 = [];
+    $blindspots30 = [];
+    $calcs30 = [];
+
+    foreach ($lines as $line) {
+        $row = json_decode($line, true);
+        if (!is_array($row)) continue;
+        $ts = strtotime((string)($row['ts'] ?? ''));
+        if (!$ts || $ts < $monthAgoTs || $ts > ($nowTs + 60)) continue;
+
+        $event = (string)($row['event'] ?? '');
+        $props = is_array($row['properties'] ?? null) ? $row['properties'] : [];
+        $total30++;
+
+        $source = marketing_source_label($props, (string)($row['referrer_domain'] ?? ''));
+        marketing_inc($sources30, $source);
+
+        if ($event === 'cta_click') {
+            $name = (string)($props['cta'] ?? ($props['event_name'] ?? 'cta-onbekend'));
+            marketing_inc($ctas30, $name);
+            $calc = (string)($props['calc'] ?? '');
+            if ($calc !== '') marketing_inc($calcs30, str_pad($calc, 2, '0', STR_PAD_LEFT));
+        }
+
+        if ($event === 'calculator_opened') {
+            $calc = (string)($props['calc'] ?? '');
+            if ($calc !== '') marketing_inc($calcs30, str_pad($calc, 2, '0', STR_PAD_LEFT));
+        }
+
+        if ($event === 'scan_completed' || $event === 'rapport_opened') {
+            $top3 = is_array($props['top3'] ?? null) ? $props['top3'] : [];
+            foreach ($top3 as $domainId) {
+                marketing_inc($blindspots30, marketing_domain_label((string)$domainId));
+            }
+        }
+
+        if ($ts >= $weekAgoTs) {
+            $total7++;
+            marketing_inc($events7, $event);
+        }
+    }
+
+    return [
+        'status' => $total30 > 0 ? 'green' : 'unknown',
+        'note' => $total30 > 0 ? null : 'Nog geen first-party marketing events in de laatste 30 dagen.',
+        'total_7d' => $total7,
+        'total_30d' => $total30,
+        'funnel_7d' => marketing_funnel_rows($events7),
+        'top_sources_30d' => marketing_top_rows($sources30, 5),
+        'top_ctas_30d' => marketing_top_rows($ctas30, 5),
+        'top_blindspots_30d' => marketing_top_rows($blindspots30, 5),
+        'top_calcs_30d' => marketing_calc_rows($calcs30, 5),
+    ];
+}
+
+function marketing_inc(array &$map, string $key): void {
+    $key = trim($key) !== '' ? trim($key) : 'onbekend';
+    $map[$key] = ($map[$key] ?? 0) + 1;
+}
+
+function marketing_top_rows(array $map, int $limit): array {
+    arsort($map);
+    $rows = [];
+    foreach ($map as $label => $count) {
+        $rows[] = ['label' => (string)$label, 'count' => (int)$count];
+        if (count($rows) >= $limit) break;
+    }
+    return $rows;
+}
+
+function marketing_calc_rows(array $map, int $limit): array {
+    arsort($map);
+    $rows = [];
+    foreach ($map as $calc => $count) {
+        $calc = str_pad((string)$calc, 2, '0', STR_PAD_LEFT);
+        $rows[] = [
+            'utm_content' => $calc,
+            'calc_name' => CALC_NAMES[$calc] ?? ('Calc ' . $calc),
+            'count' => (int)$count,
+        ];
+        if (count($rows) >= $limit) break;
+    }
+    return $rows;
+}
+
+function marketing_empty_funnel(): array {
+    return marketing_funnel_rows([]);
+}
+
+function marketing_funnel_rows(array $events): array {
+    $defs = [
+        ['event' => 'page_view', 'label' => 'Bezoek'],
+        ['event' => 'scan_started', 'label' => 'Scan gestart'],
+        ['event' => 'scan_email_step_reached', 'label' => 'E-mailstap bereikt'],
+        ['event' => 'scan_completed', 'label' => 'Scan afgerond'],
+        ['event' => 'rapport_opened', 'label' => 'Rapport geopend'],
+        ['event' => 'call_clicked', 'label' => 'Kennismaking geklikt'],
+        ['event' => 'call_booked', 'label' => 'Call geboekt'],
+    ];
+    $rows = [];
+    foreach ($defs as $def) {
+        $rows[] = [
+            'event' => $def['event'],
+            'label' => $def['label'],
+            'count' => (int)($events[$def['event']] ?? 0),
+        ];
+    }
+    return $rows;
+}
+
+function marketing_source_label(array $props, string $referrerDomain): string {
+    foreach (['utm_source', 'UTM_SOURCE'] as $key) {
+        if (!empty($props[$key]) && is_scalar($props[$key])) {
+            return strtolower((string)$props[$key]);
+        }
+    }
+    if ($referrerDomain === 'internal') return 'internal';
+    if ($referrerDomain !== '') return $referrerDomain;
+    return 'direct';
+}
+
+function marketing_domain_label(string $domainId): string {
+    $labels = [
+        'salaris_dividend' => 'Salaris/dividend',
+        'box3_2028' => 'Box 3 2028',
+        'box3_optimizer' => 'Box 3 optimalisatie',
+        'pensioengat' => 'Pensioengat',
+        'peb_odv_lijfrente' => 'PEB/ODV/lijfrente',
+        'estate_planning' => 'Estate planning',
+        'schenken_erven' => 'Schenken/erven',
+        'vastgoed_scenario' => 'Vastgoed',
+        'lenen_van_bv' => 'Lenen van BV',
+        'eigen_woning_hefboom' => 'Eigen woning',
+        'pensioen_toeslagen' => 'Pensioen/toeslagen',
+        'peildatum_timing' => 'Peildatum timing',
+        'aflossen_vs_beleggen' => 'Aflossen/beleggen',
+    ];
+    return $labels[$domainId] ?? $domainId;
 }
 
 // ---------- Classification helpers ----------

@@ -12,6 +12,20 @@
 
   function $(id) { return document.getElementById(id); }
 
+  function track(name, props) {
+    try {
+      if (window.FinaforteTrack) window.FinaforteTrack(name, props || {});
+    } catch (e) {}
+  }
+
+  function trackOnce(key, name, props) {
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+    } catch (e) {}
+    track(name, props);
+  }
+
   function getQuestions(state) {
     if (!state.profile) return window.SCAN_DATA.CORE_QUESTIONS;
     return window.SCAN_DATA.getQuestionSet(state.profile);
@@ -77,6 +91,12 @@
   function onAnswer(question, opt) {
     var state = window.ScanState.load();
     window.ScanState.setAnswer(state, question.id, opt.id);
+    track('scan_step_answered', {
+      question_id: question.id,
+      answer_id: opt.id,
+      step: state.currentIdx + 1,
+      profile: state.profile || null
+    });
     state.currentIdx = state.currentIdx + 1;
     window.ScanState.save(state);
     advance();
@@ -104,6 +124,10 @@
   function renderEmailForm(state, totalQuestions) {
     var stage = $(STAGE_ID);
     if (!stage) return;
+    trackOnce('ff_track_scan_email_step', 'scan_email_step_reached', {
+      questions: totalQuestions,
+      profile: state.profile || null
+    });
     var p = $(PROGRESS_ID);
     var f = $(PROGRESS_FILL_ID);
     if (p) p.textContent = 'Laatste stap — uw gegevens';
@@ -272,6 +296,11 @@
       console.error('scan-logic: missing dependencies');
       return;
     }
+    var state = window.ScanState.load();
+    trackOnce('ff_track_scan_started', 'scan_started', {
+      profile: state.profile || null,
+      current_idx: state.currentIdx || 0
+    });
     advance();
   }
 

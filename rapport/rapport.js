@@ -13,6 +13,12 @@
 
   function $(id) { return document.getElementById(id); }
 
+  function track(name, props) {
+    try {
+      if (window.FinaforteTrack) window.FinaforteTrack(name, props || {});
+    } catch (e) {}
+  }
+
   function getHash() {
     var p = new URLSearchParams(location.search).get('p');
     return p || '';
@@ -139,6 +145,10 @@
       }
       return;
     }
+    track('rapport_opened', {
+      top3: domains,
+      top3_hash: hash
+    });
     renderTop3(domains);
     attachSecondaryHandler();
     attachPdfHandler(domains);

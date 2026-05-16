@@ -126,6 +126,7 @@
     renderF4(metrics.f4_engagement_30d, errorBySource['brevo-f4-stats']);
     renderTopCalcs(metrics.top_calcs_30d, errorBySource['brevo-top-calcs']);
     renderRedLamp(metrics.red_lamp, errorBySource['brevo-health']);
+    renderMarketingEvents(metrics.marketing_events, errorBySource['first-party-events']);
   }
 
   // --- Card renderers ---
@@ -248,6 +249,76 @@
       });
     }
     setStatus(card, m.status);
+  }
+
+  function renderMarketingEvents(m, err) {
+    if (err || !m) {
+      renderInsightEmpty('funnel', err || 'Nog geen meetdata.');
+      renderInsightEmpty('sources', err || 'Nog geen meetdata.');
+      renderInsightEmpty('blindspots', err || 'Nog geen meetdata.');
+      renderInsightEmpty('ctas', err || 'Nog geen meetdata.');
+      return;
+    }
+    renderFunnelList(m.funnel_7d || []);
+    renderMiniRank('sources', m.top_sources_30d || [], 'Nog geen brondata.');
+    renderMiniRank('blindspots', m.top_blindspots_30d || [], 'Nog geen scan-thema data.');
+    renderMiniRank('ctas', m.top_ctas_30d || [], 'Nog geen CTA-clicks.');
+  }
+
+  function renderFunnelList(rows) {
+    var list = document.querySelector('[data-bind="funnel"]');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!rows.length) {
+      renderInsightEmpty('funnel', 'Nog geen funnel-events.');
+      return;
+    }
+    var max = rows.reduce(function (acc, row) {
+      return Math.max(acc, parseInt(row.count || 0, 10));
+    }, 0);
+    rows.forEach(function (row) {
+      var li = document.createElement('li');
+      var label = document.createElement('span');
+      label.textContent = row.label || row.event || 'Stap';
+      var value = document.createElement('strong');
+      value.textContent = fmtNum(row.count);
+      var bar = document.createElement('i');
+      bar.style.width = max > 0 ? Math.max(4, Math.round((row.count / max) * 100)) + '%' : '0';
+      li.appendChild(label);
+      li.appendChild(value);
+      li.appendChild(bar);
+      list.appendChild(li);
+    });
+  }
+
+  function renderMiniRank(kind, rows, emptyText) {
+    var list = document.querySelector('[data-insight="' + kind + '"] [data-bind]');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!rows.length) {
+      renderInsightEmpty(kind, emptyText);
+      return;
+    }
+    rows.forEach(function (row) {
+      var li = document.createElement('li');
+      var label = document.createElement('span');
+      label.textContent = row.label || row.calc_name || row.utm_content || 'Onbekend';
+      var count = document.createElement('strong');
+      count.textContent = fmtNum(row.count);
+      li.appendChild(label);
+      li.appendChild(count);
+      list.appendChild(li);
+    });
+  }
+
+  function renderInsightEmpty(kind, message) {
+    var list = document.querySelector('[data-insight="' + kind + '"] [data-bind]');
+    if (!list) return;
+    list.innerHTML = '';
+    var li = document.createElement('li');
+    li.className = 'ff-mini-rank__empty';
+    li.textContent = message;
+    list.appendChild(li);
   }
 
   // ============================================================

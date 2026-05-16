@@ -90,6 +90,9 @@
       if (window.goatcounter && window.goatcounter.count) {
         window.goatcounter.count({ path: name, event: true });
       }
+      if (window.FinaforteTrack) {
+        window.FinaforteTrack(name, params || {});
+      }
       if (window.console && console.info) {
         console.info('[scan-submit]', name, params || {});
       }
@@ -149,6 +152,13 @@
     var top3 = window.ScanScoring.getTop3(scores);
     var hash = window.ScanFingerprint.encode(top3);
     var payload = buildPayload(formData, state, scores, hash);
+    trackEvent('scan_completed', {
+      profile: state.profile || null,
+      intent: state.answers.q13_intent || null,
+      top3: top3,
+      top3_hash: hash,
+      scores: mapTo3Domain(scores)
+    });
 
     // Funnel auto-unlock: zelfde sessionStorage-sleutel die token-guard.js
     // gebruikt, zodat een scan-voltooier geen tweede email-gate krijgt

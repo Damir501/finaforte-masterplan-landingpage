@@ -226,6 +226,14 @@
       }
       setLoading(true);
       setError('');
+      try {
+        if (window.FinaforteTrack) {
+          window.FinaforteTrack('calc_gate_submit', {
+            calculator_title: document.title || '',
+            calc_path: window.location.pathname || ''
+          });
+        }
+      } catch (trackErr) {}
 
       // Stuur lead naar Damir via FormSubmit
       var formData = new FormData();
@@ -271,6 +279,14 @@
         sessionStorage.setItem(EMAIL_STORAGE_KEY, email);
         window.FinaforteAccess.isValid = true;
         window.FinaforteAccess.clientId = email;
+        try {
+          if (window.FinaforteTrack) {
+            window.FinaforteTrack('calc_unlocked', {
+              calculator_title: document.title || '',
+              calc_path: window.location.pathname || ''
+            });
+          }
+        } catch (trackErr2) {}
         setLoading(false);
         // Force re-render door pagina te herladen
         window.location.reload();
@@ -279,6 +295,15 @@
         sessionStorage.setItem(EMAIL_STORAGE_KEY, email);
         window.FinaforteAccess.isValid = true;
         window.FinaforteAccess.clientId = email;
+        try {
+          if (window.FinaforteTrack) {
+            window.FinaforteTrack('calc_unlocked', {
+              calculator_title: document.title || '',
+              calc_path: window.location.pathname || '',
+              fallback: true
+            });
+          }
+        } catch (trackErr3) {}
         setLoading(false);
         window.location.reload();
       });
