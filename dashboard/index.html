@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Cockpit — Finaforte Masterplan</title>
+  <meta name="description" content="Strategische cockpit voor de marketingfunnel.">
+
+  <link rel="icon" type="image/svg+xml" href="/shared/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/shared/favicon-32.png">
+
+  <!-- Tokens-stylesheet eerst, dan dashboard-overrides -->
+  <link rel="stylesheet" href="/styles/tokens.css?v=20260516a">
+  <link rel="stylesheet" href="./dashboard.css?v=20260516a">
+
+  <!-- Google Fonts (consistent met landingpage) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Email-gate overlay -->
+  <div id="ff-gate" class="ff-gate" hidden>
+    <div class="ff-gate__card">
+      <h1>Cockpit</h1>
+      <p>Voer je e-mailadres in om toegang te krijgen.</p>
+      <form id="ff-gate-form" autocomplete="off">
+        <input type="email" id="ff-gate-email" placeholder="naam@finaforte.nl" required>
+        <button type="submit">Open cockpit</button>
+      </form>
+      <p class="ff-gate__hint">Toegang is voorbehouden aan Finaforte-medewerkers.</p>
+    </div>
+  </div>
+
+  <!-- Main app (initieel hidden tot gate-pass) -->
+  <main id="ff-app" class="ff-app" hidden>
+
+    <header class="ff-topbar">
+      <a href="/" class="ff-logo">
+        <span class="ff-logo__mark">Finaforte</span>
+        <span class="ff-logo__sub">Cockpit</span>
+      </a>
+      <div class="ff-topbar__meta">
+        <span id="ff-updated" class="ff-updated">—</span>
+        <button id="ff-refresh" class="ff-refresh" type="button" aria-label="Ververs data">
+          <span class="ff-refresh__icon">↻</span>
+          <span class="ff-refresh__label">Ververs</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="ff-intro">
+      <h2>Strategische cockpit</h2>
+      <p>Zes kerncijfers, week-over-week. Rood = actie nodig, oranje = aandacht, groen = op koers.</p>
+    </section>
+
+    <section class="ff-grid" id="ff-grid" aria-live="polite">
+
+      <article class="ff-card" data-metric="scans_week">
+        <header><span class="ff-card__label">Scans deze week</span></header>
+        <div class="ff-card__primary">
+          <span class="ff-card__value" data-bind="value">—</span>
+          <span class="ff-card__delta" data-bind="delta"></span>
+        </div>
+        <div class="ff-card__sub">
+          <span data-bind="sub">Gem. 4w: —</span>
+        </div>
+        <div class="ff-card__bar" data-bind="status"></div>
+      </article>
+
+      <article class="ff-card" data-metric="calls_week">
+        <header><span class="ff-card__label">Calls geboekt</span></header>
+        <div class="ff-card__primary">
+          <span class="ff-card__value" data-bind="value">—</span>
+          <span class="ff-card__delta" data-bind="delta"></span>
+        </div>
+        <div class="ff-card__sub">
+          <span data-bind="sub">Gem. 4w: —</span>
+        </div>
+        <div class="ff-card__bar" data-bind="status"></div>
+      </article>
+
+      <article class="ff-card" data-metric="conversion_30d">
+        <header><span class="ff-card__label">Scan → Call (30d)</span></header>
+        <div class="ff-card__primary">
+          <span class="ff-card__value" data-bind="value">—</span>
+          <span class="ff-card__unit">%</span>
+        </div>
+        <div class="ff-card__sub">
+          <span data-bind="sub">— scans · — calls</span>
+        </div>
+        <div class="ff-card__bar" data-bind="status"></div>
+      </article>
+
+      <article class="ff-card ff-card--wide" data-metric="f4_engagement_30d">
+        <header>
+          <span class="ff-card__label">F4 e-mail engagement (30d)</span>
+          <button type="button" class="ff-card__detail-toggle" aria-expanded="false">Per mail ▾</button>
+        </header>
+        <div class="ff-card__primary">
+          <span class="ff-card__value" data-bind="value">—</span>
+          <span class="ff-card__unit">% gem. open</span>
+        </div>
+        <div class="ff-card__bar" data-bind="status"></div>
+        <ul class="ff-card__detail" hidden data-bind="detail"></ul>
+      </article>
+
+      <article class="ff-card ff-card--wide" data-metric="top_calcs_30d">
+        <header><span class="ff-card__label">Top 3 calcs (30d)</span></header>
+        <ol class="ff-rank" data-bind="rank">
+          <li class="ff-rank__empty">Nog geen calc-leads in deze periode.</li>
+        </ol>
+      </article>
+
+      <article class="ff-card" data-metric="red_lamp">
+        <header><span class="ff-card__label">Rode lamp</span></header>
+        <div class="ff-card__primary">
+          <span class="ff-card__value ff-card__value--small" data-bind="value">—</span>
+        </div>
+        <ul class="ff-issues" data-bind="issues"></ul>
+        <div class="ff-card__bar" data-bind="status"></div>
+      </article>
+
+    </section>
+
+    <footer class="ff-footer">
+      <p>
+        <a href="/">← terug naar masterplan.finaforte.nl</a>
+        <span class="ff-footer__sep">·</span>
+        Cockpit V0 · <span id="ff-version">2026-05-16</span>
+      </p>
+    </footer>
+
+  </main>
+
+  <!-- Error toast -->
+  <div id="ff-toast" class="ff-toast" hidden></div>
+
+  <script src="./dashboard.js?v=20260516a"></script>
+</body>
+</html>
