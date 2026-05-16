@@ -23,9 +23,30 @@ declare(strict_types=1);
 // ---------- 1. Headers + method gate ----------
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
-header('Access-Control-Allow-Origin: https://masterplan.finaforte.nl');
-header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Cache-Control: private, no-store');
+
+// CORS: laat eigen dashboard + Cowork-artifacts (Anthropic-hosted) toe.
+// Endpoint is GET-only en retourneert alleen aggregate data (geen PII),
+// dus de iets opener policy is acceptabel.
+$ALLOWED_ORIGINS = [
+    'https://masterplan.finaforte.nl',     // eigen dashboard
+    'https://claude.ai',                   // Cowork web
+    'https://desktop.anthropic.com',       // Cowork desktop (mogelijk)
+    'https://artifact.claude.com',         // Cowork artifact iframe (mogelijk)
+];
+$reqOrigin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($reqOrigin, $ALLOWED_ORIGINS, true)) {
+    header('Access-Control-Allow-Origin: ' . $reqOrigin);
+} elseif ($reqOrigin !== '' && preg_match('#^https://[a-z0-9-]+\.(claude\.com|anthropic\.com|claude\.ai)$#', $reqOrigin)) {
+    // Subdomain-wildcard voor Anthropic/Claude infra
+    header('Access-Control-Allow-Origin: ' . $reqOrigin);
+} else {
+    // Fallback: eigen dashboard (browsers zonder Origin-header)
+    header('Access-Control-Allow-Origin: https://masterplan.finaforte.nl');
+}
+header('Vary: Origin');
+header('Access-Control-Allow-Methods: GET, OPTIONS');
+header('Access-Control-Allow-Headers: Accept, Content-Type');
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
     http_response_code(204);

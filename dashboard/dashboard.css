@@ -349,13 +349,17 @@ a:hover { text-decoration: underline; }
   color: var(--mint-deep);
   font-variant-numeric: tabular-nums;
 }
-.ff-rank__empty {
+/* Hogere specificiteit (.ff-rank li.ff-rank__empty = 0,2,1) wint van .ff-rank li */
+.ff-rank li.ff-rank__empty {
   display: block;
   grid-template-columns: none;
   text-align: center;
   color: var(--ink-muted);
   font-size: 13px;
-  padding: 24px 12px;
+  font-style: italic;
+  padding: 24px 16px;
+  background: transparent;
+  border: 1px dashed var(--paper-line);
 }
 
 /* ---------- Issues (M6) ---------- */

@@ -284,12 +284,12 @@
   }
 
   function deltaBadge(deltaPct) {
-    var span = document.createElement('span');
+    // Null = geen vergelijking mogelijk (bv. vorige periode had 0).
+    // Toon dan helemaal niets — cleaner dan een placeholder-streep.
     if (deltaPct === null || deltaPct === undefined) {
-      span.className = 'ff-card__delta ff-card__delta--flat';
-      span.textContent = '—';
-      return span;
+      return document.createTextNode('');
     }
+    var span = document.createElement('span');
     if (deltaPct > 0) {
       span.className = 'ff-card__delta ff-card__delta--up';
       span.textContent = '↑ +' + deltaPct + '%';
