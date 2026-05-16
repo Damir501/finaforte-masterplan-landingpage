@@ -1,0 +1,31 @@
+# dashboard/.htaccess — laat embedding in Anthropic Cowork-artifact toe.
+#
+# Standaard server-config zet vaak X-Frame-Options: SAMEORIGIN of DENY, waarmee
+# /dashboard/ niet in een externe iframe (zoals Cowork) geladen kan worden.
+# Hier overschrijven we dat specifiek voor /dashboard/ — andere URL's blijven
+# beschermd door de server-default.
+#
+# CSP frame-ancestors lijst expliciet de toegestane parent-origins op:
+#   - 'self' = eigen domein (testen vanuit masterplan.finaforte.nl)
+#   - claude.ai + subdomains = Cowork web
+#   - *.anthropic.com = Cowork desktop/artifact infrastructuur
+#   - *.claude.com = Anthropic alternative naamspace
+#
+# Toelichting: deze pagina toont alleen aggregate funnel-data (geen PII),
+# dus iframe-embedding in vertrouwde Anthropic-context is acceptabel.
+
+<IfModule mod_headers.c>
+    # Verwijder eventuele X-Frame-Options die ergens hoger in de keten gezet wordt
+    Header unset X-Frame-Options
+    Header always unset X-Frame-Options
+
+    # Vervang door moderne CSP frame-ancestors policy (specifieker en flexibeler)
+    Header set Content-Security-Policy "frame-ancestors 'self' https://claude.ai https://*.claude.ai https://claude.com https://*.claude.com https://anthropic.com https://*.anthropic.com"
+
+    # Behoud overige security-headers
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Geen directory-listing
+Options -Indexes
