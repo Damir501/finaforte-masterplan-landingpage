@@ -274,19 +274,25 @@
     domainIds.forEach(function(id, idx) {
       var dom = architect.domeinen[id];
       var title = dom ? dom.title : id;
-      ensureSpace(10);
+      var titleX = margin + 12;
+      var lines = doc.splitTextToSize(title, contentWidth - 14);
+      var blockHeight = lines.length * 5;
+      ensureSpace(blockHeight + 4);
+      // Vertical-center: 22pt cijfer (cap-height ~5.5mm) op visueel midden van titel-blok.
+      // Eerste titel-baseline op y - 4, blok-center op (y - 4) + (blockHeight - 5) / 2 + 2.5
+      var titleCenterY = (y - 4) + (blockHeight - 5) / 2 + 2.5;
+      var numberBaselineY = titleCenterY + 2.75;
       setColor(BRAND.copper);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(22);
-      doc.text(String(idx + 1), margin, y);
+      doc.text(String(idx + 1), margin, numberBaselineY);
       setColor(BRAND.darkGreen);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(11);
-      var lines = doc.splitTextToSize(title, contentWidth - 12);
       lines.forEach(function(line, li) {
-        doc.text(line, margin + 10, y - 4 + (li * 5));
+        doc.text(line, titleX, y - 4 + (li * 5));
       });
-      y += Math.max(10, lines.length * 5 + 2);
+      y += Math.max(13, blockHeight + 5);
     });
 
     y += 10;
