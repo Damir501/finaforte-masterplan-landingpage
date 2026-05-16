@@ -208,8 +208,26 @@ try {
     $perTemplate = [];
     $opensSum    = 0.0;
     $weightSum   = 0;
+    $templateErrors = 0;
     foreach (F4_TEMPLATE_IDS as $tplId) {
-        $stats = brevo_template_stats($brevoKey, $tplId, $month30Ts, $nowTs);
+        try {
+            $stats = brevo_template_stats($brevoKey, $tplId, $month30Ts, $nowTs);
+        } catch (Throwable $e) {
+            $templateErrors++;
+            error_log(LOG_PREFIX . 'F4 template #' . $tplId . ' stats failed: ' . $e->getMessage());
+            $stats = [
+                'sent' => 0,
+                'delivered' => 0,
+                'opens' => 0,
+                'clicks' => 0,
+                'hardBounces' => 0,
+                'softBounces' => 0,
+                'unsubscribed' => 0,
+                'complaints' => 0,
+                'event_count' => 0,
+                'source' => 'events-unavailable',
+            ];
+        }
         $sent  = (int)($stats['sent']    ?? 0);
         $opens = (int)($stats['opens']   ?? 0);
         $openPct = ($sent > 0) ? round(($opens / $sent) * 100, 1) : null;
@@ -218,11 +236,16 @@ try {
             'name'      => 'F4-mail' . (array_search($tplId, F4_TEMPLATE_IDS, true) + 1),
             'sent'      => $sent,
             'open_pct'  => $openPct,
+            'event_count' => (int)($stats['event_count'] ?? 0),
+            'source'    => (string)($stats['source'] ?? 'events'),
         ];
         if ($sent > 0) {
             $opensSum  += $opens;
             $weightSum += $sent;
         }
+    }
+    if ($templateErrors === count(F4_TEMPLATE_IDS)) {
+        throw new RuntimeException('Brevo F4 event stats unavailable');
     }
     $avgOpenPct = ($weightSum > 0) ? round(($opensSum / $weightSum) * 100, 1) : null;
     $metrics['f4_engagement_30d'] = [
@@ -389,34 +412,108 @@ function brevo_fetch_list_contacts_since(string $apiKey, int $listId, int $since
 }
 
 /**
- * Brevo: aggregated SMTP stats per template binnen window.
+ * Brevo: SMTP stats per template binnen window.
+ *
+ * Let op: /smtp/statistics/aggregatedReport ondersteunt geen templateId-filter;
+ * Brevo negeert die parameter en geeft dan account-brede totalen terug. Daarom
+ * gebruiken we de unaggregated events-route, waar templateId wel officieel wordt
+ * ondersteund, en aggregeren we hier zelf naar PII-vrije totalen.
  */
 function brevo_template_stats(string $apiKey, int $templateId, int $sinceTs, int $untilTs): array {
-    $url = sprintf(
-        'https://api.brevo.com/v3/smtp/statistics/aggregatedReport?templateId=%d&startDate=%s&endDate=%s',
-        $templateId,
-        gmdate('Y-m-d', $sinceTs),
-        gmdate('Y-m-d', $untilTs)
-    );
-    try {
-        $data = http_json_get($url, brevo_headers($apiKey));
-        return [
-            'sent'         => (int)($data['requests']        ?? 0),
-            'delivered'    => (int)($data['delivered']       ?? 0),
-            'opens'        => (int)($data['uniqueOpens']     ?? $data['opens']        ?? 0),
-            'clicks'       => (int)($data['uniqueClicks']    ?? $data['clicks']       ?? 0),
-            'hardBounces'  => (int)($data['hardBounces']     ?? 0),
-            'softBounces'  => (int)($data['softBounces']     ?? 0),
-            'unsubscribed' => (int)($data['unsubscribed']    ?? 0),
-            'complaints'   => (int)($data['spamReports']     ?? $data['complaints']   ?? 0),
-        ];
-    } catch (Throwable $e) {
-        // Per-template fail: terug met nullen, niet hele M4 omver
-        return [
-            'sent' => 0, 'delivered' => 0, 'opens' => 0, 'clicks' => 0,
-            'hardBounces' => 0, 'softBounces' => 0, 'unsubscribed' => 0, 'complaints' => 0,
-        ];
+    $events = brevo_fetch_template_events($apiKey, $templateId, $sinceTs, $untilTs);
+
+    $messages = [];
+    $delivered = [];
+    $opened = [];
+    $clicked = [];
+    $hardBounces = [];
+    $softBounces = [];
+    $unsubscribed = [];
+    $complaints = [];
+
+    foreach ($events as $idx => $event) {
+        if (!is_array($event)) continue;
+
+        $name = normalize_brevo_event_name((string)($event['event'] ?? ''));
+        $key  = brevo_event_message_key($event, $templateId, $idx);
+        $messages[$key] = true;
+
+        if (in_array($name, ['delivered'], true)) {
+            $delivered[$key] = true;
+        } elseif (in_array($name, ['open', 'opened', 'opens', 'uniqueopen', 'uniqueopened', 'uniqueopens'], true)) {
+            $opened[$key] = true;
+        } elseif (in_array($name, ['click', 'clicked', 'clicks', 'uniqueclick', 'uniqueclicked', 'uniqueclicks'], true)) {
+            $clicked[$key] = true;
+        } elseif (in_array($name, ['hardbounce', 'hardbounces', 'hard_bounce'], true)) {
+            $hardBounces[$key] = true;
+        } elseif (in_array($name, ['softbounce', 'softbounces', 'soft_bounce'], true)) {
+            $softBounces[$key] = true;
+        } elseif (in_array($name, ['unsubscribe', 'unsubscribed', 'unsub'], true)) {
+            $unsubscribed[$key] = true;
+        } elseif (in_array($name, ['spam', 'spamreport', 'spamreports', 'complaint', 'complaints'], true)) {
+            $complaints[$key] = true;
+        }
     }
+
+    return [
+        'sent'         => count($messages),
+        'delivered'    => count($delivered),
+        'opens'        => count($opened),
+        'clicks'       => count($clicked),
+        'hardBounces'  => count($hardBounces),
+        'softBounces'  => count($softBounces),
+        'unsubscribed' => count($unsubscribed),
+        'complaints'   => count($complaints),
+        'event_count'  => count($events),
+        'source'       => 'events',
+    ];
+}
+
+function brevo_fetch_template_events(string $apiKey, int $templateId, int $sinceTs, int $untilTs): array {
+    $out = [];
+    $offset = 0;
+    $limit = 5000;
+    $maxPages = 5;
+
+    for ($i = 0; $i < $maxPages; $i++) {
+        $url = sprintf(
+            'https://api.brevo.com/v3/smtp/statistics/events?templateId=%d&startDate=%s&endDate=%s&limit=%d&offset=%d&sort=asc',
+            $templateId,
+            gmdate('Y-m-d', $sinceTs),
+            gmdate('Y-m-d', $untilTs),
+            $limit,
+            $offset
+        );
+        $data = http_json_get($url, brevo_headers($apiKey));
+        $batch = is_array($data['events'] ?? null) ? $data['events'] : [];
+        foreach ($batch as $event) {
+            if (is_array($event)) {
+                $out[] = $event;
+            }
+        }
+        if (count($batch) < $limit) break;
+        $offset += $limit;
+    }
+
+    return $out;
+}
+
+function normalize_brevo_event_name(string $event): string {
+    return strtolower(str_replace(['-', ' ', '_'], '', trim($event)));
+}
+
+function brevo_event_message_key(array $event, int $templateId, int $idx): string {
+    $messageId = trim((string)($event['messageId'] ?? ''));
+    if ($messageId !== '') {
+        return $messageId;
+    }
+
+    $email = strtolower(trim((string)($event['email'] ?? '')));
+    if ($email !== '') {
+        return sha1($templateId . '|' . $email);
+    }
+
+    return 'event-' . $templateId . '-' . $idx;
 }
 
 /**
