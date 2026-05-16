@@ -168,12 +168,18 @@
     var detail = card.querySelector('[data-bind="detail"]');
     if (detail && Array.isArray(m.per_template)) {
       detail.innerHTML = '';
+      if (m.note) {
+        var note = document.createElement('li');
+        note.className = 'ff-card__detail-note';
+        note.textContent = m.note;
+        detail.appendChild(note);
+      }
       m.per_template.forEach(function (t, i) {
         var li = document.createElement('li');
         var name = document.createElement('span');
         name.textContent = 'Mail ' + (i + 1) + ' · #' + t.id;
         var val = document.createElement('span');
-        val.textContent = (t.open_pct === null ? '—' : t.open_pct.toFixed(1)) + '%  ('
+        val.textContent = (t.open_pct === null ? '—' : t.open_pct.toFixed(1)) + '% ('
           + fmtNum(t.sent) + ' verz.)';
         li.appendChild(name);
         li.appendChild(val);

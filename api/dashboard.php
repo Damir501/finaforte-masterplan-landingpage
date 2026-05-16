@@ -209,6 +209,7 @@ try {
     $opensSum    = 0.0;
     $weightSum   = 0;
     $templateErrors = 0;
+    $eventCountSum = 0;
     foreach (F4_TEMPLATE_IDS as $tplId) {
         try {
             $stats = brevo_template_stats($brevoKey, $tplId, $month30Ts, $nowTs);
@@ -230,13 +231,15 @@ try {
         }
         $sent  = (int)($stats['sent']    ?? 0);
         $opens = (int)($stats['opens']   ?? 0);
+        $eventCount = (int)($stats['event_count'] ?? 0);
+        $eventCountSum += $eventCount;
         $openPct = ($sent > 0) ? round(($opens / $sent) * 100, 1) : null;
         $perTemplate[] = [
             'id'        => $tplId,
             'name'      => 'F4-mail' . (array_search($tplId, F4_TEMPLATE_IDS, true) + 1),
             'sent'      => $sent,
             'open_pct'  => $openPct,
-            'event_count' => (int)($stats['event_count'] ?? 0),
+            'event_count' => $eventCount,
             'source'    => (string)($stats['source'] ?? 'events'),
         ];
         if ($sent > 0) {
@@ -247,11 +250,29 @@ try {
     if ($templateErrors === count(F4_TEMPLATE_IDS)) {
         throw new RuntimeException('Brevo F4 event stats unavailable');
     }
+
+    $note = null;
+    if ($eventCountSum === 0 && $templateErrors === 0) {
+        $note = 'Brevo geeft voor deze automation-mails geen per-template events via de API. Bekijk F4-breakdown voorlopig in Brevo Automation #13.';
+        $perTemplate = [];
+        foreach (F4_TEMPLATE_IDS as $tplId) {
+            $perTemplate[] = [
+                'id'          => $tplId,
+                'name'        => 'F4-mail' . (array_search($tplId, F4_TEMPLATE_IDS, true) + 1),
+                'sent'        => null,
+                'open_pct'    => null,
+                'event_count' => 0,
+                'source'      => 'automation-events-empty',
+            ];
+        }
+    }
+
     $avgOpenPct = ($weightSum > 0) ? round(($opensSum / $weightSum) * 100, 1) : null;
     $metrics['f4_engagement_30d'] = [
         'avg_open_rate_pct' => $avgOpenPct,
         'per_template'      => $perTemplate,
         'status'            => $avgOpenPct === null ? 'unknown' : classify_f4($avgOpenPct),
+        'note'              => $note,
     ];
 } catch (Throwable $e) {
     $errors[] = ['source' => 'brevo-f4-stats', 'message' => $e->getMessage()];

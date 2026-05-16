@@ -303,6 +303,12 @@ a:hover { text-decoration: underline; }
   justify-content: space-between;
   color: var(--ink);
 }
+.ff-card__detail li.ff-card__detail-note {
+  display: block;
+  color: var(--ink-muted);
+  font-style: italic;
+  line-height: 1.45;
+}
 .ff-card__detail li span:last-child {
   font-weight: 600;
   color: var(--mint-deep);
