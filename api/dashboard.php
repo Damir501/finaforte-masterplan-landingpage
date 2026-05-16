@@ -381,7 +381,6 @@ function http_json_get(string $url, array $headers, int $timeout = 8): array {
     $resp = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $err  = curl_error($ch);
-    curl_close($ch);
     if ($resp === false) {
         throw new RuntimeException('curl-fail: ' . $err);
     }
@@ -621,6 +620,7 @@ function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs,
     $ctas30 = [];
     $blindspots30 = [];
     $calcs30 = [];
+    $seenCallBooked = [];
 
     foreach ($lines as $line) {
         $row = json_decode($line, true);
@@ -630,6 +630,15 @@ function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs,
 
         $event = (string)($row['event'] ?? '');
         $props = is_array($row['properties'] ?? null) ? $row['properties'] : [];
+
+        if ($event === 'call_booked') {
+            $dedupeId = (string)($row['dedupe_id'] ?? '');
+            if ($dedupeId !== '') {
+                if (isset($seenCallBooked[$dedupeId])) continue;
+                $seenCallBooked[$dedupeId] = true;
+            }
+        }
+
         $total30++;
 
         $source = marketing_source_label($props, (string)($row['referrer_domain'] ?? ''));
