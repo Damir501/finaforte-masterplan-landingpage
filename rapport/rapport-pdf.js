@@ -502,6 +502,32 @@
     y += 32;
 
     // ============================================
+    // BRIDGE — naar Implementatie (2e hoofdproduct)
+    // Plaatsing aan einde rapport: rapport = tekening, daarna kan
+    // bouwbegeleiding volgen via Implementatie.
+    // ============================================
+    setFill(BRAND.paper);
+    doc.roundedRect(margin, y, contentWidth, 32, 3, 3, 'F');
+    setFill(BRAND.copper);
+    doc.rect(margin, y, 3, 32, 'F');
+    setColor(BRAND.darkGreen);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11);
+    doc.text('Wat na deze tekening?', margin + 9, y + 9);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    setColor(BRAND.text);
+    doc.text('Een plan is geen garantie dat het ook gebeurt. Voor wie regie wil over de uitvoering —', margin + 9, y + 16);
+    doc.text('coördinatie met notaris, accountant en bank, voortgang bewaakt — bestaat de zelfstandige', margin + 9, y + 21);
+    doc.text('tweede dienst: Implementatie.', margin + 9, y + 26);
+    doc.setFontSize(9);
+    setColor(BRAND.copper);
+    doc.setFont('helvetica', 'bold');
+    doc.textWithLink('Lees over Implementatie → masterplan.finaforte.nl/implementatie/', margin + 9, y + 30.5, { url: 'https://masterplan.finaforte.nl/implementatie/?utm_source=rapport-pdf&utm_medium=pdf-bridge' });
+    doc.setFont('helvetica', 'normal');
+    y += 38;
+
+    // ============================================
     // PAGE — Disclaimer
     // ============================================
     doc.addPage();

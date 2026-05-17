@@ -1,141 +1,258 @@
-/* Implementatie — page-specific styling
+/* Implementatie v2 — Implementatie als volwaardig 2e hoofdproduct
  * Hergebruikt globale tokens en base-componenten (.cta, .hero, .faq,
- * .kennismaking, .lp-header, .lp-footer). Hieronder alleen page-extras
- * voor B1-B8 secties.
+ * .crosslink-belt, .lp-header, .lp-footer). Hieronder page-specifieke
+ * styling voor de v2-secties (hero, product-paritet, propositie,
+ * regie-strip, voor-wie, werkwijze, pakket, kennismaking).
  */
 
-/* B1 — Hero (variant op .hero uit base.css) */
-.hero-implementatie {
-  background: linear-gradient(135deg, var(--mint-light) 0%, var(--paper) 100%);
-}
-
-/* B2 — Probleem-herkenning */
-.probleem-herkenning {
-  background: var(--white);
-  padding: 96px 24px;
-}
-.probleem-herkenning h2 {
-  font-size: clamp(26px, 4vw, 36px);
-  color: var(--dark-green);
-  text-align: center;
-  margin-bottom: 40px;
-  max-width: 720px;
-  margin-left: auto;
-  margin-right: auto;
-}
-.probleem-bullets {
-  list-style: none;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0;
-  display: grid;
-  gap: 14px;
-}
-.probleem-bullets li {
+/* B1 — Hero (eigen merk, copper-accent voor visueel onderscheid van Masterplan-hero) */
+.hero-impl-v2 {
+  background:
+    radial-gradient(ellipse at top right, rgba(183,134,82,0.10) 0%, transparent 60%),
+    linear-gradient(135deg, var(--cream-warm) 0%, var(--paper) 100%);
   position: relative;
-  padding: 18px 22px 18px 56px;
-  background: var(--paper);
-  border-radius: var(--radius);
-  border: 1px solid var(--paper-dark);
-  font-size: 17px;
-  line-height: 1.5;
-  color: var(--text);
+  padding-top: 96px;
+  padding-bottom: 88px;
 }
-.probleem-bullets li::before {
+.hero-impl-v2::before {
   content: "";
-  position: absolute;
-  left: 22px;
-  top: 50%;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
+  position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+  width: clamp(40px, 8vw, 80px); height: 3px;
   background: var(--copper);
-  transform: translateY(-50%);
 }
+.hero-impl-v2 .hero-tag {
+  color: var(--copper);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+.hero-impl-v2 h1 em { color: var(--copper); font-style: italic; }
 
-/* B3 — Uitleg-quote + partner-disclosure */
-.uitleg {
-  background: var(--mint-light);
+/* B2 — Product-pariteit (Masterplan ↔ Implementatie zij aan zij) */
+.product-paritet {
+  background: var(--white);
+  padding: 80px 24px 64px;
+  border-bottom: 1px solid var(--paper-line);
+}
+.product-paritet__inner { max-width: var(--max-w); margin: 0 auto; }
+.product-paritet__head { text-align: center; margin-bottom: 48px; }
+.product-paritet__head .eyebrow { color: var(--mint-deep); }
+.product-paritet__head h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(28px, 4.4vw, 40px); color: var(--dark-green);
+  line-height: 1.2; margin: 10px 0 8px;
+}
+.product-paritet__head p {
+  color: var(--text-muted); font-size: 17px;
+  max-width: 580px; margin: 0 auto;
+}
+.product-paritet__grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  max-width: 960px; margin: 0 auto;
+}
+.product-card {
+  background: var(--cream); padding: 32px 32px 28px;
+  border-radius: 14px; border: 1px solid var(--paper-line);
+  box-shadow: var(--shadow-soft); position: relative;
+}
+.product-card--actief {
+  background: var(--white);
+  border-top: 4px solid var(--copper);
+  box-shadow: var(--shadow-medium);
+}
+.product-card__tag {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--mint-deep); margin-bottom: 14px;
+}
+.product-card--actief .product-card__tag { color: var(--copper); }
+.product-card h3 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 24px; color: var(--dark-green);
+  margin: 0 0 10px;
+}
+.product-card p {
+  color: var(--text); font-size: 16px; line-height: 1.55;
+  margin: 0 0 20px;
+}
+.product-card__link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--mint-deep); font-weight: 600; font-size: 15px;
+  text-decoration: none; border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: transform 0.2s;
+}
+.product-card--actief .product-card__link { color: var(--copper); }
+.product-card__link:hover { transform: translateX(2px); }
+
+/* B3 — Propositie (4 cards met "Niet:"-pendels) */
+.propositie {
+  background: var(--paper-editorial);
   padding: 96px 24px;
-  text-align: center;
+  position: relative;
 }
-.uitleg-quote {
-  max-width: 760px;
-  margin: 0 auto 28px;
-  padding: 0 16px;
+.propositie::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle, var(--paper-grid-dot) 1px, transparent 1px);
+  background-size: 28px 28px; opacity: 0.7; pointer-events: none;
 }
-.uitleg-quote p {
-  font-size: clamp(22px, 3.2vw, 28px);
-  line-height: 1.45;
-  color: var(--dark-green);
+.propositie__inner { max-width: var(--max-w); margin: 0 auto; position: relative; }
+.propositie__head { text-align: center; margin-bottom: 56px; }
+.propositie__head .eyebrow { color: var(--copper); }
+.propositie__head h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(28px, 4.4vw, 40px); color: var(--dark-green);
+  margin: 10px 0 12px; line-height: 1.15;
+}
+.propositie__head h2 em { color: var(--copper); font-style: italic; }
+.propositie__head p {
+  color: var(--text-muted); font-size: 18px;
+  max-width: 640px; margin: 0 auto; line-height: 1.55;
+}
+.propositie__grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px;
+}
+.propositie-card {
+  background: var(--white); padding: 32px;
+  border-radius: 10px; border-left: 3px solid var(--copper);
+  box-shadow: var(--shadow-sm);
+}
+.propositie-card h3 {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: 20px; color: var(--dark-green);
+  margin: 0 0 12px; line-height: 1.3;
+}
+.propositie-card p {
+  color: var(--text); font-size: 16px; line-height: 1.6; margin: 0;
+}
+.propositie-card__not {
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px dashed var(--paper-dark);
+  color: var(--text-muted); font-size: 14px;
+}
+.propositie-card__not strong { color: var(--copper); font-weight: 600; }
+
+/* B4 — Regie-strip (donkergroen, Wij vs. Uitvoerders) */
+.regie-strip {
+  background: var(--mint-deep); color: var(--cream);
+  padding: 88px 24px;
+}
+.regie-strip__inner { max-width: 960px; margin: 0 auto; }
+.regie-strip__head { text-align: center; margin-bottom: 48px; }
+.regie-strip__head .eyebrow { color: var(--mint); letter-spacing: 0.16em; }
+.regie-strip__head h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(26px, 3.8vw, 34px); color: var(--cream);
+  margin: 10px 0 0; line-height: 1.2;
+}
+.regie-strip__head h2 em { color: var(--copper); font-style: italic; }
+.regie-strip__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+.regie-strip__col h3 {
+  font-family: var(--font-body); font-weight: 700;
+  font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 18px; color: var(--mint);
+}
+.regie-strip__col--niet h3 { color: rgba(248,247,244,0.55); }
+.regie-strip__col ul { list-style: none; padding: 0; margin: 0; }
+.regie-strip__col li {
+  padding: 12px 0 12px 28px; font-size: 16px; line-height: 1.5;
+  position: relative; border-bottom: 1px solid rgba(248,247,244,0.10);
+}
+.regie-strip__col li::before {
+  content: ""; position: absolute; left: 0; top: 18px;
+  width: 16px; height: 16px; border-radius: 50%;
+}
+.regie-strip__col--wij li::before {
+  background: var(--mint); box-shadow: 0 0 0 4px rgba(0,162,170,0.18);
+}
+.regie-strip__col--niet li::before {
+  background: transparent; border: 1.5px solid rgba(248,247,244,0.35);
+}
+.regie-strip__col--niet li { color: rgba(248,247,244,0.78); }
+.regie-strip__footer {
+  text-align: center; margin-top: 40px; padding-top: 32px;
+  border-top: 1px solid rgba(248,247,244,0.15);
+  font-size: 15px; color: rgba(248,247,244,0.72);
   font-style: italic;
-  font-weight: 500;
-}
-.uitleg-partner {
-  max-width: 640px;
-  margin: 0 auto;
-  color: var(--text-muted);
-  font-size: 17px;
-  line-height: 1.6;
 }
 
-/* B4 — Werkwijze 6 stappen (variant op .how uit base.css) */
-.werkwijze {
+/* B5 — Voor wie (Wel/Niet geschikt) */
+.voor-wie {
+  background: var(--cream);
+  padding: 96px 24px;
+}
+.voor-wie__inner { max-width: var(--max-w); margin: 0 auto; }
+.voor-wie__head { text-align: center; margin-bottom: 48px; }
+.voor-wie__head .eyebrow { color: var(--copper); }
+.voor-wie__head h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(26px, 4vw, 36px); color: var(--dark-green);
+  margin: 10px 0; line-height: 1.2;
+}
+.voor-wie__grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  max-width: 880px; margin: 0 auto;
+}
+.voor-wie__col {
+  background: var(--white); padding: 32px; border-radius: 10px;
+  border: 1px solid var(--paper-line);
+}
+.voor-wie__col h3 {
+  font-family: var(--font-body); font-weight: 700;
+  font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+  margin: 0 0 18px;
+}
+.voor-wie__col--ja h3 { color: var(--mint-deep); }
+.voor-wie__col--nee h3 { color: var(--text-muted); }
+.voor-wie__col ul { list-style: none; padding: 0; margin: 0; }
+.voor-wie__col li {
+  padding: 10px 0 10px 26px; font-size: 16px; line-height: 1.45;
+  position: relative; color: var(--text);
+}
+.voor-wie__col--ja li::before {
+  content: "✓"; position: absolute; left: 0; top: 9px;
+  color: var(--copper); font-weight: 700; font-size: 18px; line-height: 1;
+}
+.voor-wie__col--nee li { color: var(--text-muted); }
+.voor-wie__col--nee li::before {
+  content: "—"; position: absolute; left: 0; top: 9px;
+  color: var(--text-muted); font-weight: 400; font-size: 18px; line-height: 1;
+}
+
+/* B6 — Werkwijze (6 stappen, copper-genummerd) */
+.werkwijze-v2 {
   background: var(--white);
   padding: 96px 24px;
 }
-.werkwijze-header {
-  text-align: center;
-  max-width: 640px;
-  margin: 0 auto 56px;
+.werkwijze-v2__inner { max-width: var(--max-w); margin: 0 auto; }
+.werkwijze-v2__head { text-align: center; max-width: 640px; margin: 0 auto 56px; }
+.werkwijze-v2__head .eyebrow { color: var(--copper); }
+.werkwijze-v2__head h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(26px, 4vw, 36px); color: var(--dark-green);
+  margin: 10px 0 12px;
 }
-.werkwijze-header h2 {
-  font-size: clamp(26px, 4vw, 36px);
-  color: var(--dark-green);
-  margin-bottom: 12px;
+.werkwijze-v2__head p { color: var(--text-muted); font-size: 17px; }
+.werkwijze-v2__steps {
+  list-style: none; padding: 0; margin: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px 32px;
 }
-.werkwijze-header p {
-  color: var(--text-muted);
-  font-size: 18px;
+.werkwijze-v2__step { padding: 0 8px; }
+.werkwijze-v2__nr {
+  display: inline-block; width: 48px; height: 48px; border-radius: 50%;
+  background: var(--copper); color: var(--white);
+  font-weight: 700; font-size: 22px; line-height: 48px;
+  text-align: center; margin-bottom: 20px;
 }
-.werkwijze-steps {
-  list-style: none;
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 40px 32px;
+.werkwijze-v2__step h3 {
+  font-size: 19px; margin-bottom: 8px;
+  color: var(--dark-green); line-height: 1.3;
 }
-.werkwijze-step {
-  padding: 0 8px;
-}
-.werkwijze-nr {
-  display: inline-block;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--mint);
-  color: var(--white);
-  font-weight: 700;
-  font-size: 22px;
-  line-height: 48px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-.werkwijze-step h3 {
-  font-size: 19px;
-  margin-bottom: 8px;
-  color: var(--dark-green);
-  line-height: 1.3;
-}
-.werkwijze-step p {
-  color: var(--text-muted);
-  font-size: 16px;
-  line-height: 1.5;
+.werkwijze-v2__step p {
+  color: var(--text-muted); font-size: 16px; line-height: 1.5;
 }
 
-/* B5 — Pakket-inhoud (genummerde blokken op papier-achtergrond) */
+/* B7 — Pakket (6 items, paper-achtergrond) */
 .pakket {
   background: var(--paper);
   padding: 96px 24px;
@@ -191,11 +308,45 @@
   line-height: 1.55;
 }
 
-/* B6 — FAQ-implementatie: erft alles van .faq in base.css; geen overrides nodig. */
+/* B8 — FAQ-implementatie: erft alles van .faq in base.css; geen overrides nodig. */
 
-/* B7 — Kennismaking-impl: erft van .kennismaking in base.css. */
+/* B9 — Kennismaking-V2 (dark-green gradient + copper CTA) */
+.kennismaking-v2 {
+  background: linear-gradient(135deg, var(--mint-deep) 0%, var(--dark-green) 100%);
+  color: var(--cream);
+  padding: 88px 24px;
+  text-align: center;
+  position: relative;
+}
+.kennismaking-v2::before {
+  content: ""; position: absolute; top: 32px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 3px; background: var(--copper);
+}
+.kennismaking-v2 h2 {
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(28px, 4.4vw, 40px); margin: 32px 0 14px;
+  color: var(--cream); line-height: 1.2;
+}
+.kennismaking-v2 h2 em { color: var(--copper); font-style: italic; }
+.kennismaking-v2 p {
+  font-size: 18px; max-width: 580px; margin: 0 auto 32px;
+  color: rgba(248,247,244,0.85);
+}
+.kennismaking-v2 .cta-primary {
+  background: var(--copper); color: var(--white);
+  border: 2px solid var(--copper);
+}
+.kennismaking-v2 .cta-primary:hover {
+  background: var(--copper-hover); border-color: var(--copper-hover);
+}
+.kennismaking-v2 .cta-secondary {
+  color: var(--cream); border-color: rgba(248,247,244,0.35);
+}
+.kennismaking-v2 .cta-secondary:hover {
+  background: rgba(248,247,244,0.10); border-color: var(--cream);
+}
 
-/* B8 — Footer back-link accent */
+/* B10 — Footer back-link accent (behouden van v1) */
 .footer-back {
   font-weight: 600;
   color: var(--copper) !important;
@@ -206,18 +357,22 @@
 
 /* Responsive */
 @media (max-width: 900px) {
-  .werkwijze-steps { grid-template-columns: repeat(2, 1fr); gap: 32px 24px; }
+  .product-paritet__grid,
+  .propositie__grid,
+  .regie-strip__cols,
+  .voor-wie__grid { grid-template-columns: 1fr; }
+  .werkwijze-v2__steps { grid-template-columns: repeat(2, 1fr); gap: 32px 24px; }
   .pakket-items { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 720px) {
-  .werkwijze-steps { grid-template-columns: 1fr; gap: 32px; }
-  .pakket-items { grid-template-columns: 1fr; }
-  .werkwijze, .pakket, .probleem-herkenning, .uitleg { padding: 64px 20px; }
-}
-
 @media (max-width: 640px) {
-  .probleem-bullets li { padding: 16px 18px 16px 48px; font-size: 16px; }
-  .probleem-bullets li::before { left: 18px; }
-  .uitleg-quote p { font-size: 20px; }
+  .werkwijze-v2__steps { grid-template-columns: 1fr; gap: 32px; }
+  .pakket-items { grid-template-columns: 1fr; }
+  .product-paritet,
+  .propositie,
+  .regie-strip,
+  .voor-wie,
+  .werkwijze-v2,
+  .pakket,
+  .kennismaking-v2 { padding: 64px 20px; }
 }
