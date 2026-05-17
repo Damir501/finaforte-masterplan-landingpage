@@ -253,16 +253,49 @@
 
   function renderMarketingEvents(m, err) {
     if (err || !m) {
+      renderActionAdvice([]);
       renderInsightEmpty('funnel', err || 'Nog geen meetdata.');
       renderInsightEmpty('sources', err || 'Nog geen meetdata.');
       renderInsightEmpty('blindspots', err || 'Nog geen meetdata.');
       renderInsightEmpty('ctas', err || 'Nog geen meetdata.');
+      renderInsightEmpty('channels', err || 'Nog geen kanaaldata.');
+      renderInsightEmpty('campaigns', err || 'Nog geen campagnedata.');
       return;
     }
+    renderActionAdvice(m.action_advice || []);
     renderFunnelList(m.funnel_7d || []);
     renderMiniRank('sources', m.top_sources_30d || [], 'Nog geen brondata.');
     renderMiniRank('blindspots', m.top_blindspots_30d || [], 'Nog geen scan-thema data.');
     renderMiniRank('ctas', m.top_ctas_30d || [], 'Nog geen CTA-clicks.');
+    renderFunnelTable('channels', m.channel_funnels_30d || [], 'Nog geen kanaaldata.');
+    renderFunnelTable('campaigns', m.campaign_funnels_30d || [], 'Nog geen campagnedata.');
+  }
+
+  function renderActionAdvice(rows) {
+    var list = document.querySelector('[data-bind="advice"]');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!rows.length) {
+      var empty = document.createElement('li');
+      empty.className = 'ff-advice-list__empty';
+      empty.textContent = 'Nog geen advies. Eerst data verzamelen via LinkedIn, Meta, F4 en Calendly.';
+      list.appendChild(empty);
+      return;
+    }
+    rows.forEach(function (row) {
+      var li = document.createElement('li');
+      li.className = 'ff-advice ff-advice--' + (row.level || 'orange');
+
+      var title = document.createElement('strong');
+      title.textContent = row.title || 'Actie';
+
+      var body = document.createElement('span');
+      body.textContent = row.body || '';
+
+      li.appendChild(title);
+      li.appendChild(body);
+      list.appendChild(li);
+    });
   }
 
   function renderFunnelList(rows) {
@@ -307,6 +340,47 @@
       count.textContent = fmtNum(row.count);
       li.appendChild(label);
       li.appendChild(count);
+      list.appendChild(li);
+    });
+  }
+
+  function renderFunnelTable(kind, rows, emptyText) {
+    var list = document.querySelector('[data-insight="' + kind + '"] [data-bind]');
+    if (!list) return;
+    list.innerHTML = '';
+    if (!rows.length) {
+      renderInsightEmpty(kind, emptyText);
+      return;
+    }
+    rows.forEach(function (row) {
+      var li = document.createElement('li');
+
+      var top = document.createElement('div');
+      top.className = 'ff-channel-list__top';
+
+      var label = document.createElement('span');
+      label.textContent = row.channel ? row.channel + ' · ' + row.label : row.label;
+
+      var booked = document.createElement('strong');
+      booked.textContent = fmtNum(row.call_booked) + ' geboekt';
+
+      top.appendChild(label);
+      top.appendChild(booked);
+
+      var meta = document.createElement('small');
+      var parts = [
+        'bezoek ' + fmtNum(row.visits),
+        'link ' + fmtNum(row.redirects),
+        'scan ' + fmtNum(row.scan_completed),
+        'klik ' + fmtNum(row.call_clicked)
+      ];
+      if (row.scan_to_click_pct !== null && row.scan_to_click_pct !== undefined) {
+        parts.push('scan→klik ' + Number(row.scan_to_click_pct).toFixed(1) + '%');
+      }
+      meta.textContent = parts.join(' · ');
+
+      li.appendChild(top);
+      li.appendChild(meta);
       list.appendChild(li);
     });
   }

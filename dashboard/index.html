@@ -13,7 +13,7 @@
 
   <!-- Tokens-stylesheet eerst, dan dashboard-overrides -->
   <link rel="stylesheet" href="/styles/tokens.css?v=20260516b">
-  <link rel="stylesheet" href="./dashboard.css?v=20260516d">
+  <link rel="stylesheet" href="./dashboard.css?v=20260517a">
 
   <!-- Google Fonts (consistent met landingpage) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -54,7 +54,17 @@
 
     <section class="ff-intro">
       <h2>Strategische cockpit</h2>
-      <p>Zes kerncijfers, week-over-week. Rood = actie nodig, oranje = aandacht, groen = op koers.</p>
+      <p>Kerncijfers, kanaalprestaties en concrete acties voor LinkedIn, Meta, e-mail en de Masterplan-funnel.</p>
+    </section>
+
+    <section class="ff-decision" aria-live="polite">
+      <header class="ff-decision__header">
+        <h2>Deze week doen</h2>
+        <p>Automatisch advies op basis van funnel-lekken, kanaaldata en campagne-attributie.</p>
+      </header>
+      <ol class="ff-advice-list" data-bind="advice">
+        <li class="ff-advice-list__empty">Advies wordt geladen.</li>
+      </ol>
     </section>
 
     <section class="ff-grid" id="ff-grid" aria-live="polite">
@@ -148,6 +158,14 @@
           <h3>CTA's (30d)</h3>
           <ol class="ff-mini-rank" data-bind="ctas"></ol>
         </article>
+        <article class="ff-insight-card ff-insight-card--wide" data-insight="channels">
+          <h3>Kanalen naar gesprek (30d)</h3>
+          <ol class="ff-channel-list" data-bind="channels"></ol>
+        </article>
+        <article class="ff-insight-card ff-insight-card--wide" data-insight="campaigns">
+          <h3>Campagnes naar gesprek (30d)</h3>
+          <ol class="ff-channel-list" data-bind="campaigns"></ol>
+        </article>
       </div>
     </section>
 
@@ -155,7 +173,7 @@
       <p>
         <a href="/">← terug naar masterplan.finaforte.nl</a>
         <span class="ff-footer__sep">·</span>
-        Cockpit V0 · <span id="ff-version">2026-05-16</span>
+        Cockpit V1.2 · <span id="ff-version">2026-05-17</span>
       </p>
     </footer>
 
@@ -164,6 +182,6 @@
   <!-- Error toast -->
   <div id="ff-toast" class="ff-toast" hidden></div>
 
-  <script src="./dashboard.js?v=20260516d"></script>
+  <script src="./dashboard.js?v=20260517a"></script>
 </body>
 </html>

@@ -602,6 +602,9 @@ function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs,
             'top_ctas_30d' => [],
             'top_blindspots_30d' => [],
             'top_calcs_30d' => [],
+            'channel_funnels_30d' => [],
+            'campaign_funnels_30d' => [],
+            'action_advice' => marketing_action_advice([], [], []),
         ];
     }
 
@@ -620,6 +623,8 @@ function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs,
     $ctas30 = [];
     $blindspots30 = [];
     $calcs30 = [];
+    $channelFunnels30 = [];
+    $campaignFunnels30 = [];
     $seenCallBooked = [];
 
     foreach ($lines as $line) {
@@ -643,6 +648,13 @@ function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs,
 
         $source = marketing_source_label($props, (string)($row['referrer_domain'] ?? ''));
         marketing_inc($sources30, $source);
+        $channel = marketing_channel_label($props, $source);
+        $campaign = marketing_campaign_label($props, $channel);
+        marketing_funnel_inc($channelFunnels30, $channel, $event, $channel);
+        if ($campaign !== '') {
+            $campaignKey = $channel . '|' . $campaign;
+            marketing_funnel_inc($campaignFunnels30, $campaignKey, $event, $campaign, $channel);
+        }
 
         if ($event === 'cta_click') {
             $name = (string)($props['cta'] ?? ($props['event_name'] ?? 'cta-onbekend'));
@@ -679,6 +691,9 @@ function marketing_events_summary(string $file, int $weekAgoTs, int $monthAgoTs,
         'top_ctas_30d' => marketing_top_rows($ctas30, 5),
         'top_blindspots_30d' => marketing_top_rows($blindspots30, 5),
         'top_calcs_30d' => marketing_calc_rows($calcs30, 5),
+        'channel_funnels_30d' => marketing_funnel_table_rows($channelFunnels30, 6),
+        'campaign_funnels_30d' => marketing_funnel_table_rows($campaignFunnels30, 8),
+        'action_advice' => marketing_action_advice($events7, $channelFunnels30, $campaignFunnels30),
     ];
 }
 
@@ -717,17 +732,8 @@ function marketing_empty_funnel(): array {
 }
 
 function marketing_funnel_rows(array $events): array {
-    $defs = [
-        ['event' => 'page_view', 'label' => 'Bezoek'],
-        ['event' => 'scan_started', 'label' => 'Scan gestart'],
-        ['event' => 'scan_email_step_reached', 'label' => 'E-mailstap bereikt'],
-        ['event' => 'scan_completed', 'label' => 'Scan afgerond'],
-        ['event' => 'rapport_opened', 'label' => 'Rapport geopend'],
-        ['event' => 'call_clicked', 'label' => 'Kennismaking geklikt'],
-        ['event' => 'call_booked', 'label' => 'Call geboekt'],
-    ];
     $rows = [];
-    foreach ($defs as $def) {
+    foreach (marketing_funnel_step_defs() as $def) {
         $rows[] = [
             'event' => $def['event'],
             'label' => $def['label'],
@@ -738,7 +744,16 @@ function marketing_funnel_rows(array $events): array {
 }
 
 function marketing_source_label(array $props, string $referrerDomain): string {
-    foreach (['utm_source', 'UTM_SOURCE'] as $key) {
+    foreach ([
+        'utm_source',
+        'first_utm_source',
+        'UTM_SOURCE',
+        'click_source',
+        'first_click_source',
+        'landing_referrer_domain',
+        'first_landing_referrer_domain',
+        'source',
+    ] as $key) {
         if (!empty($props[$key]) && is_scalar($props[$key])) {
             return strtolower((string)$props[$key]);
         }
@@ -746,6 +761,220 @@ function marketing_source_label(array $props, string $referrerDomain): string {
     if ($referrerDomain === 'internal') return 'internal';
     if ($referrerDomain !== '') return $referrerDomain;
     return 'direct';
+}
+
+function marketing_funnel_step_defs(): array {
+    return [
+        ['event' => 'page_view', 'label' => 'Bezoek'],
+        ['event' => 'redirect_click', 'label' => 'Meetbare link geklikt'],
+        ['event' => 'scan_started', 'label' => 'Scan gestart'],
+        ['event' => 'scan_email_step_reached', 'label' => 'E-mailstap bereikt'],
+        ['event' => 'scan_completed', 'label' => 'Scan afgerond'],
+        ['event' => 'rapport_opened', 'label' => 'Rapport geopend'],
+        ['event' => 'call_clicked', 'label' => 'Kennismaking geklikt'],
+        ['event' => 'call_booked', 'label' => 'Call geboekt'],
+    ];
+}
+
+function marketing_channel_label(array $props, string $source): string {
+    $source = strtolower(trim($source));
+    $medium = strtolower((string)($props['utm_medium'] ?? $props['first_utm_medium'] ?? ''));
+    $campaign = strtolower((string)($props['utm_campaign'] ?? $props['first_utm_campaign'] ?? ''));
+    $channel = strtolower((string)($props['channel'] ?? ''));
+
+    if (in_array($channel, ['f4', 'n1', 'c1', 'brevo'], true) || $source === 'brevo' || $medium === 'email') {
+        return match ($channel !== '' ? $channel : $campaign) {
+            'f4' => 'F4 e-mail',
+            'n1' => 'N1 nieuwsbrief',
+            'c1' => 'C1 follow-up',
+            default => 'Brevo e-mail',
+        };
+    }
+    if (in_array($source, ['linkedin', 'li', 'linkedin.com'], true) || str_contains($source, 'linkedin')) {
+        return 'LinkedIn';
+    }
+    if (in_array($source, ['meta', 'facebook', 'fb', 'instagram', 'ig'], true)
+        || str_contains($source, 'facebook')
+        || str_contains($source, 'instagram')) {
+        return 'Meta';
+    }
+    if ($source === 'calc') return 'Calculators';
+    if ($source === 'calendly') return 'Calendly';
+    if ($source === 'internal') return 'Eigen site';
+    if ($source === 'direct' || $source === '') return 'Direct';
+
+    return ucfirst($source);
+}
+
+function marketing_campaign_label(array $props, string $channel): string {
+    $campaign = marketing_first_scalar($props, ['utm_campaign', 'first_utm_campaign', 'channel']);
+    $content = marketing_first_scalar($props, ['utm_content', 'first_utm_content', 'message', 'label']);
+    $term = marketing_first_scalar($props, ['utm_term', 'first_utm_term']);
+
+    $parts = [];
+    foreach ([$campaign, $content, $term] as $part) {
+        $part = trim($part);
+        if ($part !== '' && !in_array($part, $parts, true)) {
+            $parts[] = $part;
+        }
+    }
+
+    if (!$parts && in_array($channel, ['LinkedIn', 'Meta', 'F4 e-mail', 'N1 nieuwsbrief', 'C1 follow-up'], true)) {
+        return $channel . ' zonder campagnecode';
+    }
+
+    return implode(' · ', array_slice($parts, 0, 3));
+}
+
+function marketing_first_scalar(array $props, array $keys): string {
+    foreach ($keys as $key) {
+        if (!empty($props[$key]) && is_scalar($props[$key])) {
+            return (string)$props[$key];
+        }
+    }
+    return '';
+}
+
+function marketing_funnel_inc(array &$map, string $key, string $event, string $label, ?string $channel = null): void {
+    $key = trim($key) !== '' ? trim($key) : 'onbekend';
+    if (!isset($map[$key])) {
+        $map[$key] = [
+            'label' => $label !== '' ? $label : $key,
+            'channel' => $channel,
+            'events' => 0,
+            'visits' => 0,
+            'redirects' => 0,
+            'scan_started' => 0,
+            'scan_completed' => 0,
+            'call_clicked' => 0,
+            'call_booked' => 0,
+        ];
+    }
+
+    $map[$key]['events']++;
+    if ($event === 'page_view') {
+        $map[$key]['visits']++;
+    } elseif ($event === 'redirect_click') {
+        $map[$key]['redirects']++;
+    } elseif ($event === 'scan_started') {
+        $map[$key]['scan_started']++;
+    } elseif ($event === 'scan_completed') {
+        $map[$key]['scan_completed']++;
+    } elseif ($event === 'call_clicked') {
+        $map[$key]['call_clicked']++;
+    } elseif ($event === 'call_booked') {
+        $map[$key]['call_booked']++;
+    }
+}
+
+function marketing_funnel_table_rows(array $map, int $limit): array {
+    uasort($map, static function (array $a, array $b): int {
+        $scoreA = ($a['call_booked'] * 10000) + ($a['call_clicked'] * 1000) + ($a['scan_completed'] * 100) + ($a['scan_started'] * 10) + $a['visits'] + $a['redirects'];
+        $scoreB = ($b['call_booked'] * 10000) + ($b['call_clicked'] * 1000) + ($b['scan_completed'] * 100) + ($b['scan_started'] * 10) + $b['visits'] + $b['redirects'];
+        return $scoreB <=> $scoreA;
+    });
+
+    $rows = [];
+    foreach ($map as $row) {
+        $scanCompleted = (int)$row['scan_completed'];
+        $callClicked = (int)$row['call_clicked'];
+        $callBooked = (int)$row['call_booked'];
+        $rows[] = [
+            'label' => (string)$row['label'],
+            'channel' => $row['channel'] === null ? null : (string)$row['channel'],
+            'events' => (int)$row['events'],
+            'visits' => (int)$row['visits'],
+            'redirects' => (int)$row['redirects'],
+            'scan_started' => (int)$row['scan_started'],
+            'scan_completed' => $scanCompleted,
+            'call_clicked' => $callClicked,
+            'call_booked' => $callBooked,
+            'scan_to_click_pct' => $scanCompleted > 0 ? round(($callClicked / $scanCompleted) * 100, 1) : null,
+            'click_to_book_pct' => $callClicked > 0 ? round(($callBooked / $callClicked) * 100, 1) : null,
+        ];
+        if (count($rows) >= $limit) break;
+    }
+    return $rows;
+}
+
+function marketing_action_advice(array $events7, array $channelFunnels30, array $campaignFunnels30): array {
+    $advice = [];
+    $visits = (int)($events7['page_view'] ?? 0);
+    $redirects = (int)($events7['redirect_click'] ?? 0);
+    $scanStarted = (int)($events7['scan_started'] ?? 0);
+    $scanCompleted = (int)($events7['scan_completed'] ?? 0);
+    $callClicked = (int)($events7['call_clicked'] ?? 0);
+    $callBooked = (int)($events7['call_booked'] ?? 0);
+
+    if ($visits + $redirects === 0) {
+        $advice[] = [
+            'level' => 'orange',
+            'title' => 'Start met meetbare campagne-links',
+            'body' => 'Gebruik de redirect-links voor LinkedIn, Meta en F4 zodat elk bezoek direct aan een kanaal gekoppeld wordt.',
+        ];
+        return $advice;
+    }
+
+    if ($visits > 0 && ($scanStarted / max(1, $visits)) < 0.1) {
+        $advice[] = [
+            'level' => 'red',
+            'title' => 'Landingsbelofte aanscherpen',
+            'body' => 'Er komt verkeer binnen, maar weinig mensen starten de scan. Maak LinkedIn/Meta copy en eerste scherm explicieter op het Masterplan-probleem.',
+        ];
+    }
+
+    if ($scanCompleted > 0 && ($callClicked / max(1, $scanCompleted)) < 0.15) {
+        $advice[] = [
+            'level' => 'orange',
+            'title' => 'Rapport naar gesprek sterker maken',
+            'body' => 'Mensen ronden de scan af, maar klikken nog beperkt door naar Calendly. Zet de rapport-CTA scherper op urgentie en concrete uitkomst.',
+        ];
+    }
+
+    if ($callClicked > 0 && $callBooked === 0) {
+        $advice[] = [
+            'level' => 'red',
+            'title' => 'Calendly-frictie controleren',
+            'body' => 'Er zijn kennismakingskliks zonder boeking. Controleer beschikbaarheid, pagina-copy en of de gekozen tijdsloten voldoende aantrekkelijk zijn.',
+        ];
+    }
+
+    $topChannel = marketing_best_funnel_label($channelFunnels30);
+    if ($topChannel !== '') {
+        $advice[] = [
+            'level' => 'green',
+            'title' => 'Verdubbel wat werkt',
+            'body' => $topChannel . ' levert de meeste tractie. Gebruik dit als referentie voor de volgende LinkedIn- en Meta-uitingen.',
+        ];
+    }
+
+    if (!$campaignFunnels30) {
+        $advice[] = [
+            'level' => 'orange',
+            'title' => 'Geef elke uiting een eigen code',
+            'body' => 'Maak per LinkedIn-post, Meta-ad en F4-mail een unieke campagnecode, zodat het dashboard straks niet alleen kan tellen maar ook kan kiezen.',
+        ];
+    }
+
+    return array_slice($advice, 0, 4);
+}
+
+function marketing_best_funnel_label(array $map): string {
+    $bestLabel = '';
+    $bestScore = 0;
+    foreach ($map as $row) {
+        $score = ((int)$row['call_booked'] * 10000)
+            + ((int)$row['call_clicked'] * 1000)
+            + ((int)$row['scan_completed'] * 100)
+            + ((int)$row['scan_started'] * 10)
+            + (int)$row['redirects']
+            + (int)$row['visits'];
+        if ($score > $bestScore) {
+            $bestScore = $score;
+            $bestLabel = (string)$row['label'];
+        }
+    }
+    return $bestLabel;
 }
 
 function marketing_domain_label(string $domainId): string {
