@@ -1,0 +1,297 @@
+/* ============================================================
+   Architecten-Academie — pagina-specifieke styling
+   Sluit aan op /styles/tokens.css + /styles/base.css
+   ============================================================ */
+
+.academie-body { background: var(--paper-editorial); }
+
+/* HERO ----------------------------------------------------- */
+.ac-hero {
+  padding: 96px 24px 56px;
+  background: var(--paper-editorial);
+}
+.ac-hero__inner {
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: center;
+}
+.ac-eyebrow {
+  font-family: var(--font-body, "Manrope", sans-serif);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--copper, #b78652);
+  margin: 0 0 24px;
+  text-transform: uppercase;
+}
+.ac-hero h1 {
+  font-family: var(--font-display, "Fraunces", Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(32px, 4.5vw, 52px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--dark-green, #00292b);
+  margin: 0 0 24px;
+}
+.ac-hero h1 em {
+  font-style: italic;
+  color: var(--mint-deep, #003d40);
+}
+.ac-hero__sub {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--text-muted, #5a6478);
+  max-width: 680px;
+  margin: 0 auto 36px;
+}
+.ac-hero__cta {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* CTA buttons --------------------------------------------- */
+.ac-cta-primary {
+  display: inline-block;
+  background: var(--copper, #b78652);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+.ac-cta-primary:hover { background: var(--copper-hover, #9a6f42); color: #ffffff; }
+
+.ac-cta-secondary {
+  display: inline-block;
+  color: var(--dark-green, #00292b);
+  text-decoration: none;
+  padding: 14px 8px;
+  border-bottom: 2px solid var(--copper, #b78652);
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.15s;
+}
+.ac-cta-secondary:hover { color: var(--copper, #b78652); }
+
+/* INTRO ---------------------------------------------------- */
+.ac-intro {
+  padding: 48px 24px 72px;
+  background: var(--paper-editorial);
+  border-top: 1px solid var(--paper-line, rgba(0,61,64,0.08));
+}
+.ac-intro__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.ac-intro p {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text, #1a2a2c);
+  margin: 0 0 20px;
+}
+.ac-intro p em { color: var(--dark-green, #00292b); font-style: italic; }
+.ac-intro__note {
+  font-size: 15px;
+  color: var(--text-muted, #5a6478);
+  border-left: 3px solid var(--copper, #b78652);
+  padding-left: 16px;
+}
+.ac-intro__note a { color: var(--mint-dark, #003d40); font-weight: 600; }
+
+/* THEMAS --------------------------------------------------- */
+.ac-themas { padding: 24px 24px 96px; }
+.ac-themas__inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+}
+
+.ac-thema {
+  background: #ffffff;
+  border: 1px solid var(--paper-line, rgba(0,61,64,0.08));
+  border-radius: 8px;
+  padding: 40px 36px;
+  box-shadow: 0 1px 3px rgba(0,41,43,0.04), 0 16px 40px rgba(0,41,43,0.04);
+}
+
+.ac-thema__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--paper-line, rgba(0,61,64,0.08));
+}
+.ac-thema__nr {
+  font-family: var(--font-display, "Fraunces", Georgia, serif);
+  font-weight: 500;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--copper, #b78652);
+  flex-shrink: 0;
+  margin-top: -4px;
+}
+.ac-thema__head h2 {
+  font-family: var(--font-display, "Fraunces", Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(22px, 3vw, 28px);
+  line-height: 1.2;
+  color: var(--dark-green, #00292b);
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+.ac-thema__head p {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text-muted, #5a6478);
+  margin: 0;
+}
+
+/* CARDS ---------------------------------------------------- */
+.ac-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.ac-cards li {
+  margin: 0;
+  padding: 0;
+}
+.ac-cards a {
+  display: block;
+  padding: 20px 22px;
+  background: var(--paper-editorial, #f5f1e8);
+  border: 1px solid var(--paper-line, rgba(0,61,64,0.08));
+  border-radius: 6px;
+  text-decoration: none;
+  transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+  height: 100%;
+}
+.ac-cards a:hover {
+  transform: translateY(-2px);
+  border-color: var(--copper, #b78652);
+  box-shadow: 0 4px 12px rgba(0,41,43,0.08);
+}
+.ac-cards h3 {
+  font-family: var(--font-body, "Manrope", sans-serif);
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--dark-green, #00292b);
+  margin: 0 0 8px;
+  letter-spacing: -0.005em;
+}
+.ac-cards p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted, #5a6478);
+  margin: 0;
+}
+
+/* ROADMAP -------------------------------------------------- */
+.ac-roadmap {
+  padding: 80px 24px;
+  background: var(--dark-green, #00292b);
+  color: #ffffff;
+}
+.ac-roadmap__inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.ac-roadmap h2 {
+  font-family: var(--font-display, "Fraunces", Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(24px, 3.5vw, 36px);
+  color: #ffffff;
+  margin: 0 0 24px;
+}
+.ac-roadmap > .ac-roadmap__inner > p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+  margin: 0 0 24px;
+}
+.ac-roadmap__list {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ac-roadmap__list li {
+  font-size: 16px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.9);
+  padding-left: 28px;
+  position: relative;
+}
+.ac-roadmap__list li::before {
+  content: "→";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--copper, #b78652);
+  font-weight: 700;
+}
+.ac-roadmap__list strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+.ac-roadmap__signup {
+  font-size: 15px;
+  color: rgba(255,255,255,0.75);
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 20px;
+}
+.ac-roadmap__signup a {
+  color: var(--copper, #b78652);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.ac-roadmap__signup a:hover { color: #ffffff; }
+
+/* CTA STRIP ----------------------------------------------- */
+.ac-cta-strip {
+  padding: 80px 24px;
+  background: var(--paper-editorial, #f5f1e8);
+  text-align: center;
+}
+.ac-cta-strip__inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.ac-cta-strip h2 {
+  font-family: var(--font-display, "Fraunces", Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(24px, 3.5vw, 36px);
+  color: var(--dark-green, #00292b);
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.ac-cta-strip p {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--text-muted, #5a6478);
+  margin: 0 0 32px;
+}
+.ac-cta-strip p em { color: var(--dark-green, #00292b); font-style: italic; }
+
+/* RESPONSIVE ---------------------------------------------- */
+@media (max-width: 640px) {
+  .ac-hero { padding: 72px 20px 40px; }
+  .ac-thema { padding: 28px 22px; }
+  .ac-thema__head { gap: 16px; }
+  .ac-thema__nr { font-size: 40px; }
+  .ac-cards { grid-template-columns: 1fr; }
+  .ac-roadmap { padding: 56px 20px; }
+  .ac-cta-strip { padding: 56px 20px; }
+}
