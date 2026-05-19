@@ -354,12 +354,9 @@
     <p>Vier keer per jaar een rustige update — wetswijzigingen, casussen,
        check-vragen. Geen verkooppraat, geen spam.</p>
     <form id="newsletter-form" class="newsletter-form"
-          action="https://formsubmit.co/ajax/info@finaforte.nl" method="POST">
+          action="/api/brevo-newsletter.php" method="POST">
       <input type="email" name="email" placeholder="uw@email.nl" required>
-      <input type="hidden" name="_subject" value="Onderhoudsronde nieuwsbrief-aanmelding v2">
-      <input type="hidden" name="Pagina" value="home/newsletter">
-      <input type="hidden" name="_template" value="table">
-      <input type="text" name="_honey" style="display:none">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <button type="submit">Aanmelden</button>
     </form>
     <p class="newsletter-fineprint">U kunt zich altijd weer afmelden onderaan elke editie.</p>
@@ -437,9 +434,19 @@
     if (honey && honey.value) return;
     if (Date.now() - renderedAt < 5000) return;
     submitting = true;
-    var data = new FormData(form);
-    fetch(form.action, { method: 'POST', body: data, mode: 'no-cors' })
-      .then(function() {
+    var emailInput = form.querySelector('input[name="email"]');
+    var payload = {
+      email: emailInput ? emailInput.value : '',
+      source: 'home/newsletter',
+      honey: honey ? honey.value : ''
+    };
+    fetch('/api/brevo-newsletter.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+      .then(function(r) {
+        if (!r.ok && r.status !== 202 && r.status !== 207) throw new Error('http-' + r.status);
         form.outerHTML = '<p class="newsletter-thanks">Bedankt — bevestigingsmail volgt zo.</p>';
       })
       .catch(function() {
