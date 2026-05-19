@@ -427,13 +427,19 @@
   if (!form) return;
   var renderedAt = Date.now();
   var submitting = false;
+  var btn = form.querySelector('button[type="submit"]');
+  var btnDefault = btn ? btn.textContent : 'Aanmelden';
   form.addEventListener('submit', function(ev) {
     ev.preventDefault();
     if (submitting) return;
     var honey = form.querySelector('input[name="_honey"]');
     if (honey && honey.value) return;
-    if (Date.now() - renderedAt < 5000) return;
+    if (Date.now() - renderedAt < 1500) {
+      if (btn) { btn.textContent = 'Even geduld...'; setTimeout(function(){ if (btn) btn.textContent = btnDefault; }, 800); }
+      return;
+    }
     submitting = true;
+    if (btn) { btn.disabled = true; btn.textContent = 'Bezig...'; }
     var emailInput = form.querySelector('input[name="email"]');
     var payload = {
       email: emailInput ? emailInput.value : '',
@@ -447,10 +453,11 @@
     })
       .then(function(r) {
         if (!r.ok && r.status !== 202 && r.status !== 207) throw new Error('http-' + r.status);
-        form.outerHTML = '<p class="newsletter-thanks">Bedankt — bevestigingsmail volgt zo.</p>';
+        form.outerHTML = '<p class="newsletter-thanks">Bedankt — kijk in uw inbox (en spam) voor de bevestigingsmail.</p>';
       })
       .catch(function() {
         submitting = false;
+        if (btn) { btn.disabled = false; btn.textContent = btnDefault; }
         form.classList.add('error');
       });
   });
