@@ -51,7 +51,7 @@
     },
     {
       id: 'q5',
-      label: 'Hoe vaak werken uw adviseurs onderling af?',
+      label: 'Hoe vaak stemmen uw adviseurs onderling af?',
       sub: 'Boekhouder, fiscalist, hypotheekadviseur, notaris.',
       options: [
         { id: 'structureel', label: 'Structureel (minimaal 1x per jaar)' },
