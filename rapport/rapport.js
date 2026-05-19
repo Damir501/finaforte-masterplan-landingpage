@@ -45,10 +45,15 @@
     header.appendChild(title);
     section.appendChild(header);
 
-    var body = document.createElement('p');
-    body.className = 'rapport-vlek-uitleg';
-    body.textContent = data.uitleg;
-    section.appendChild(body);
+    // Uitleg pas tonen zodra er echte copy staat — placeholder-strings
+    // (beginnen met '[') worden overgeslagen
+    var u = String(data.uitleg || '').trim();
+    if (u && u.charAt(0) !== '[') {
+      var body = document.createElement('p');
+      body.className = 'rapport-vlek-uitleg';
+      body.textContent = u;
+      section.appendChild(body);
+    }
 
     var link = document.createElement('a');
     link.className = 'rapport-vlek-link';
