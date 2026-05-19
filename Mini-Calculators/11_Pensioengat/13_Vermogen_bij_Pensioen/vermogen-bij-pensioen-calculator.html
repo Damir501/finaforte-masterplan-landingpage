@@ -279,6 +279,11 @@ const formatCurrency = (amount) => new Intl.NumberFormat('nl-NL', { style: 'curr
       // Gauge rotation: -90deg (0%) to 90deg (150%)
       const gaugeRotation = -90 + (results.score / 150) * 180;
 
+      // Token toegangscontrole
+      if (!window.FinaforteAccess || !window.FinaforteAccess.isValid) {
+        return React.createElement(window.FinaforteLockedState);
+      }
+
       return (
         <div className="container">
           <div className="header">
