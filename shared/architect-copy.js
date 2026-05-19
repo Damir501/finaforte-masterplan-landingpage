@@ -8,7 +8,7 @@
 
   var ARCHITECT = {
     hero: {
-      h1: 'Het bouwplan voor je vermogen — start met de blindspot-scan',
+      h1: 'Eerst zien wat u niet weet. Dan pas plannen.',
       sub: 'Vermogensplanning voor wie wil weten wat hij niet weet.',
       cta_primary: 'Start de gratis scan',
       cta_secondary: 'Plan gratis kennismaking',
