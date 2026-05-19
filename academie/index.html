@@ -335,12 +335,20 @@
   </footer>
 
   <script>
-  // Academie funnel-flow: cards op /academie/ verwijzen ALTIJD eerst door naar
-  // de blinde-vlekken-scan, ongeacht eerdere session-access. De Academie is
-  // marketing-vitrine, de scan is de toegangsroute. Wie de scan al heeft gedaan
-  // landt na completion op het rapport, niet hier.
+  // Academie funnel-flow: cards staan locked tenzij de bezoeker de scan
+  // heeft afgerond (ff_scan_completed in sessionStorage, gezet door
+  // scan-submit.js). Calc-email-route (token-guard.js) zet die flag NIET —
+  // alleen de scan opent de Academie. Locked → redirect naar /scan/.
   (function() {
+    var scanCompleted = false;
+    try { scanCompleted = !!sessionStorage.getItem('ff_scan_completed'); } catch (e) {}
     var callout = document.getElementById('ac-gate-callout');
+
+    if (scanCompleted) {
+      // Cards open, geen redirect — normale link-flow
+      return;
+    }
+
     if (callout) callout.hidden = false;
 
     var cards = document.querySelectorAll('.ac-cards a');

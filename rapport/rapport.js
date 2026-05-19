@@ -50,15 +50,6 @@
     body.textContent = data.uitleg;
     section.appendChild(body);
 
-    var video = document.createElement('div');
-    video.className = 'rapport-vlek-video';
-    video.innerHTML = '<div class="video-placeholder">' +
-      '<svg viewBox="0 0 24 24" width="48" height="48" aria-hidden="true">' +
-      '<circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>' +
-      '<path d="M10 8 L16 12 L10 16 Z" fill="currentColor"/></svg>' +
-      '<p>' + window.ARCHITECT.rapport.video_placeholder + '</p></div>';
-    section.appendChild(video);
-
     var link = document.createElement('a');
     link.className = 'rapport-vlek-link';
     link.href = data.calculator_path;

@@ -35,8 +35,7 @@
     rapport: {
       opener: 'Op basis van uw antwoorden zien wij 3 aandachtspunten die een financieel architect direct zou opmerken.',
       cta_primary: 'Plan uw intake op de bouwplaats — 30 min met Damir',
-      cta_secondary: 'Stuur dit rapport naar mijn inbox + Architecten-Academie',
-      video_placeholder: 'Welkom-video van Damir volgt binnen 2 weken.'
+      cta_secondary: 'Stuur dit rapport naar mijn inbox + Architecten-Academie'
     },
     domeinen: {
       pensioengat: {

@@ -164,6 +164,9 @@
     // gebruikt, zodat een scan-voltooier geen tweede email-gate krijgt
     // op een calc. Sluit het funnel-gat tussen /scan/ en /Mini-Calculators/.
     try { sessionStorage.setItem('ff_email_access', formData.email); } catch (e) {}
+    // Aparte flag voor /academie/: alleen scan-voltooiers krijgen toegang tot
+    // de tool-cards (calc-email-route via token-guard.js zet deze flag NIET).
+    try { sessionStorage.setItem('ff_scan_completed', '1'); } catch (e) {}
 
     if (window.console && console.info) {
       console.info('[scan-submit] payload', payload);

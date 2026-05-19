@@ -199,9 +199,111 @@
 
 .has-calendly-embed #cta-primary { display: none; }
 
+/* ===== Testimonial (1 video bovenaan rapport) ===== */
+.rapport-testimonial {
+  max-width: 960px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+.rapport-testimonial__inner {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 32px;
+  align-items: center;
+  background: var(--paper-editorial);
+  border: 1px solid var(--paper-line, rgba(0,61,64,0.08));
+  border-radius: var(--radius);
+  padding: 32px;
+}
+.rapport-testimonial__copy .eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--copper);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.rapport-testimonial__copy h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(20px, 2.4vw, 26px);
+  line-height: 1.2;
+  color: var(--dark-green);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+.rapport-testimonial__copy p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+.rapport-testimonial__video {
+  aspect-ratio: 16/9;
+  background: var(--dark-green);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== Academie-CTA aan einde rapport-sheets ===== */
+.rapport-academie-cta {
+  max-width: 880px;
+  margin: 48px auto 0;
+  padding: 0 24px;
+}
+.rapport-academie-cta__inner {
+  background: var(--dark-green);
+  color: #ffffff;
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  text-align: center;
+}
+.rapport-academie-cta__inner .eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--copper);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.rapport-academie-cta__inner h2 {
+  font-family: var(--font-display, Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(22px, 2.8vw, 30px);
+  line-height: 1.2;
+  color: #ffffff;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.rapport-academie-cta__inner p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.85);
+  max-width: 580px;
+  margin: 0 auto 28px;
+}
+.cta-academie {
+  display: inline-block;
+  background: var(--copper);
+  color: #ffffff;
+  text-decoration: none;
+  padding: 14px 28px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background 0.15s;
+}
+.cta-academie:hover { background: var(--copper-hover, #9a6f42); color: #ffffff; }
+
 @media (max-width: 640px) {
   .rapport-vlek { padding: 36px 24px; }
   .rapport-vlek header { flex-direction: column; gap: 4px; }
   .rapport-vlek-nr { font-size: 40px; }
   .calendly-inline-widget { height: 1000px !important; }
+  .rapport-testimonial__inner { grid-template-columns: 1fr; padding: 24px; gap: 24px; }
+  .rapport-academie-cta__inner { padding: 32px 24px; }
 }
