@@ -35,7 +35,7 @@
 
   <link rel="stylesheet" href="/styles/tokens.css?v=20260519a">
   <link rel="stylesheet" href="/styles/base.css?v=20260519d">
-  <link rel="stylesheet" href="academie.css?v=20260519c">
+  <link rel="stylesheet" href="academie.css?v=20260519d">
 
   <!-- GoatCounter analytics -->
   <script data-goatcounter="https://masterplan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -110,9 +110,12 @@
         </p>
         <div class="ac-gate-callout" id="ac-gate-callout" hidden>
           <div class="ac-gate-callout__icon" aria-hidden="true"></div>
-          <p class="ac-gate-callout__text">
-            <strong>De tools openen via de scan.</strong> Vul eerst de <a href="/scan/">blinde-vlekken-scan</a> in — gratis, ongeveer twee minuten. U krijgt direct een rapport én toegang tot de bijbehorende rekentools. Geen advies, wel inzicht.
-          </p>
+          <div class="ac-gate-callout__body">
+            <p class="ac-gate-callout__text">
+              <strong>De tools openen via de scan.</strong> Vul eerst de blinde-vlekken-scan in — gratis, ongeveer twee minuten. U krijgt direct een rapport én toegang tot de bijbehorende rekentools. Geen advies, wel inzicht.
+            </p>
+            <a href="/scan/?from=academie" class="ac-gate-callout__cta" data-event="academie-scan-cta">Doe de blinde-vlekken-scan →</a>
+          </div>
         </div>
       </div>
     </section>
@@ -364,7 +367,19 @@
             window.FinaforteTrack('academie_card_locked_click', { href: origHref });
           }
         } catch (e) {}
-        window.location.href = '/scan/?from=academie';
+        if (callout) {
+          callout.classList.add('ac-gate-callout--pulse');
+          callout.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(function() {
+            callout.classList.remove('ac-gate-callout--pulse');
+          }, 1800);
+          var ctaBtn = callout.querySelector('.ac-gate-callout__cta');
+          if (ctaBtn) {
+            setTimeout(function() { try { ctaBtn.focus({ preventScroll: true }); } catch (e) {} }, 600);
+          }
+        } else {
+          window.location.href = '/scan/?from=academie';
+        }
       });
     });
   })();

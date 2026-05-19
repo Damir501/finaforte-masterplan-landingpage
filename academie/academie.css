@@ -220,33 +220,67 @@
   background: var(--dark-green, #00292b);
   color: #ffffff;
   border-radius: 6px;
-  padding: 20px 24px;
+  padding: 24px 28px;
   display: flex;
-  gap: 16px;
-  align-items: center;
+  gap: 20px;
+  align-items: flex-start;
   margin-top: 24px;
+  transition: box-shadow 0.3s;
+  scroll-margin-top: 96px;
 }
 .ac-gate-callout__icon {
   flex-shrink: 0;
-  width: 28px;
-  height: 32px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 32' fill='none' stroke='%23b78652' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='14' width='20' height='14' rx='2'/><path d='M8 14V8a6 6 0 0 1 12 0v6'/></svg>");
+  width: 32px;
+  height: 36px;
+  margin-top: 4px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 32' fill='none' stroke='%23f6a75b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='14' width='20' height='14' rx='2'/><path d='M8 14V8a6 6 0 0 1 12 0v6'/></svg>");
   background-repeat: no-repeat;
   background-size: contain;
 }
+.ac-gate-callout__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
 .ac-gate-callout__text {
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.55;
   margin: 0;
-  color: rgba(255,255,255,0.92);
+  color: #ffffff;
 }
-.ac-gate-callout__text strong { color: #ffffff; font-weight: 600; }
-.ac-gate-callout__text a {
-  color: var(--copper, #b78652);
+.ac-gate-callout__text strong { color: #ffffff; font-weight: 700; }
+.ac-gate-callout__cta {
+  display: inline-block;
+  align-self: flex-start;
+  background: var(--copper, #b78652);
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 6px;
   font-weight: 600;
-  text-decoration: underline;
+  font-size: 15px;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.15s;
 }
-.ac-gate-callout__text a:hover { color: #ffffff; }
+.ac-gate-callout__cta:hover {
+  background: var(--copper-hover, #9a6f42);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.ac-gate-callout__cta:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* Pulse na klik op locked card --- */
+.ac-gate-callout--pulse {
+  animation: ac-gate-pulse 1.8s ease-out;
+}
+@keyframes ac-gate-pulse {
+  0%   { box-shadow: 0 0 0 0   rgba(183, 134, 82, 0.65); }
+  70%  { box-shadow: 0 0 0 18px rgba(183, 134, 82, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(183, 134, 82, 0); }
+}
 .ac-cards h3 {
   font-family: var(--font-body, "Manrope", sans-serif);
   font-weight: 600;
