@@ -181,6 +181,72 @@
   border-color: var(--copper, #b78652);
   box-shadow: 0 4px 12px rgba(0,41,43,0.08);
 }
+
+/* Locked state (geen scan-completion in sessionStorage) ---- */
+.ac-cards a[data-locked="true"] {
+  position: relative;
+  background: rgba(245, 241, 232, 0.55);
+  border-style: dashed;
+  border-color: rgba(0, 61, 64, 0.18);
+}
+.ac-cards a[data-locked="true"] h3,
+.ac-cards a[data-locked="true"] p {
+  color: var(--text-muted, #5a6478);
+  opacity: 0.78;
+}
+.ac-cards a[data-locked="true"]::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 16px;
+  height: 18px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 18' fill='none' stroke='%23b78652' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><rect x='2' y='8' width='12' height='8' rx='1.5'/><path d='M4.5 8V5a3.5 3.5 0 0 1 7 0v3'/></svg>");
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.7;
+}
+.ac-cards a[data-locked="true"]:hover {
+  transform: translateY(-2px);
+  border-color: var(--copper, #b78652);
+  border-style: solid;
+  background: rgba(245, 241, 232, 0.85);
+  box-shadow: 0 4px 12px rgba(0,41,43,0.08);
+}
+.ac-cards a[data-locked="true"]:hover::before { opacity: 1; }
+
+/* Gate-callout (vervangt .ac-intro__note bij locked) -------- */
+.ac-gate-callout {
+  background: var(--dark-green, #00292b);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 20px 24px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-top: 24px;
+}
+.ac-gate-callout__icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 32px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 32' fill='none' stroke='%23b78652' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='14' width='20' height='14' rx='2'/><path d='M8 14V8a6 6 0 0 1 12 0v6'/></svg>");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.ac-gate-callout__text {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+  color: rgba(255,255,255,0.92);
+}
+.ac-gate-callout__text strong { color: #ffffff; font-weight: 600; }
+.ac-gate-callout__text a {
+  color: var(--copper, #b78652);
+  font-weight: 600;
+  text-decoration: underline;
+}
+.ac-gate-callout__text a:hover { color: #ffffff; }
 .ac-cards h3 {
   font-family: var(--font-body, "Manrope", sans-serif);
   font-weight: 600;

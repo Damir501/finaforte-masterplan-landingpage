@@ -35,7 +35,7 @@
 
   <link rel="stylesheet" href="/styles/tokens.css?v=20260519a">
   <link rel="stylesheet" href="/styles/base.css?v=20260519a">
-  <link rel="stylesheet" href="academie.css?v=20260519a">
+  <link rel="stylesheet" href="academie.css?v=20260519b">
 
   <!-- GoatCounter analytics -->
   <script data-goatcounter="https://masterplan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -108,8 +108,14 @@
         <p>
           De Academie volgt de logica van het Masterplan: <em>eerst het geheel zien, daarna pas rekenen.</em> Elke tool hieronder bekijkt één deelvraag. Samen vormen ze de bouwtekening waar uw adviseurs op werken — en u zelf op meeleest.
         </p>
-        <p class="ac-intro__note">
-          Tools zijn vrij toegankelijk na het invullen van de <a href="/scan/">blinde-vlekken-scan</a>. Geen advies, wel inzicht: u leest af waar uw situatie stevig staat en waar verdere blik nodig is.
+        <div class="ac-gate-callout" id="ac-gate-callout" hidden>
+          <div class="ac-gate-callout__icon" aria-hidden="true"></div>
+          <p class="ac-gate-callout__text">
+            <strong>De tools zijn vergrendeld.</strong> U opent ze na het invullen van de <a href="/scan/">blinde-vlekken-scan</a> — gratis, ongeveer twee minuten. Geen advies, wel inzicht: u leest af waar uw situatie stevig staat en waar verdere blik nodig is.
+          </p>
+        </div>
+        <p class="ac-intro__note" id="ac-intro-unlocked" hidden>
+          Tools zijn open. Geen advies, wel inzicht: u leest af waar uw situatie stevig staat en waar verdere blik nodig is.
         </p>
       </div>
     </section>
@@ -331,6 +337,42 @@
     <script>document.getElementById('footer-year').textContent = new Date().getFullYear();</script>
   </footer>
 
+  <script>
+  // Academie gate-UX: vergrendel tool-cards totdat scan/email-access is gezet
+  // (window.FinaforteAccess wordt gezet door token-guard.js op calc-pagina's;
+  //  hier checken we sessionStorage rechtstreeks omdat token-guard hier niet draait)
+  (function() {
+    var unlocked = false;
+    try { unlocked = !!sessionStorage.getItem('ff_email_access'); } catch (e) {}
+    var callout = document.getElementById('ac-gate-callout');
+    var unlockedNote = document.getElementById('ac-intro-unlocked');
+
+    if (unlocked) {
+      if (unlockedNote) unlockedNote.hidden = false;
+      return;
+    }
+
+    if (callout) callout.hidden = false;
+
+    var cards = document.querySelectorAll('.ac-cards a');
+    Array.prototype.forEach.call(cards, function(card) {
+      card.setAttribute('data-locked', 'true');
+      card.setAttribute('aria-disabled', 'true');
+      card.setAttribute('title', 'Vergrendeld — open via de Scan');
+      card.addEventListener('click', function(ev) {
+        ev.preventDefault();
+        try {
+          if (window.FinaforteTrack) {
+            window.FinaforteTrack('academie_card_locked_click', {
+              href: card.getAttribute('href') || ''
+            });
+          }
+        } catch (e) {}
+        window.location.href = '/scan/?from=academie';
+      });
+    });
+  })();
+  </script>
   <script src="/shared/header-nav.js?v=20260515f" defer></script>
   <script src="/shared/analytics-cta.js?v=20260517a" defer></script>
   <script src="/shared/help-button.js?v=20260513k" defer></script>
